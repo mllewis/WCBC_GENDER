@@ -8,7 +8,7 @@ CORPUS_PATHS <- list(here("data/processed/books/tidy_full_corpus_all.csv"),
                      here("data/processed/books/tidy_full_corpus_no_chars.csv"),
                      here("data/processed/books/tidy_full_corpus_chars_only.csv"))
 GENDER_DATA <- here("data/processed/words/gender_ratings_mean.csv")
-STOP_WORDS_PATH <- here("data/processed/words/stop_words.csv")
+STOP_WORDS_PATH <- here("data/raw/other/stop_words.csv") # stop words come from https://github.com/igorbrigadir/stopwords/blob/master/en/ranksnl_oldgoogle.txt
 
 OUTFILE <- here("data/processed/books/gender_token_type_by_book.csv")
 
