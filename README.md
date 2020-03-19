@@ -5,7 +5,7 @@ Lewis, M. & Borkenhagen, MC., Converse, E., Lupyan, G., Seidenberg, M.  (under r
 
 <br>
 
-<img src="resources/bookforest-1.png?raw=true" height="400">
+<img src="resources/bookforest-1.png?raw=true" height="500">
 
 We investigated how gender is represented in children's books using a 200,000 word corpus comprising 249 popular books for young children (0-5 years). Using human judgments and word co-occurrence data, we quantified the gender biases of the words within the corpus and within individual books. We find that children's books contain large numbers of words that adults judge as more masculine or feminine. Semantic analyses based on co-occurrence data yielded word clusters related to gender stereotypes (e.g., feminine: food; masculine: tools). Co-occurrence data also indicate that books instantiate gender stereotypes found in other research (e.g., girls are better at reading and boys at math). Finally, we used large-scale data to estimate the gender distribution of the audience for individual books, and find that children tend to be exposed to gender stereotypes for their own gender. Together the data suggest that children's books may be an early source of gender stereotypes.
 
