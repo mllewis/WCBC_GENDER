@@ -1,0 +1,154 @@
+
+
+# Book gender and child gender
+
+The prior three studies suggest that the text of popular children’s books contains rich information about gender. In this final study, we sought to begin to understand the processes through which this information might influence children’s socialization into gender stereotypes.  In particular, we examined who is being exposed to these books, since prior work suggests that children are more likely to imitate same-gender models (Meltzoff, 2007; Bussey & Bandura, 1999).  To estimate the genders of the children reading these books, we created a novel measure based on the content of book reviews on a large online book store and validated this measure using existing survey data directly measuring the audience of a book. These data indicate that children’s books more frequently read to girls tend to have both more female content and a larger number of female characters, and children’s books more frequently read to boys tend to have both more male content and a larger number of male characters. These patterns suggest that children’s books are exposing children to information about normative behavior for their own gender.
+
+
+## Method and Results
+```{r}
+# our measures of book gender
+book_content_measures <- book_means %>%
+  select(book_id, corpus_type, token_gender_mean) %>%
+  spread("corpus_type", "token_gender_mean")
+
+IBDB_TIDY_PATH <- here("data/processed/other/ibdb_tidy.csv")
+ibdb_data <- read_csv(IBDB_TIDY_PATH)
+
+REVIEWS_DATA_PATH <- here("data/processed/other/amazon_gender_scores.csv")
+review_data <- read_csv(REVIEWS_DATA_PATH)  %>%
+  left_join(book_content_measures) %>% 
+  left_join(ibdb_data)
+```
+
+```{r imdb}
+by_book_review_data <- review_data %>%
+  left_join(ibdb_data) %>%
+  group_by(book_id, n_reviews_total, n_reviews_gendered,
+           prop_review_gendered, char_only, no_char, child_gender)  %>%
+  summarize(addressee_gender_score_token =
+              sum(n_female_token)/(sum(n_female_token) +
+                                     sum(n_male_token)))
+
+n_amazon_ibdb_books <- by_book_review_data %>%
+  filter(!is.na(child_gender)) %>%
+  nrow()
+
+ibdb_amazon_cor <- get_tidy_corr_text(by_book_review_data,
+                                      "addressee_gender_score_token",
+                                      "child_gender")
+```
+
+
+For each book in the WCBC we collected a sample of the most recent reviews on Amazon.com. There were reviews for all but two books, with an average of `r printnum(mean(review_data$n_reviews_total))` reviews per book (_SD_ = `r printnum(sd(review_data$n_reviews_total))`; min = `r printnum(sd(review_data$n_reviews_total))`; max = `r printnum(max(review_data$n_reviews_total))`. The content of each review was coded for the presence of 16 gendered kinship terms (e.g., “son”, “daughter”, “nephew”, “niece”; see SI for full list). We selected these target words because they had a high likelihood of referring to the child for whom the book was purchased (e.g., “My son loves *Goodnight Moon*.”), rather than referring to a book character. All but two books had reviews containing at least one of our target gendered kinship terms. Overall, `r printnum(mean(by_book_review_data$prop_review_gendered, na.rm = T)*100)`% of reviews per book contained at least one target gendered kinship term (_SD_ = `r printnum(sd(by_book_review_data$prop_review_gendered, na.rm = T))`). For each review, we calculated an audience gender score as the proportion of female kinship terms (tokens) present relative to all target kinship words, and then averaged across reviews from the same book to get a book-level estimate of the gender of book addressees (_M_ = `r printnum(mean(by_book_review_data$addressee_gender_score_token, na.rm = T))`; _SD_ = `r printnum(sd(by_book_review_data$addressee_gender_score_token, na.rm = T))`; see SI for supplemental models predicting book gender at the review level). 
+
+We validated our computed audience gender score by comparing it to survey data collected by @kam_2017, who asked a sample of 1,107 Canadian caregivers to list the five books most frequently read to their male or female child. Of the books with at least 5 survey responses, `r n_amazon_ibdb_books` were also in the WCBC. Our review-based gender measure was positively correlated with Kam and Matthewson’s survey based measure (`r ibdb_amazon_cor`), suggesting that book reviews can be used to estimate whether a given book is primarily read to boys or girls.
+
+```{r}
+char_addressee_corr <- get_tidy_corr_text(by_book_review_data,
+                                      "char_only",
+                                      "addressee_gender_score_token")
+
+
+content_addressee_corr <- get_tidy_corr_text(by_book_review_data,
+                                      "no_char",
+                                      "addressee_gender_score_token")
+
+# LM
+additive_adressee_model <- lm(addressee_gender_score_token ~
+                                   no_char + char_only,
+                             data = by_book_review_data) 
+  
+r_squared <- summary(additive_adressee_model)$r.squared %>%
+  round(2) * 100
+
+model_estimates <- tidy(additive_adressee_model) %>%
+  mutate_at(vars(estimate, std.error, statistic), round,2) %>%
+  mutate(string = paste0(" = ", estimate, "; _SE_ = ", std.error, 
+                         "; _Z_ = ", statistic, "; _p_ < .001"))
+```
+
+```{r characteraddresseegender}
+addressee_t_test_data <- character_bar_data %>%
+  select(book_id, char_main_gender) %>%
+  left_join(by_book_review_data) 
+
+overall_adressee_average <- 
+  mean(addressee_t_test_data$addressee_gender_score_token, 
+       na.rm = T)
+
+fem_t_text <- get_tidy_one_sample_t_test_text(x_value = 
+                                  filter(addressee_t_test_data, char_main_gender ==  "F") %>%
+                                  pull(addressee_gender_score_token), 
+                                mu_value = overall_adressee_average)
+
+male_t_text <- get_tidy_one_sample_t_test_text(x_value = 
+                                  filter(addressee_t_test_data, char_main_gender ==  "M") %>%
+                                  pull(addressee_gender_score_token), 
+                                mu_value = overall_adressee_average)
+
+and_t_text <- get_tidy_one_sample_t_test_text(x_value = 
+                                  filter(addressee_t_test_data, char_main_gender ==  "AND") %>%
+                                  pull(addressee_gender_score_token), 
+                                mu_value = overall_adressee_average)
+
+mixed_t_text <- get_tidy_one_sample_t_test_text(x_value = 
+                                  filter(addressee_t_test_data, char_main_gender ==  "MIXED") %>%
+                                  pull(addressee_gender_score_token), 
+                                mu_value = overall_adressee_average)
+
+other_t_text <- get_tidy_one_sample_t_test_text(x_value = 
+                                  filter(addressee_t_test_data, is.na(char_main_gender)) %>%
+                                  pull(addressee_gender_score_token), 
+                                mu_value = overall_adressee_average)
+```
+
+
+
+```{r characterplots,  fig.height = 3.8, out.width = "\\textwidth", fig.cap="(a) Distribution across books of content gender score as a function of primary character gender. Colored points show individuals books (one point excluded for visibility). Dashed line shows content gender score grand mean. (b) Distribution across books of audience gender as a function of primary character gender. Colored points show individuals books. Dashed line shows grand mean of proportion female audience. Black points and ranges show mean and bootstrapped 95\\% percent confidence intervals for books of each primary character gender type.", cache = F}
+
+
+addressee_char_data_primary_data <- character_bar_data %>%
+  select(book_id, char_main_gender2) %>%
+  left_join(by_book_review_data) %>%
+  rename(char_type = char_main_gender2) 
+
+addressee_char_data_primary <- addressee_char_data_primary_data %>%
+  group_by(char_type) %>%
+  tidyboot_mean(column = addressee_gender_score_token, na.rm = T) 
+
+violin_plot2 <- ggplot(addressee_char_data_primary_data, 
+         aes(x = char_type, y = addressee_gender_score_token, color = fct_rev(char_type))) +
+  geom_violin() +
+  geom_jitter(alpha = .5, size = 1) +
+  geom_point(data = addressee_char_data_primary, 
+                  aes(y = mean), 
+                  color = "black",
+             size = 2) +
+  geom_linerange(data = addressee_char_data_primary, 
+                  aes(y = mean, ymin = ci_lower, ymax = ci_upper), 
+                  color = "black", 
+                 size = .6) +
+  geom_hline(aes(yintercept = .5), linetype = 2) +
+  scale_color_manual(
+      values = rev(c("pink"," lightblue", "lightgoldenrod1",  "lightgreen", 
+                      "lightgrey")),guide = F)+
+  ggtitle("Prop. Female Audience vs.\nPrimary Character Gender") +
+  xlab("Primary Character Gender") +
+  ylab("Prop. female audience") +
+  theme_classic(base_size = 10) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+cowplot::plot_grid(violin_plot1, violin_plot2, ncol = 2,
+                             labels = c('a','b'), label_size = 12, rel_widths = c(1,1))
+```
+
+
+## Results
+
+We compared our audience gender score for each book to the measures of book genderedness described above. Both the content gender scores  (`r content_addressee_corr`) and book character gender scores (`r char_addressee_corr`) were correlated with audience gender scores: Books that contained more female-biased content words and more female characters tended to be read more often to girls. In an additive linear model predicting audience gender with both types of gender scores, both content  ($\beta$ `r model_estimates %>% filter(term == "no_char") %>% pull(string)`) and character gender scores ($\beta$ `r model_estimates %>% filter(term == "char_only") %>% pull(string)`) predicted independent, and roughly equal, variance. Together, they accounted for `r r_squared`%  of the total variance in audience gender. 
+
+Consistent with this general pattern, books with female primary characters also tended to be more often read to girls, compared to the overall average (`r fem_t_text`). In contrast, books with either male (`r male_t_text`) or indeterminate primary characters  (`r and_t_text`; \autoref{fig:characterplots}b)  tended to be more often read to boys. Notably, the effect size for girls was nearly twice that for boys, suggesting that there was a stronger bias to read books with female content to girls, relative to books with male content to boys. There was no bias in audience gender for books with multiple primary characters of different genders(`r mixed_t_text`)  or books without primary characters (`r other_t_text`).
+
+In sum, these findings suggest that children’s books tend to communicate  to children information about how to behave as normative members of their own gender. 
+

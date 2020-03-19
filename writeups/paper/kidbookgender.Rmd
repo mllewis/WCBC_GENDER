@@ -1,0 +1,161 @@
+---
+title             : "What might books be teaching young children about gender?"
+shorttitle        : "Gender in children's books"
+
+author:  
+  - name          : "Molly Y. Lewis"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : ""
+    email         : "mollylewis@cmu.edu"
+  - name          : "Matt Cooper Borkenhagen"
+    affiliation   : "2"
+    email         : "cooperborken@wisc.edu"
+  - name          : "Ellen Converse"
+    affiliation   : "2"
+    email         : "econverse@wisc.edu"
+  - name          : "Gary Lupyan"
+    affiliation   : "2"
+    email         : "glupyan@wisc.edu"
+  - name          : "Mark Seidenberg"
+    affiliation   : "2"
+    email         : "seidenberg@wisc.edu "
+affiliation:
+  - id            : "1"
+    institution   : "Department of Psychology, Carnegie Mellon University"
+  - id            : "2"
+    institution   : "Department of Psychology, University of Wisconsin, Madison"
+    
+author_note: | 
+  The second author was supported by the Vilas Trust at UW-Madison, the Institute of Education Sciences, US Department of Education, through Award #R305B150003 to UW-Madison. The opinions expressed are those of the authors and do not represent views of the US Department of Education. The third author was supported by the Summer Senior Thesis Research Grant awarded by the UW-Madison L&S Honors Program.
+
+abstract: |
+  We investigated how gender is represented in children's books using a 200,000 word corpus comprising 249 popular books for young children (0-5 years). Using human judgments and word co-occurrence data, we quantified the gender biases of the words within the corpus and within individual books. We find that children's books contain large numbers of words that adults judge as more masculine or feminine. Semantic analyses based on co-occurrence data yielded word clusters related to gender stereotypes (e.g., feminine: food; masculine: tools). Co-occurrence data also indicate that books instantiate gender stereotypes found in other research (e.g., girls are better at reading and boys at math). Finally, we used large-scale data to estimate the gender distribution of the audience for individual books, and find that children tend to be exposed to gender stereotypes for their own gender. Together the data suggest that children's books may be an early source of gender stereotypes.
+  
+keywords          : "reading, gender, language development"
+wordcount         : ""
+bibliography      : ["r-references.bib"]
+header-includes:
+  - \usepackage{setspace}
+  - \usepackage{float}
+  - \usepackage{graphicx}
+#  - \usepackage{booktabs}
+  - \usepackage{tabu}
+  - \usepackage{makecell}
+  - \AtBeginEnvironment{tabular}{\singlespacing}
+  - \usepackage{pbox}
+  - \usepackage{hyphsubst}
+  - \floatplacement{figure}{t!} # make every figure with caption = t
+  - \raggedbottom
+  - \renewcommand{\topfraction}{1}
+  - \renewcommand{\bottomfraction}{1}
+  - \renewcommand{\textfraction}{.1}
+  - \renewcommand{\floatpagefraction}{1}
+
+
+figsintext        : yes
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+lineno            : no
+documentclass     : "apa6"
+lang              : "english"
+class             : "man"
+output            : papaja::apa6_pdf
+  
+
+---
+
+```{r load_utility_packages, include = FALSE}
+library(papaja)
+library(rmarkdown)
+library(tidyverse) 
+library(here)
+library(broom)
+library(janitor)
+library(kableExtra)
+library(tidyboot)
+library(ggrepel)
+library(ggpmisc)
+library(langcog)
+library(glue)
+library(esc)
+source(here("writeups/paper/paper_helpers.R"))
+```
+
+```{r global_options, include = FALSE}
+#redoc::redoc(highlight_outputs = FALSE)
+knitr::opts_chunk$set(warning = FALSE, 
+                      message = FALSE, 
+                      cache = TRUE,
+                      echo = FALSE,
+                      out.extra = "",
+                      fig.pos = "t!", sanitize = TRUE)
+
+#https://www.psychologicalscience.org/publications/psychological_science/ps-submissions#ART
+# abstract 150
+#p < .001, report CIs
+```
+
+Children begin learning about gender stereotypes from a young age. As early as 24 months, girls exhibit knowledge about stereotypically feminine (e.g., vacuuming), masculine (e.g., shaving), and neutral (e.g., sleeping) household activities; boys exhibit this knowledge several months later on average [@poulin2002men]. By age three, children distinguish individuals by gender, race, and age, with gender and age more salient than race [@shutts2010social]. By age five, children have developed “a constellation of stereotypes about gender (often amusing and incorrect) that they apply to themselves and others” [@martin2004children]. For example, preschoolers show evidence in behavioral tasks for holding the stereotypes that girls are better at reading while boys are better at math [@cvencek2011math], and that girls are less likely than boys to be “very, very smart” [@bian2017gender]. These and other studies show that many young children develop expectations about gender that are consistent with cultural stereotypes.
+
+The sources of this knowledge are less well understood. @gelman2000gender review extensive evidence that young children’s gender expectations arise in part from an essentialist bias, a tendency to treat categories such as male and female as distinct with respect to visible, inferred, and assumed characteristics [see also @liben2002introduction; @dunham2016development]. Children learn about gender-related behaviors from observing interactions between adults [@hilliard2010differing], from their own interactions with adults, and from social contexts. Some studies have found that girls more often receive adult linguistic feedback for dress, hairstyle, and helping behaviors, whereas boys receive comments on their size and physical skills [@chick2002impact]. Language itself can also provide cues to the existence and content of gendered traits. @cimpian2011generic found that when a novel game was introduced to children using a generic subject (“Girls are really good at a game called “gorp”) they were more likely to associate it with a gender than when the game was introduced with a specific subject (“There is a girl who is good at...”). Finally, toys and activities are often gender stereotyped in home, day care, and preschool social settings [@weisgram2014pink]. It is remarkable how rapidly children absorb information about gender, often reflecting cultural stereotypes; identifying the sources of this knowledge is an important continuing research question.
+
+Our study examined whether children’s books could be an early, under appreciated source of information about gender stereotypes. The practice of reading to young children (also called “shared reading”) has been widely encouraged because of its numerous benefits [@bus1995joint; @duursma2008reading; @high2014literacy]. Shared reading marks the child’s entré to literacy and facilitates its development [@snow1998preventing]. Reading with children also exposes them to information beyond their immediate experience. There is an extensive literature on the content of children’s books studied from the perspectives of multiple disciplines, including literary theory, gender studies, and developmental psychology [@morgenstern2001rise]. Major topics include what children’s books convey about individuals (e.g., traits), groups (defined by race or ethnicity) and cultures (e.g., Western, non-Western), and the books’ impact on cognitive and emotional development [@mendelsohn2018reading].
+
+Given that children’s books are an important source of new information, it is important to examine how they represent gender. The question is not new: see @lehr2001beauty, @weitzman1972sex, and @peterson1990gender. Much of the existing evidence derives from “content analysis” methods that emphasize close analyses of small numbers of texts. These studies have consistently found systematic differences in the representation of male and female gender. For example, @diekman2004learning examined gender information in books for middle-schoolers they categorized as “sexist” or “nonsexist” (10 books per category), using a 72 item questionnaire. Each participant (college students) completed the questionnaire for one book. Questions probed whether books conveyed common gender stereotypes and inequalities, such as “Males, but not females, are shown as dominant” and “The book depicts female characters as the natural servants of male characters.” The results suggested that gender differences and inequalities were expressed even in books intended to be nonsexist.
+
+Understanding how gender concepts are represented in children’s books, however, is only one element in understanding the role they may play in shaping children’s gender stereotypes; it is important to also identify the mechanisms through which these messages might be learned from exposure. A large body of work on observational learning suggests that a range of social and cognitive factors influence children’s acquisition of social stereotypes [@meltzoff2007like;@bussey1999social].  One key finding from this literature is that children are more likely to imitate a source if the source shares certain features with themselves, such as gender. There is little public data about who the actual audience of popular, contemporary books is and, critically, how a child’s own gender is related to the gender messages in the books they are exposed to. 
+
+Our goal was to conduct a more extensive representation of gender in books for the youngest children—from infancy through 5 years old—and to understand who is being exposed to them. We used data science methods now used in many types of language research [@iliev2015automated;@von2018implicit;@lewis2019we]  involving statistical analyses based on quantifiable properties of texts such as the occurrence and co-occurrence of words, and properties of words such as abstractness and age of acquisition. The main advantage of the approach is that it does not require explicit judgments of pre-specified properties of texts [as in studies such as @diekman2004learning] and can be quickly and automatically applied to novel materials of arbitrary size. Such methods can also reveal properties of texts that readers and authors do not consciously recognize, such as author-specific statistical patterns [@juola2008authorship], and variation in the affective content of tweets associated with time of day [@golder2011diurnal]. Such analyses could also yield evidence about the representation of gender that would not otherwise be apparent. 
+
+In the current work, we created a large corpus of popular, contemporary children’s books  and examined their gender biases, using three strategies.  We first measured the gender bias of individual words through adult judgments, and examined how word gender bias relates to other word properties (e.g., age of acquisition; abstractness; Study 1). We next characterized the semantics of these gender biases using word embedding models (Study 2). Finally, we quantified the gender bias of individual books (Study 3) and asked how book gender bias relates to the gender of the children who are exposed to them (Study 4). We find that books read to young children convey information about gender stereotypes, and that children tend to be exposed to books conveying stereotypical information corresponding to their own gender. We conclude that children’s books may be an important source of stereotypic beliefs about gender.
+
+
+
+```{r child = "sections/00_corpus_desc_writeup.Rmd"}
+```
+
+```{r child = "sections/01_word_desc_writeup.Rmd"}
+```
+
+```{r child = "sections/02_word_semantics_writeup.Rmd"}
+```
+
+```{r child = "sections/03_book_desc_writeup.Rmd"}
+```
+
+```{r child = "sections/04_book_audience_writeup.Rmd"}
+```
+
+
+# General Discussion
+
+What gender messages are conveyed by popular children’s books and who is being exposed to them? We constructed a corpus of 249 contemporary children’s books and analyzed the gender stereotypes contained within them. Using adult judgments, we found that over half of the words in children’s books tended to be associated with a particular gender, and that a word’s gender bias tended to covary with other word features. We then used word embedding models to explore the semantic associates of words in the corpus, and found that gender-biased words formed gender stereotypical categories (e.g., social interaction for females, and physical interaction for males). Further, we found that both the word gender biases elicited from adult judgements and more elaborate gender stereotypes previously studied in the social psychology literature (e.g., boys are relatively better at math, and girls are relatively better at reading) were reflected in the language statistics of the corpus itself.  At the book level, we found that books varied in their gender associations, and contained statistical regularities that provided information about gender stereotypes. Finally, we derived a novel metric for measuring the gender distribution of a book’s audience and found that children tended to be exposed to books that conveyed gender stereotypes about their own gender. This work provides the first quantitative assessment of the nature of gender messages within contemporary children’s books, and reveals that they contain many statistical regularities that could inform children’s understanding of gender stereotypes. 
+
+There are a number of reasons to think that the statistical regularities in children’s text that we identify may be a particularly effective means for shaping children’s gender stereotypes. First, many of the stereotypical patterns that we report are implicit in the distributional statistics of the text, rather than conveyed via explicit statements (“boys are better at math than girls”).  The implicit nature of these messages may make them particularly difficult for adult readers to track or explicitly oppose.  Second, picture books tend to be read with a caregiver, unlike other media sources such as TV shows. The presence of the caregiver may imply implicit endorsement of these stereotypes as correct or desirable, consistent with prior work suggesting that children make stronger inferences in social contexts [@lewis2016understanding; @xu2007b]. Third, our data suggest that children tend to be exposed to books that reflect gender stereotypes for their own gender. This means that children tend to have more access to information that is biased toward gender-consistent  preferences and beliefs, thereby making gender-inconsistent preferences and beliefs less familiar to children (and therefore more difficult to emulate). Further, a large body of prior work suggests that children are more likely to imitate behaviors by people that are similar to them [@meltzoff2007like;@bussey1999social]. These factors suggest that children’s picture books, coupled with children’s cognitive and social learning biases, may be a potent means of teaching children about gender stereotypes. 
+
+The finding that children tend to be read books matching their own gender provides novel insight into the gender socialization process. Critically, however, these data do not tell us whether the correspondence between child gender and book gender is due to caregiver or child preferences. The role that children's preferences play in book selection is an important question in light of recent data on gender development in transgender children [@gulgoz2019similarity]. Transgender children show strong  identity with the gender they feel they are by three years of age. If trangender children play an active role in their own socialzation [@martin2004children], our data suggest that children's books could be a early source of gender information for transgender children.
+
+Our work characterizes the messages in the text of children’s books and begins to address the role they play in socialization, but there are a number of open questions left open about the causal link between the statistical regularities we observe and the gender stereotypes that children form.  Importantly, little is known about how children themselves perceive the messages contained within these books. In the work presented here, we primarily measure word gender bias  via adult judgements, yet children do not have the extensive knowledge and experience that underlies adult judgments. The fact that word embedding models trained exclusively on the statistics of the children’s book corpus reflect adult-like word gender biases suggests that the adult gender biases could in principle be learned from sources like children’s book text, but it is an open question whether they actually do. Future work could more directly address these questions by eliciting child norms of word gender bias, and by experimental manipulating the statistical regularities of children’s linguistic input about gender stereotypes. 
+
+
+In sum, shared reading of picture books with young children is a pervasive cultural practice with numerous benefits. Our data suggest that this beneficial practice may also have the unintended consequences of conveying undesirable gender stereotypes that may, in turn, contribute to gender disparities in domains like STEM fields [@bian2017gender; @ceci2011understanding]. Changing the books that children read with their caregivers is a relatively straight-forward intervention that could potentially have a large impact on children’s gender stereotypes. 
+
+
+
+\newpage
+
+# References
+
+---
+nocite: | 
+  @time_100_kidbooks, @xkcd, @lewis2019gender, @cvencek2011measuring, @skowronski2001comparative, @greenwald2002unified, @rudman2004gender, cvencek2011math, @nosek2002harvesting
+...
+  
+```{r create_r-references}
+r_refs(file = "r-references.bib")
+```
+
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
