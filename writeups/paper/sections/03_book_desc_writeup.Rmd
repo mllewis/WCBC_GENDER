@@ -21,7 +21,7 @@ book_means <- gender_rating_by_book_mean_only %>%
                                   char_second_gender))
 ```
 
-```{r bookforest, fig.height = 8, fig.width = 8, fig.pos = "b", fig.cap = "Overall gender rating of each book in our corpus, calculated from the mean gender ratings of words in each book (tokens). The dashed line indicates the overall mean across books, and color indicates the gender of the primary character. Ranges are bootstrapped 95\\% CIs."}
+```{r bookforest, fig.height = 8, fig.width = 8, fig.pos = "b", fig.cap = "Overall gender rating of  a subset of books, the 20 with the highest feminine bias scores, the 20 with the highest masculine bias scores, and 20 from the neutral range. Bias scores are calculated from the mean gender ratings of words in each book (tokens). The dashed line indicates the overall mean across books, and color indicates the gender of the primary character. Ranges are bootstrapped 95\\% CIs."}
 
 prop_present <- book_means %>%
   group_by(corpus_type) %>%

@@ -17,6 +17,8 @@ data/raw/gender_norms/*
 
 data/processed/books/*
 
+data/processed/iat/*
+
 data/processed/other/coca_fiction_sampled/*
 data/processed/other/slices_cleaned/*
 data/processed/other/kidbook_sampled/*

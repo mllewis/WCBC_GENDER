@@ -1,0 +1,107 @@
+---
+title: Behavioral IAT
+author: Molly Lewis 
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    code_folding: hide
+    number_sections: no
+    toc: yes
+---
+  
+```{r setup, include = F}
+
+# load packages
+library(knitr)
+library(rmarkdown)
+library(tidyverse)
+library(here)
+library(langcog)
+library(ggrepel)
+library(viridis)
+
+opts_chunk$set(echo = T, message = F, warning = F, 
+               error = F, tidy = F, cache = F)
+
+```
+
+
+
+```{r}
+IAT_ES_PATH <- here("exploratory_analyses/5_IAT_tests/data/other/kid iat stim - implicit ES.csv")
+
+iat_es <- read_csv(IAT_ES_PATH) %>%
+  select(short_citation, bias2, n, group_type, age_months, participant_gender, d_measure_clean) %>%
+  filter(bias2 != "other")
+
+iat_es %>% 
+  ggplot(aes(x = group_type, y = d_measure_clean, color = participant_gender)) +
+  geom_label(aes(label = short_citation)) +
+  geom_hline(aes(yintercept = 0), linetype = 2) +
+  facet_wrap(~bias2) +
+  theme_classic()
+
+
+iat_ns_c <- iat_es %>%
+  filter(participant_gender != "C") %>%
+  select(-d_measure_clean) %>%
+  group_by(bias2, group_type, short_citation, age_months) %>%
+  spread(participant_gender, n) %>%
+  rename(F_n = F,
+         M_n = M)
+
+iat_es_c <- iat_es %>%
+  filter(participant_gender != "C") %>%
+  select(-n) %>%
+  group_by(bias2, group_type, short_citation, age_months) %>%
+  spread(participant_gender, d_measure_clean) %>%
+  left_join(iat_ns_c) 
+
+weighted_mean_es_across_gender <- iat_es_c %>%
+  rowwise()%>%
+  mutate(d_measure_clean = weighted.mean(c(F, M), c(F_n, M_n)),
+         participant_gender = "C") %>%
+  filter(!is.na(d_measure_clean)) %>%
+  select(short_citation, bias2, group_type, participant_gender, d_measure_clean) 
+
+tidy_es <- iat_es %>%
+  filter(participant_gender == "C") %>%
+    select(short_citation, bias2, group_type, participant_gender, d_measure_clean)  %>%
+  bind_rows(weighted_mean_es_across_gender) %>%
+    mutate(bias2 = fct_relevel(bias2, "bad-good", 
+                                 "math-language", "math-arts")) %>%
+  group_by(bias2, group_type) %>%
+  summarize(d_measure_clean = mean(d_measure_clean))
+  # need to do meta-analyss thing here
+
+#tidy_es %>% 
+ # ggplot(aes(x = group_type, y = d_measure_clean, color = participant_gender)) +
+ # geom_label(aes(label = short_citation)) +
+ # geom_hline(aes(yintercept = 0), linetype = 2) +
+ # facet_wrap(~bias2) +
+ # theme_classic()
+
+tidy_es %>% 
+  ggplot(aes(x = bias2, y = d_measure_clean, group = group_type)) +
+  geom_line(alpha = .2, size = 1) +
+  geom_point(aes(color = group_type), size = 3) +
+  geom_hline(aes(yintercept = 0), linetype = 2) +
+    geom_text_repel(
+    data = subset(tidy_es, bias2 == "career-family"),
+    aes(label = group_type, color = group_type),
+    size = 5,
+    nudge_x = 45,
+    segment.color = NA
+  ) +
+    ylim(-.25,1.5) +
+
+  ylab("Mete-analytic IAT Behavioral Effect Size") +
+  xlab("Bias Type") +
+  coord_cartesian(xlim = c(1, 4 + .15)) +
+    scale_color_viridis(discrete=TRUE, option = "D") +
+  theme_classic(base_size = 14) +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1))
+
+ 
+```

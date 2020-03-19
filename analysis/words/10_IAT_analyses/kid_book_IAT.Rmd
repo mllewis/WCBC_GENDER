@@ -1,0 +1,181 @@
+---
+title: IAT task for models trained on kidbook
+author: Molly Lewis 
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    code_folding: hide
+    number_sections: no
+    toc: yes
+---
+  
+```{r setup, include = F}
+
+# load packages
+library(knitr)
+library(rmarkdown)
+library(tidyverse)
+library(here)
+library(langcog)
+library(ggrepel)
+ library(cowplot)
+library(metafor)
+
+opts_chunk$set(echo = T, message = F, warning = F, 
+               error = F, tidy = F, cache = F)
+
+```
+
+```{r language}
+IAT_ES_PATH_LANGUAGE <- here("exploratory_analyses/5_IAT_tests/data/other/iat_es_by_model.csv")
+
+iat_es_language <- read_csv(IAT_ES_PATH_LANGUAGE) %>%
+  filter(corpus %in% c("kidbook_sampled", "coca_sampled", "wiki")) %>%
+  mutate(bias_type = str_remove(bias_type, "gender-bias-"),
+         bias_type = fct_recode(bias_type, "bad-good" = "good-bad",
+                                "career-family" = "career-family2")) %>%
+  group_by(corpus, bias_type) %>%
+  multi_boot_standard(col = "effect_size") %>%
+  ungroup() %>%
+  mutate(bias_type = fct_relevel(bias_type, "bad-good", 
+                                 "math-language", "math-arts"),
+         group = fct_recode(corpus, "coca" = "coca_sampled", "kidbook" = "kidbook_sampled"),
+         group = fct_relevel(group, "kidbook"),
+         es_type = "language") %>%
+  select(-corpus)
+
+```
+
+
+```{r behavior}
+IAT_ES_PATH_BEHAVIOR <- here("exploratory_analyses/5_IAT_tests/data/other/kid iat stim - implicit ES.csv")
+
+iat_es <- read_csv(IAT_ES_PATH_BEHAVIOR) %>%
+  select(short_citation, bias2, n, group_type, age_months, participant_gender, d, d_var) %>%
+  filter(bias2 != "other",
+         short_citation != "skowronski2001")# not split by gender
+
+# get es variances
+iat_es_with_var <- iat_es %>%
+  mutate(d_var = case_when(is.na(d_var) ~ (2*n)/(n^2) + (d^2)/(4*n),
+                           TRUE ~ d_var)) 
+
+ma_es <- iat_es_with_var %>%
+  group_by(bias2, group_type) %>%
+  nest() %>%
+  mutate(d_meta = map(data, ~rma(.$d, .$d_var)$b[1]),
+            ci_lower = map(data, ~rma(.$d, .$d_var)$ci.lb),
+            ci_upper = map(data, ~rma(.$d, .$d_var)$ci.ub))  %>%
+  select(-data) %>%
+  unnest() %>%
+  ungroup() %>%
+  rename(bias_type = bias2, 
+         group = group_type,
+         mean = d_meta) %>%
+  mutate(es_type = "behavior")
+```
+
+```{r}
+
+all_es <- bind_rows(ma_es, iat_es_language) %>%
+    mutate(bias_type = fct_relevel(bias_type, "bad-good", 
+                                 "math-language", "math-arts"),
+          es_type = fct_relevel(es_type, "language"),
+            group = fct_recode(group, "children" = "kid",
+                            "adults" = "adult"))
+
+language_plot <- all_es %>%
+  filter(es_type == "language") %>%
+ggplot(aes(x = bias_type, y = mean,  group = group)) +
+  geom_line(alpha = .2, size = 1) +
+ # geom_pointrange(aes(color = corpus, ymin = ci_lower, ymax = ci_upper), size = 1) +
+  geom_point(aes(color = group), size = 3) +
+  geom_text_repel(
+    data = subset(all_es %>% filter(es_type == "language"), bias_type == "career-family"),
+    aes(label = group, color = group),
+    size = 5,
+    nudge_x = 45,
+    segment.color = NA
+  ) +
+  scale_color_manual(values = c("blue", "orange", "lightblue")) +
+  coord_cartesian(xlim = c(1, 4 + .15)) +
+  geom_hline(aes(yintercept = 0), linetype = 2) + 
+  xlab("Bias Type") +
+  ylab("Language IAT effect size") +
+  ggtitle("Language IAT Bias") +
+  theme_classic(base_size = 14) +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1))
+
+label_df <- all_es %>% 
+  filter(es_type == "behavior", 
+         (bias_type == "career-family" & group == "adults")| 
+           (bias_type == "math-language" & group == "children")) %>%
+  mutate(x_pos = as.numeric(bias_type))
+
+behavior_plot <- all_es %>%
+  filter(es_type == "behavior") %>%
+  ggplot(aes(x = bias_type, y = mean,
+            # shape = participant_gender, 
+             color = group)) +
+  geom_pointrange(aes(color = group, 
+                      ymin = ci_lower, ymax = ci_upper), 
+                  position = position_jitter(w = 0.15, h = 0)) +
+  geom_text(
+    data = label_df,
+    aes(x = x_pos, label = group, y = mean),
+    size = 5,
+    nudge_x = .4) +
+  scale_color_manual(values = c("blue", "orange"), guide = F) +
+  geom_hline(aes(yintercept = 0), linetype = 2) +
+  ylab("Mete-analytic IAT Behavioral Effect Size") +
+  xlab("Bias Type") +
+  labs(fill = "Participant Gender") +
+  theme_classic(base_size = 14) +
+  ggtitle("Behavioral IAT Bias") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+plot_grid(language_plot, behavior_plot)
+```
+
+
+```{r}
+
+all_es <- iat_es_language %>%
+    mutate(bias_type = fct_relevel(bias_type, "bad-good", 
+                                 "math-language", "math-arts"),
+          es_type = fct_relevel(es_type, "language"),
+            group = fct_recode(group, "children" = "kid",
+                            "adults" = "adult"))
+
+language_plot_data <- all_es %>%
+  filter(es_type == "language") %>%
+  filter(bias_type %in% c("career-family", "math-arts", "math-language")) %>%
+  mutate(group = fct_relevel(group,"wiki","coca" , "kidbook"),
+         bias_type = fct_relevel(bias_type,"career-family","math-language" , "math-arts"),
+         bias_type = fct_recode(bias_type,
+                                "male-career\n (vs. family)" = "career-family",
+                                "male-math\n(vs. language)\n" = "math-language",
+                                "male-math\n(vs. art)" = "math-arts")) 
+  
+
+pdf("bias_across_corpora2.pdf", width = 12, height = 5.5)
+language_plot_data %>%
+  ggplot(aes(x = bias_type, y = mean, group = group, fill = group)) +
+  geom_bar(stat = "identity", position='dodge') +
+  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper), position = position_dodge(width = .9)) +
+    scale_fill_manual(values = c("lightblue", "blue", "orange"), name = "Language Source", labels = c("Wikipedia", "Adult Fiction", "Children's Picture Books"))  +
+    geom_hline(aes(yintercept = 0), linetype = 2)  +
+    xlab("Bias Type") +
+  ylab("Language IAT effect size") +
+  ggtitle("Language IAT Bias in Different Corpora") +
+  theme_classic(base_size = 20)
+dev.off()
+
+
+```
+
+
+
+

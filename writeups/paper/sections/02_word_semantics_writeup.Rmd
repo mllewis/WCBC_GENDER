@@ -220,7 +220,7 @@ We used this same method to measure the extent to which gender-related psycholog
 
 ```{r languageiat, fig.height = 4, out.width = "\\textwidth",  fig.cap = "Estimates of the magnitude of gender biases in word embedding models trained on the Wisconsin Children’s Book Corpus (orange), adult fiction corpus (COCA; dark blue), and Wikipedia (light blue). Positive effect sizes indicate a bias to associate women with the stereotypical category (e.g., ‘family'); negative effect sizes indicate a bias to associate women with the non-stereotypical category (e.g., ‘career’).  Ranges indicate 95\\% confidence intervals across models. Biases are described more fully in Table 5."}
 
-IAT_ES_PATH_LANGUAGE <- here("exploratory_analyses/5_IAT_tests/data/other/iat_es_by_model.csv")
+IAT_ES_PATH_LANGUAGE <- here("data/processed/iat/other/iat_es_by_model.csv")
 
 iat_es_language <- read_csv(IAT_ES_PATH_LANGUAGE) %>%
   filter(corpus %in% c("kidbook_sampled", "coca_sampled", "wiki")) %>%
