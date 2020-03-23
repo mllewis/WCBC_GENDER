@@ -1,0 +1,14 @@
+
+We calculated a language IAT effect size from our corpora using the same method as in Caliskan et al. (2017) and Lewis and Lupyan (2019). The target categories in all analyses were female and male. These two categories were indexed by the following sets of words: “woman,” “girl,” “sister,” “she,” “her,” and “daughter” (female), and “man,” “boy,” “brother,” “he,” “him,” and “son” (male). For each IAT, we compared the average cosine distance of these target words to words indexing two attribute categories (e.g., math and reading). Each attribute category was indexed by five words (listed in Table 5 of the Main Text). A positive effect size indicates a bias to associate males with the stereotypical male attribute, and females with the stereotypical female attribute. 
+
+Formally, let $A$,$B$ denote the two sets of attributes  words (e.g., math and reading words) and $\cos (\vec{a}, \vec{b})$ denote the angle between vectors $\vec{a}$ and $\vec{b}$. Then, $s(w, A, B)$ measures the association of $w$ with the attribute:
+
+
+
+$$ s(w, A, B)=\operatorname{mean}_{a \in A} \cos (\vec{w}, \vec{a})-\operatorname{mean}_{b \in B} \cos (\vec{w}, \vec{b}) $$
+
+ Let $X$ and $Y$ be two sets of target words (male and female words). Then the IAT effect size (ES) is: 
+
+
+$$ ES = \frac{\operatorname{mean}_{x \in X} s(x, A, B)-\operatorname{mean}_{y \in Y} s(y, A, B)}{\operatorname{std}_{-}\operatorname{dev}_{w \in X \cup Y} s(w, A, B)} $$
+

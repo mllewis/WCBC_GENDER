@@ -5,12 +5,13 @@ library(ggiraph)
 library(DT)
 
 navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
-
+         #  header = tags$div(`width` = "200px"),
            tabPanel("Word Gender Ratings",
-                    HTML( "Mean gender rating for words in gender rating task. Values range from 1 (male associated) to 5 (female associated). See 'Method Details' tab for additional information."),
+
+                    p( "Mean gender rating for words in gender rating task. Values range from 1 (male associated) to 5 (female associated). See 'Method Details' tab for additional information."),
                     br(),
                     br(),
-                    dataTableOutput("wordratingtable")
+                    dataTableOutput("wordratingtable"),
            ),
            tabPanel("Word Gender Semantics",
                     HTML( "Words are clustered based on the Wikipedia English embeddings Bojanowski et al. (2016).
@@ -18,7 +19,7 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
                     Blue indicates male-biased clusters. Circle size corresponds to number of words in the cluster."),
                     br(),
                     br(),
-                    HTML("Descriptive labels are provided for each cluster where possible (empty labels indicate clusters lacks coherence). Hover over a cluster to see effect size (ES),
+                    p("Descriptive labels are provided for each cluster where possible (empty labels indicate clusters lacks coherence). Hover over a cluster to see effect size (ES),
                        and actual words included in the cluster. Effect size is Cohen's <i> d </i> from one sampled t-test with bootstrapped 95% confidence intervals. Larger effect sizes indicate larger degree of female bias."),
                     br(),
                     br(),
@@ -66,8 +67,8 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
                       Please try to use the entire scale, from "Very masculine" to "Very feminine"</i> '),
                     br(),
                     br(),
-                    HTML("After collecting ratings for 2280 words, we realized that we were missing many proper names that occurred in the books
-                        and so conducted another round of rating to collect addditonal ratings for 93 proper names.
+                    HTML("After collecting ratings for 2,280 words, we realized that we were missing many proper names that occurred in the books
+                        and so conducted another round of rating to collect additonal ratings for 93 proper names.
                         The data reported in the main manuscript already includes these words.
                         We slightly modified the instructions to inform participants that the words in this list were dominated by proper names."),
                     br(),
@@ -79,8 +80,15 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
                         Try to use the entire scale. It\'s ok to go with your first impression for each word, but please do not rush.</i> '),
                     br(),
                     br(),
+                    h2("Stop word list"),
+                    HTML("We excluded the follow 30 words from our norming procedure: 'I', 'a', 'about', 'an', 'are', 'as', 'at', 'be', 'by',
+                    'for', 'from', 'how', 'in', 'is', 'it', 'of', 'on', 'or', 'that', 'the', 'this', 'to', 'was', 'what', 'when', 'where', 'who', 'will',
+                    'with', 'the'."),
+
+                    br(),
+                    br(),
                     h2("Book Gender and Child Gender"),
-                    HTML( "A gender score was calculate for each review for each book on Amazon based on the number of gender relational terms included in the review. The 16 terms are listed below:"),
+                    HTML( "A gender score was calculated for each review for each book on Amazon based on the number of gender relational terms included in the review. The 16 terms are listed below:"),
                     br(),
                     br(),
                     HTML('<b>Female </b>: "daughter", "daughters",  "granddaughter", "granddaughters","niece", "nieces", "grandniece", "grandnieces"<br>'),
@@ -89,17 +97,22 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
                     br(),
                     h2("Word Embedding models"),
                     HTML("We used the gensim implementation (Řehůřek & Sojka, 2011) of word2vec (skip-gram; Miklov, et al., 2013) on our corpus of children's books. The text of each book was entered as a new line in the corpus.
-                          The vector size was 300, the window size was 20, and the minimum word count was 5. We trained 10 seperate models where we randomized
-                          the order of the books across corpora. Similiarly, for the adult fiction corpus (CoCA; Davies, 2008), we trained 10 models  on 10 corpora constructed by sampling fiction text from the CoCA corpus dating  from 1990 to 2017. Each training corpus
+                          The vector size was 300, the window size was 20, and the minimum word count was 5. We trained 10 separate models where we randomized
+                          the order of the books across corpora. Similarly, for the adult fiction corpus (CoCA; Davies, 2008), we trained 10 models  on 10 corpora constructed by sampling fiction text from the CoCA corpus dating  from 1990 to 2017. Each training corpus
                           included a sample from a book in CoCA matched for length to one from the Children's Book Corpus. The starting point for the text from the adult fiction book was randomly determined.
                           The word level bias estimates reported in the paper reflect the mean estimate across each of the 10 model runs for both corpus types." ),
 
                     br(),
                     br(),
                     h2("Language IAT Measure"),
+                    withMathJax(includeMarkdown('iat_method.Rmd')),
 
                     h2("References"),
+                    HTML("Caliskan, A., Bryson, J. J., & Narayanan, A. (2017). Semantics derived automatically from language corpora contain human-like biases. Science, 356(6334), 183-186."),
+                    br(),
                     HTML("Davies, M (2008). The Corpus of Contemporary American English: 450 million words, 1990-present."),
+                    br(),
+                    HTML("Lewis, M., & Lupyan, G. (2019). What are we learning from language? Associations between gender biases and distributional semantics in 25 languages."),
                     br(),
                     HTML("Mikolov T, Chen K, Corrado G, Dean J (2013). Efficient estimation of word representations in vector space."),
                     br(),
@@ -160,15 +173,6 @@ AoA = Age of acquisition; WCBC = Wisconsin Children's Book Corpus; TASA = Zeno e
                        br(),
                        h4("Predicting audience gender in reviews with charcter and content gender scores"),
                        tableOutput('char_content_table')
-
-
-                    )
-
-#
-
-           # Additional stuff for SI:
-           # Description of gender character coding [Matt]
-           # Advert age
-           # book bias over time
+           )
 )
 
