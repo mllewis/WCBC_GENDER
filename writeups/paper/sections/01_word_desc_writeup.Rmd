@@ -7,12 +7,12 @@ options(knitr.table.format = "latex")
 
 
 # Study 1: Measuring word gender bias
-
-
-Our first step was to obtain data about the genderedness of words in the corpus. Adult English speakers rated the perceived gender of words on a 5-point scale. Previous studies using the same method [@scott2019glasgow;@crawford2004champagne] found that adult ratings yield systematic gender associations, with words such as *secretary* and *sensitive* rated as feminine, *pistol* and *garage* as masculine, and *stove* and *cordial* as neutral. We asked whether words in children’s books also exhibit such gender associations. A further question is whether rated genderedness is related to five well-studied properties of words potentially relevant to the development of gender stereotypes: *valence* (degree of pleasantness), *arousal* (intensity of emotion), *concreteness* (whether a word refers to something that can be experienced directly or is more abstract), *age of acquisition* (*AoA*, an estimate of the age at which a word is learned), and *word frequency* (how often a word occurs in a language sample). Valence and arousal are implicated in common gender stereotypes (e.g., girls nice, boys aggressive);  age of acquisition and word frequency provide evidence about children’s exposure to words with these properties; the concrete-abstract dimension reflects the conceptual complexity of words.
-
+Our first step was to obtain data about the genderedness of words in the book corpus. 
 
 ## Method
+Adult English speakers rated the perceived gender of words on a 5-point scale. Previous studies using the same method [@scott2019glasgow;@crawford2004champagne] found that adult ratings yield systematic gender associations, with words such as *secretary* and *sensitive* rated as feminine, *pistol* and *garage* as masculine, and *stove* and *cordial* as neutral. We were interested in the extent to which words used in children’s books exhibit such gender associations. A further question is whether genderedness (as rated by adults) is related to properties of words potentially relevant to the development of gender stereotypes: *valence* (degree of pleasantness), *arousal* (intensity of emotion), *concreteness* (whether a word refers to something that can be experienced directly or is more abstract), *age of acquisition* (*AoA*, an estimate of the age at which a word is learned), and *word frequency* (how often a word occurs in a language sample). Valence and arousal are implicated in common gender stereotypes (e.g., girls nice, boys aggressive);  age of acquisition and word frequency provide evidence about children’s exposure to words with these properties; the concrete-abstract dimension reflects the conceptual complexity of words.
+
+
 ```{r}
 RATING_DEMO_PATH <- here("data/processed/words/gender_ratings_demographics.csv")
 EXCLUDED_TURKERS_PATH <-  here("data/processed/words/n_participants_attention_excluded.csv")
@@ -352,5 +352,5 @@ text_pretty_model <- pretty_model %>%
 
 We next fit an additive linear model  to estimate the independent variance in gender explained by the other word measures. All five measures predicted independent variance in gender ratings ($R^2$ = `r round(summary(model)$r.squared, 2)`), with valence being the strongest predictor of a word's gender association (i.e, more positively valenced words tend to be rated as more feminine; $\beta$ = `r filter(text_pretty_model, Term == "Valence") %>% pull(pretty_model)`;  \autoref{tab:wordmodel}).
 
-In summary, many of the most frequent content-bearing words in children’s books have strong gender associations (54%), according to adult judgments. Words judged as more feminine were associated with more positive valence and lower arousal. More feminine words are also higher in frequency more concrete, and learned somewhat earlier (i.e., have a lower age of acquisition, holding frequency and the other variables listed in \autoref{tab:wordmodel} constant). These results indicate that children’s books may be a source of information for children about gender norms.
+In summary, many of the most frequent content-bearing words in children’s books have strong gender associations (54%), according to adult judgments. Words judged as more feminine were associated with more positive valence and lower arousal. More feminine words are also higher in frequency more concrete, and learned somewhat earlier (i.e., have a lower age of acquisition, holding frequency and the other variables listed in \autoref{tab:wordmodel} constant). 
 
