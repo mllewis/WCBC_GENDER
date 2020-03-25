@@ -7,7 +7,7 @@ options(knitr.table.format = "latex")
 
 
 # Study 1A: Measuring word gender bias
-As a first step in understanding the genderedness of words in the book corpus, we had adult English speakers rate words on genderedness using a 5-point scale from feminine to masculine [@scott2019glasgow]. These ratings were quite systematic; words such as *love*, *cuddle*, and *cute* were rated as feminine, *axe*, *fireman*, and *lion* as masculine, and *exactly*, *letter*, and *nose* as neutral.
+As a first step in understanding the genderedness of words in the book corpus, we had adult English speakers rate words on genderedness using a 5-point scale from feminine to masculine [@scott2019glasgow]. These ratings were quite systematic; words such as *cuddle* and *pink* were rated as feminine, *axe* and *engine* as masculine, and *exactly* and *nose* as neutral.
 
 
 ## Method
