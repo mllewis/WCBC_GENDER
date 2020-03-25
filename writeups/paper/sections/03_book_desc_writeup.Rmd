@@ -1,4 +1,4 @@
-# Study 3: Quantifying Gender Bias in Books
+# Study 2: Quantifying Gender Bias in Books
 
 ```{r}
 library(tidyverse)

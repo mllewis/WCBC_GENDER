@@ -6,7 +6,7 @@ options(knitr.table.format = "latex")
 ```
 
 
-# Study 1: Measuring word gender bias
+# Study 1A: Measuring word gender bias
 Our first step was to obtain data about the genderedness of words in the book corpus. 
 
 ## Method
