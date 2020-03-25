@@ -8,11 +8,11 @@ options(knitr.table.format = "latex")
 
 # Study 1B: Characterizing the sematic structure of word gender bias
 
-The results of Study 1A indicate that children's books include many words that adults perceive as gendered. Here we investigate in more detail the semantic neighborhoods of these words by using word embedding models [@mikolov2013efficient], a method for deriving lexical semantic representations based on patterns of co-occurrence; words are similar to the extent that they occur in similar contexts [“distributional statistics”, e.g., @landauer1997solution]. Semantic representations extracted in this way capture important aspects of meaning and correlate with human judgments of semantic similarity [@hill2015simlex], though not without limitations @chen2017evaluating. 
+The results of Study 1A indicate that children's books include many words that adults perceive as gendered. Here we investigate in more detail the semantic neighborhoods of these words by using word embedding models [@mikolov2013efficient], a method for deriving lexical semantic representations based on patterns of co-occurrence. Word embedding models characterize words as similar to the extent that they occur in similar contexts [“distributional statistics”, e.g., @landauer1997solution]. Semantic representations extracted in this way capture important aspects of meaning and correlate with human judgments of semantic similarity [@hill2015simlex], though not without limitations [@chen2017evaluating]. 
 
 We first used a pre-trained word embedding model to examine the semantic clusters of words in the children’s books, and their relationship to the gender biases based on the adult judgements collected in Study 1A. We then trained word embedding models on the children’s book corpus itself in order to understand what gender biases are present in the texts themselves, independent of other sources of information. We find that the gender bias of words --- estimated only from word co-occurrences in the corpus itself --- is correlated with adult judgments of gender association from Study 1A. We also find that gender biases that have been demonstrated behaviorally in adults and children, such as the bias to associate girls with language and boys with math, are also present in the co-occurrence statistics of the children’s book corpus.
 
-## Method
+## Method and Results
 ### Computing Genderedness from Language Statistics
 
 ```{r}
@@ -29,7 +29,7 @@ gender_bias_counts <- count(centroid_df, gender_bias)
 ```
 
 
-Semantic coordinates for each word in our sample were obtained from a model trained on English Wikipedia [@bojanowski2016enriching]. We then reduced the dimensionality of these coordinates to two using the t-sne algorithm [@maaten2008visualizing], and clustered the words into 100 clusters based on their similarity using k-means clustering. This procedure yielded semantically coherent clusters with an average of  `r mean(centroid_df$n)` words (SD = `r sd(centroid_df$n)`) per cluster (\autoref{tab:clusterexamples}; see  SI for complete results).
+Semantic coordinates for each word in our sample were obtained from a model trained on English Wikipedia [@bojanowski2016enriching]. We then reduced the dimensionality of these coordinates to two using the t-sne algorithm [@maaten2008visualizing], and clustered the words into 100 clusters based on their similarity using k-means clustering. This procedure yielded semantically coherent clusters with an average of  `r mean(centroid_df$n)` words (_SD_ = `r sd(centroid_df$n)`) per cluster (\autoref{tab:clusterexamples}; see  SI for complete results).
 
 The average rated genderedness of the words in these clusters was calculated using the gender norms. For each word cluster, we tested whether the mean gender rating of words in that cluster significantly differed from the overall mean gender rating of words. Of the 100 clusters, `r filter(gender_bias_counts, gender_bias == "female") %>% pull(n)`  were female-biased, `r filter(gender_bias_counts, gender_bias == "male") %>% pull(n)` were male-biased, and the remaining `r filter(gender_bias_counts, gender_bias == "neither") %>% pull(n)` were neutral. Table 3 shows examples of female-biased, male-biased and neutral clusters along with representative words. The gendered clusters differ in ways that reflect gender stereotyping. For example, female clusters were associated with mental states (feelings, beliefs) and interactions with others (communicating, caregiving). Male clusters, in contrast, tended to be more closely associated with events in the physical realm (e.g., sports, tools, transportation). 
 
@@ -82,8 +82,7 @@ kable(cluster_examples,  "latex", booktabs = T,  escape = F, longtable = F,
 ```
 
 ## Gender Associations derived from the Children's Book Corpus
-[we don't need such a long introduction here -- note also the redundant paragraph right below this one. Instead, just have a few sentences motivating the analysis and then have a methods section that describes the anchor words]
-So far we have presented findings about gendered information in children's books based on adult gender norms and semantic representations derived from adult text. The results are relevant to the beliefs of adults who read books with children, which they may convey in conversation during shared reading. However, we also want to understand what a child may learn about gender from children’s books alone. To answer this question, we estimated the gender bias of individual words using word embedding models trained on the text in all 249 books of the  children’s book corpus  (see SI for training details). We estimated the gender association for each word by calculating its mean semantic similarity (cosine distance) to a set of female anchor words (“woman,” “girl,” “sister,” “she,” “her,” and “daughter”), and a set of male anchor words (“man,” “boy,” “brother,” “he,” “him,” and “son”). A female gender score was calculated for each word as the mean distance of a target word from the female anchor words minus the mean similarity to the male anchor words. For comparison, we also estimated a female score from models trained on an identically sized corpus of adult fiction published from 1990 to 2017 (Corpus of Contemporary American English; COCA; Davies, 2008), and a much larger corpus of Wikipedia articles (Bojanowski et al., 2016). We then examined how these estimates of word gender bias derived from language statistics compared to the gender norms we had previously collected from participants. Notably, the WCBC corpus is much smaller than both COCA and the Wikipedia corpora, which likely underestimates the true correlation in bias between the WCBC and other corpora.
+So far we have presented findings about gendered information in children's books based on adult gender norms and semantic representations derived from adult text. The results are relevant to the beliefs of adults who read books with children, which they may convey in conversation during shared reading. However, we also want to understand what a child may learn about gender from children’s books alone. 
 
 We estimated the extent to which gender associations were encoded in the language co-occurrence statistics in our corpus by training a word embedding model on the full corpus of text from all 249 books (see SI for training details). We then estimated the gender association for each word by calculating its mean semantic similarity (cosine distance) to a set of female words ("woman," "girl," "sister," "she," "her," and "daughter"), and a set of male words ("man," "boy," "brother," "he," "him," and "son"). A female gender score was calculated for each word as the mean female similarity minus the mean male similarity. For comparison, we also estimated a female score from models trained on an identically sized corpus of adult fiction published from 1990 to 2017 [Corpus of Contemporary American English; @davies2008corpus], and a much larger corpus of Wikipedia [@bojanowski2016enriching]. We then examined how these estimates of word gender bias derived from language statistics compared to the gender norms we had previously collected from participants.
 
@@ -128,8 +127,8 @@ human_lang_corrs <- all_scores %>%
   filter(word %in% common_words) %>% 
   spread(corpus, female_score)
 
-col_order <- c("Human Gender Rating (Fem.)", "Lang. Gender (WCBC)",
-               "Lang. Gender (COCA)",  "Lang. Gender (Wikipedia)")
+col_order <- c("Human gender ratings", "Distributed semantics (WCBC)",
+               "Distributed semantics (COCA)", "Distributed semantics (Wikipedia)")
 corr_df <- cor(human_lang_corrs[,-1]) %>%
   round(2) %>%
   as.matrix()
@@ -139,10 +138,10 @@ corr_df <- cor(human_lang_corrs[,-1]) %>%
 corr_output <- corr_df %>%
     data.frame() %>%
     rownames_to_column() %>%
-    mutate(rowname = case_when(rowname == "human_gender_rating" ~ "Human Gender Rating (Fem.)",
-                               rowname == "coca" ~ "Lang. Gender (COCA)",
-                               rowname == "kidbook" ~ "Lang. Gender (WCBC)",
-                               rowname == "wiki" ~ "Lang. Gender (Wikipedia)")) %>%
+    mutate(rowname = case_when(rowname == "human_gender_rating" ~ "Human gender ratings",
+                               rowname == "coca" ~ "Distributed semantics (COCA)",
+                               rowname == "kidbook" ~ "Distributed semantics (WCBC)",
+                               rowname == "wiki" ~ "Distributed semantics (Wikipedia)")) %>%
   slice(match(col_order, rowname)) %>%
   select(1,2,4,3,5) %>%
   column_to_rownames(var = "rowname") %>%
@@ -160,9 +159,9 @@ cor_table_tidy <- corr_output %>%
 
 ```{r wordgendertable, results = "asis"}
 kable(cor_table_tidy,  "latex", booktabs = T, escape = F,
-      caption = "Correlation between word level gender bias estimates from humans and language statistics",
-      col.names = linebreak(c("", "Human\nGender\n(Fem.)", "Lang.\nGender\n(WCBC)",
-               "Lang.\nGender\n(COCA)"))) %>%
+      caption = "Relationships between word gender biases",
+      col.names = linebreak(c("", "Human\ngender\nratings", "Distributed\nsemantics\n(WCBC)",
+               "Distributed\nsemantics\n(COCA)"))) %>%
    kable_styling(font_size = 7) %>%
     footnote(general = "Correlation values are Pearson's $r$. All correlations are significant at the $p$ < .001 level. WCBC = model trained on Wisconsin Children’s Book Corpus; COCA = Davies, 2008; Wikipedia = Bojanowski et al., 2016.", general_title = "Note:", footnote_as_chunk = T, threeparttable = T, , escape = F)
 
