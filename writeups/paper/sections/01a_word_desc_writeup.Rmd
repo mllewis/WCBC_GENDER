@@ -71,7 +71,8 @@ N_ratings_per_word <- ratings %>%
     count(word) %>%
     summarize(min = min(n),
               max = max(n), 
-              mean = mean(n))  %>%
+              mean = mean(n),
+              sd = sd(n))  %>%
   mutate_all(round, 2)
 
 by_word_means <- ratings %>% 
@@ -127,7 +128,7 @@ prop_token_normed_by_book <- tidy_corpus %>%
   arrange(prop_normed) # min > 30%
 
 mean_per_book_normed <- round(mean(prop_token_normed_by_book$prop_normed) *100,2)
-sd_per_book_normed <- round(sd(prop_token_normed_by_book$prop_normed) *100,2)
+sd_per_book_normed <- round(sd(prop_token_normed_by_book$prop_normed)*100,2)
 ```
 
 ```{r pos}
@@ -152,9 +153,9 @@ prop_noun <- pos_dist %>%
 
 ```
 
-Because it was not feasible to collect gender norms for all `r format(nrow(distinct(tidy_corpus, word)), big.mark = ",")` unique words, ratings were obtained for a large subset of the most important words (_N_ = `r format(nrow(mean_rating_no_sense), big.mark = ",")`). The normed word set excluded stop words (_N_ = 30), and was largely comprised of nouns (`r prop_noun`) and verbs (`r prop_verbs`).  `r pull(normed_tokens, percent_normed)` of the tokens in the corpus and at least 30% of the tokens in each book were normed (_M_ = `r mean_per_book_normed`; _SD_ = `r sd_per_book_normed`; excluding stop words). We also included the names of all the characters (e.g. “Grover,” “Amelia”, “Yertle”). A short context was provided to indicate a specific meaning of homonymous words, e.g., “pin (hold down),” “creep (move slowly),” “act (part of a play),” “act (to take action)”.
+Because it was not feasible to collect gender norms for all `r format(nrow(distinct(tidy_corpus, word)), big.mark = ",")` unique words, ratings were obtained for a large subset of the most important words (_N_ = `r format(nrow(mean_rating_no_sense), big.mark = ",")`). The normed word set excluded stop words (_N_ = 30), and was largely comprised of nouns (`r prop_noun`) and verbs (`r prop_verbs`).  `r pull(normed_tokens, percent_normed)` of the tokens in the corpus and at least 30% of the tokens in each book were normed (_M_ = `r mean_per_book_normed`; _SD_ = `r sd_per_book_normed`; excluding stop words). We also included the names of all the characters (e.g. “Grover,” “Amelia”, “Yertle”). A short context was provided to indicate a specific meaning of homonymous words, e.g., “pin (hold down),” “creep (move slowly),” “act (part of a play),” “act (to take action)."
 
-Participants were instructed to rate the gender of each word on a 1-5 scale with the intervals labeled “Very masculine,” “Somewhat masculine,” “Neither masculine nor feminine,” “Somewhat feminine,” and “Very feminine”. The instructions did not provide explicit definitions of masculine or feminine; raters were encouraged to base ratings on their own intuitions. Each participant rated between `r pull(N_ratings_per_subject, min)` and `r pull(N_ratings_per_subject, max)` words. Words were quasirandomly assigned to participants to ensure that each word received at least 10 ratings; mean number of ratings per word was `r pull(N_ratings_per_word, mean)`. All reported ranges indicate 95% confidence intervals.
+Participants were instructed to rate the gender of each word on a 1-5 scale with the intervals labeled “Very masculine,” “Somewhat masculine,” “Neither masculine nor feminine,” “Somewhat feminine,” and “Very feminine”. The instructions did not provide explicit definitions of masculine or feminine; raters were encouraged to base ratings on their own intuitions. Each participant rated between `r pull(N_ratings_per_subject, min)` and `r pull(N_ratings_per_subject, max)` words. Words were quasirandomly assigned to participants to ensure that each word received at least 10 ratings; mean number of ratings per word was `r pull(N_ratings_per_word, mean)` (_SD_ = `r N_ratings_per_word$sd`). 
 
 
 ```{r, cache = TRUE}
@@ -181,6 +182,13 @@ male_vs_female_participants_summary <- by_gender_means %>%
 
 male_vs_female_participants_t <- t.test(by_gender_means$female, by_gender_means$male, paired = T) %>%
   tidy()
+
+male_vs_participants_d <- mes(mean(by_gender_means$female), mean(by_gender_means$male), 
+    sd(by_gender_means$female), sd(by_gender_means$male),
+    length(by_gender_means$female), length(by_gender_means$male), verbose = F) %>%
+  select(d, l.d, u.d) %>%
+  mutate(male_vs_participants_d_print = glue("{d} [{l.d}, {u.d}]")) %>%
+  pull(male_vs_participants_d_print)
 ```
 
 ```{r mean_word_ratings}
@@ -192,7 +200,6 @@ num_in_glasgow <- mean_rating_no_sense %>%
 glasgow_cor <- mean_rating_no_sense %>%
   mutate(glasgow_gender = -glasgow_gender) %>% # glasgow/us have different scale directions
   get_tidy_corr_text("gender", "glasgow_gender") 
-
 
 # example words
 TARG_WORDS <- c("sir", "unle", "fireman", "barber", "cute", "dame", "dress", "prettiest", "carry", "exactly", "letter", "nose")
@@ -245,7 +252,7 @@ A further question is whether genderedness (as rated by adults) is related to pr
 We assessed correlations between rated gender and other lexical properties using existing norms. @warriner2013norms provide valence ratings on a 1 (happy) to 9 (unhappy) point scale and arousal ratings on a 1 (excited) to 9 (calm) scale. For age of acquisition [@kuperman2012age], participants estimated the age in years at which they learned each word. For concreteness,  participants rated the extent to which the meaning of a word can be experienced "directly through one of the five senses", rating each word on a 1 (abstract)  to 5 (concrete) scale.  Word frequency estimates depend on properties of the language sample that is used. We therefore conducted the correlational analyses using frequencies from three sources: (1) our corpus of children’s books, (2) the cumulative frequency measure from the TASA norms [@tasa_norms] derived from a much larger sample of books from a broad range of reading levels, and (3) a large corpus of movie subtitles [Subtlex-US: @brysbaert2009moving]. All frequency measures wore log transformed. Because word sense was not disambiguated in these norms, we averaged across words with the same word forms (but different senses) in our dataset for these analyses. Frequency measures from all three sources were available for `r format(nrow(freq_words_with_norms_no_na), big.mark = ",")` words in the WCBC. The three frequency measures were correlated (TASA-Subtlex: `r filter(freq_corrs, Var1 == "log_tasa_freq", Var2 == 
 "log_subt_freq") %>% pull(corr_print_text)`; TASA-WCBC: `r filter(freq_corrs, Var1 == "log_tasa_freq", Var2 == 
 "log_kidbook_freq") %>% pull(corr_print_text)`; WCBC-Subtlex: `r filter(freq_corrs, Var1 == "log_subt_freq", Var2 == 
-"log_kidbook_freq") %>% pull(corr_print_text)`), and the magnitudes are similar to ones reported previously [e.g., @zevin2004age]. They also yielded very similar correlations with the other lexical measures. Below we report the results using the TASA frequencies and the `r format(nrow(all_words_with_norms_no_na), big.mark = ",")` words for which there are data for the 4 additional measures. Results using the other frequency measures are included in the SI (https://mlewis.shinyapps.io/SI_WCBC_GENDER/). 
+"log_kidbook_freq") %>% pull(corr_print_text)`; all reported ranges indicate 95% confidence intervals), and the magnitudes are similar to ones reported previously [e.g., @zevin2004age]. They also yielded very similar correlations with the other lexical measures. Below we report the results using the TASA frequencies and the `r format(nrow(all_words_with_norms_no_na), big.mark = ",")` words for which there are data for the 4 additional measures. Results using the other frequency measures are included in the SI (https://mlewis.shinyapps.io/SI_WCBC_GENDER/). 
 
 
 ## Results
@@ -256,9 +263,10 @@ tidy_corrs <-  expand.grid(names(all_words_with_norms_no_na[,-1]),
   filter(Var1 != Var2) %>%
   mutate(temp = map2(Var1, Var2, get_pairwise_tidy_corr, all_words_with_norms_no_na)) %>%
   unnest() %>%
-  mutate(sig = case_when(p.value < .001 ~ "***", p.value < .01 ~ "**", p.value < .05 ~ "*",  TRUE ~ "" ),
-         estimate_round = case_when(abs(round(estimate, 2)) < .01 ~ "0.00",
-                                    TRUE ~ as.character(round(estimate, 2))),
+  mutate(sig = case_when(p.value < .01 ~ "*", TRUE ~ "\   "), # the spacing makes it so you can right align the numbers in the table
+         estimate_round = sprintf("%.2f", round(estimate,2)), # preserves trailing zeros
+         estimate_round = case_when(abs(estimate) < .01 ~ "0.00",
+                                    TRUE ~ estimate_round),
          estimate_print = as.character(glue("{estimate_round}{sig}")))
 
 
@@ -286,14 +294,14 @@ cor_table_tidy <- cor_table %>%
 
 
 
-The overall mean gender rating was  `r pull(rating_summary_stats, mean)` (`r pull(rating_summary_stats, print_mean)`), i.e., very close to the midpoint. `r filter(perc_gendered, gender_bias == "f") %>% pull(percentage)`% of the words were significantly female biased, `r filter(perc_gendered, gender_bias == "f") %>% pull(percentage)`% significantly male biased, and the remaining did not differ from the overall mean gender rating. There was a numerically small, marginal effect of participant gender. Female participants  (`r male_vs_female_participants_summary %>% filter(group == "female") %>% pull(print_mean)`) rated words as more feminine on average compared to male raters (`r male_vs_female_participants_summary %>% filter(group == "male") %>% pull(print_mean)`; paired *t*-test: _t_(`r male_vs_female_participants_t$parameter`) = `r male_vs_female_participants_t$statistic`; _p_ = `r male_vs_female_participants_t$p.value`). Gender ratings for   `r prettyNum(num_in_glasgow, big.mark = ",")` of our words were also obtained by @scott2019glasgow   and the two sets of ratings are highly correlated, `r glasgow_cor`. Data can be explored interactively at https://mlewis.shinyapps.io/SI_WCBC_GENDER/. 
+The overall mean gender rating was  `r pull(rating_summary_stats, mean)` (`r pull(rating_summary_stats, print_mean)`), i.e., very close to the midpoint. `r filter(perc_gendered, gender_bias == "f") %>% pull(percentage)`% of the words were significantly female biased, `r filter(perc_gendered, gender_bias == "f") %>% pull(percentage)`% significantly male biased, and the remaining did not differ from the overall mean gender rating. There was a numerically small, marginal effect of participant gender. Female participants  (`r male_vs_female_participants_summary %>% filter(group == "female") %>% pull(print_mean)`) rated words as more feminine on average compared to male raters (`r male_vs_female_participants_summary %>% filter(group == "male") %>% pull(print_mean)`; paired *t*-test: _t_(`r male_vs_female_participants_t$parameter`) = `r male_vs_female_participants_t$statistic`; _p_ = `r male_vs_female_participants_t$p.value`; *d* = `r male_vs_participants_d`). Gender ratings for   `r prettyNum(num_in_glasgow, big.mark = ",")` of our words were also obtained by @scott2019glasgow  and the two sets of ratings are highly correlated, `r glasgow_cor`. Data can be explored interactively at https://mlewis.shinyapps.io/SI_WCBC_GENDER/. 
 
 
 ```{r, results = 'asis'}
-apa_table(cor_table_tidy,
+apa_table(cor_table_tidy, align = 'lrrrr',
       caption = "Pairwise correlation between all word measures.",
-      "Values are Pearson's r. Asterisks indicate statistical significance at the .05 (*), .01 (**), and .001 (***) significance levels. Word frequency measures are log transformed. AoA = Age of acquisition; TASA = Zeno et al., 1995 Corpus.", 
-      col.names = linebreak(c("", VAR_ORDER_LABS)))
+      "Values are Pearson's r. Asterisks indicate statistical significance at the .01 level. AoA = Age of acquisition; TASA = Zeno et al., 1995 Corpus.", 
+      col.names = linebreak(c("", VAR_ORDER_LABS)), escape = T)
 ```
 
 ```{r text_rs}
@@ -336,9 +344,9 @@ pretty_model_reordered <- pretty_model[c(1,4,3,5,6,2),] %>%
     mutate(p = ifelse(p == "1", ">.99", p))
 ```
 
-```{r wordmodel, results = "asis", fig.pos = "t!"}
-apa_table(pretty_model_reordered, caption ="Model parameters predicting word gender association", 
-          col.names = c("Term", "Std. Beta", "SE", "Z", "p"),
+```{r wordmodel, results = 'asis'}
+apa_table(pretty_model_reordered, caption = "Model parameters predicting word gender association", 
+          col.names = c("Term", "Std. Beta", "SE", "Z", "p"), align = 'lrrrr',
           note = "Larger gender values indicate greater association with females. AoA = Age of acquisition;  TASA = Zeno et al., 1995 Corpus.")
 ```
 

@@ -80,6 +80,7 @@ library(ggpmisc)
 library(langcog)
 library(glue)
 library(esc)
+library(compute.es)
 source(here("writeups/paper/paper_helpers.R"))
 ```
 
@@ -94,7 +95,7 @@ knitr::opts_chunk$set(warning = FALSE,
 
 # https://www.psychologicalscience.org/publications/psychological_science/ps-submissions#ART
 # abstract 150
-# 40 references - need to cut 20
+# 40 references 
 # p < .001, report CIs
 ```
 

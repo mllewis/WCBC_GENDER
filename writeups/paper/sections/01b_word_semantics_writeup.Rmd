@@ -159,12 +159,12 @@ cor_table_tidy <- corr_output %>%
 ```
 
 ```{r wordgendertable, results = "asis"}
-kable(cor_table_tidy,  "latex", booktabs = T, escape = F,
+kable(cor_table_tidy,  "latex", booktabs = T, escape = F, align = "lrrr",
       caption = "Relationships between word gender biases",
       col.names = linebreak(c("", "Human\ngender\nratings", "Distributed\nsemantics\n(WCBC)",
                "Distributed\nsemantics\n(COCA)"))) %>%
    kable_styling(font_size = 7) %>%
-   footnote(general = "Correlation values are Pearson's $r$. All correlations are significant at the $p$ < .001 level. WCBC = model trained on Wisconsin Children’s Book Corpus; COCA = Davies, 2008; Wikipedia = Bojanowski et al., 2016.", general_title = "Note:", footnote_as_chunk = T, threeparttable = T, , escape = F)
+   footnote(general = "Correlation values are Pearson's $r$. All correlations are significant at the $p$ < .001 level. WCBC = model trained on Wisconsin Children’s Book Corpus; COCA = Davies, 2008; Wikipedia = Bojanowski et al., 2016.", general_title = "Note:", footnote_as_chunk = T, threeparttable = T,  escape = F)
 
 ```
 
@@ -196,8 +196,8 @@ kable(iattablethis, "latex", booktabs = T, escape = F, longtable = T,
       col.names = c("Psychological Bias", "Target Words", "Behavioral Studies"),
       linesep = "\\addlinespace\\addlinespace") %>% #
   kable_styling(font_size = 9,
-                    full_width = T, 
-                    "striped")  %>%
+                full_width = T, 
+                "striped")  %>%
   column_spec(column = 1, width = "9em") %>%
   column_spec(column = 2, width = "27em") %>%
   column_spec(column = 3, width = "15em") %>%
