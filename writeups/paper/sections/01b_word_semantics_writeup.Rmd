@@ -29,12 +29,6 @@ gender_bias_counts <- count(centroid_df, gender_bias)
 ```
 
 
-Semantic coordinates for each word in our sample were obtained from a model trained on English Wikipedia [@bojanowski2016enriching]. We then reduced the dimensionality of these coordinates to two using the t-sne algorithm [@maaten2008visualizing], and clustered the words into 100 clusters based on their similarity using k-means clustering. This procedure yielded semantically coherent clusters with an average of  `r mean(centroid_df$n)` words (_SD_ = `r sd(centroid_df$n)`) per cluster (\autoref{tab:clusterexamples}; see  SI for complete results).
-
-The average rated genderedness of the words in these clusters was calculated using the gender norms. For each word cluster, we tested whether the mean gender rating of words in that cluster significantly differed from the overall mean gender rating of words. Of the 100 clusters, `r filter(gender_bias_counts, gender_bias == "female") %>% pull(n)`  were female-biased, `r filter(gender_bias_counts, gender_bias == "male") %>% pull(n)` were male-biased, and the remaining `r filter(gender_bias_counts, gender_bias == "neither") %>% pull(n)` were neutral. Table 3 shows examples of female-biased, male-biased and neutral clusters along with representative words. The gendered clusters differ in ways that reflect gender stereotyping. For example, female clusters were associated with mental states (feelings, beliefs) and interactions with others (communicating, caregiving). Male clusters, in contrast, tended to be more closely associated with events in the physical realm (e.g., sports, tools, transportation). 
-
-
-
 ```{r clusterexamples,  results = 'asis'}
 target_clusters <- c("zoo animals", "airborne actions", "tools", "professions",
                      "transportation (ground)", "communication verbs", "affection",
@@ -80,6 +74,13 @@ kable(cluster_examples,  "latex", booktabs = T,  escape = F, longtable = F,
   footnote(general = "Effect size measure is Cohen's $d$ based on a one-sample $t$-test comparing the mean gender of words in a cluster to the overall word gender mean. Brackets give bootstrapped 95 percent confidence intervals. $N$ indicates number of words in each cluster.", general_title = "Note:", footnote_as_chunk = T, threeparttable = T, escape = F)
 
 ```
+
+
+Semantic coordinates for each word in our sample were obtained from a model trained on English Wikipedia [@bojanowski2016enriching]. We then reduced the dimensionality of these coordinates to two using the t-sne algorithm [@maaten2008visualizing], and clustered the words into 100 clusters based on their similarity using k-means clustering. This procedure yielded semantically coherent clusters with an average of  `r mean(centroid_df$n)` words (_SD_ = `r sd(centroid_df$n)`) per cluster (\autoref{tab:clusterexamples}; see  SI for complete results).
+
+The average rated genderedness of the words in these clusters was calculated using the gender norms. For each word cluster, we tested whether the mean gender rating of words in that cluster significantly differed from the overall mean gender rating of words. Of the 100 clusters, `r filter(gender_bias_counts, gender_bias == "female") %>% pull(n)`  were female-biased, `r filter(gender_bias_counts, gender_bias == "male") %>% pull(n)` were male-biased, and the remaining `r filter(gender_bias_counts, gender_bias == "neither") %>% pull(n)` were neutral. Table 3 shows examples of female-biased, male-biased and neutral clusters along with representative words. The gendered clusters differ in ways that reflect gender stereotyping. For example, female clusters were associated with mental states (feelings, beliefs) and interactions with others (communicating, caregiving). Male clusters, in contrast, tended to be more closely associated with events in the physical realm (e.g., sports, tools, transportation). 
+
+
 
 ## Gender Associations derived from the Children's Book Corpus
 So far we have presented findings about gendered information in children's books based on adult gender norms and semantic representations derived from adult text. The results are relevant to the beliefs of adults who read books with children, which they may convey in conversation during shared reading. However, we also want to understand what a child may learn about gender from children’s books alone. 
@@ -163,7 +164,7 @@ kable(cor_table_tidy,  "latex", booktabs = T, escape = F,
       col.names = linebreak(c("", "Human\ngender\nratings", "Distributed\nsemantics\n(WCBC)",
                "Distributed\nsemantics\n(COCA)"))) %>%
    kable_styling(font_size = 7) %>%
-    footnote(general = "Correlation values are Pearson's $r$. All correlations are significant at the $p$ < .001 level. WCBC = model trained on Wisconsin Children’s Book Corpus; COCA = Davies, 2008; Wikipedia = Bojanowski et al., 2016.", general_title = "Note:", footnote_as_chunk = T, threeparttable = T, , escape = F)
+   footnote(general = "Correlation values are Pearson's $r$. All correlations are significant at the $p$ < .001 level. WCBC = model trained on Wisconsin Children’s Book Corpus; COCA = Davies, 2008; Wikipedia = Bojanowski et al., 2016.", general_title = "Note:", footnote_as_chunk = T, threeparttable = T, , escape = F)
 
 ```
 
