@@ -1,4 +1,4 @@
-# table of pairwise word measure correlations including all three frequency measures
+# table of pairwise word measure correlations including all three frequency measures (TASA, WCBC, SUBTLEXUS)
 
 library(tidyverse)
 library(tidytext)
