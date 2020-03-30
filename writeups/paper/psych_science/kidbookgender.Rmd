@@ -3,31 +3,30 @@ title             : "What might books be teaching young children about gender?"
 shorttitle        : "Gender in children's books"
 
 author:  
-  - name          : "Molly Y. Lewis"
+  - name          : "XXX"
     affiliation   : "1"
     corresponding : yes    # Define only one corresponding author
-    address       : "4909 Frew St, Pittsburgh, PA 15213"
-    email         : "mollylewis@cmu.edu"
-  - name          : "Matt Cooper Borkenhagen"
+    address       : "XXX"
+    email         : "XXX"
+  - name          : "XX"
     affiliation   : "2"
     email         : "cooperborken@wisc.edu"
-  - name          : "Ellen Converse"
+  - name          : "XXX"
     affiliation   : "2"
     email         : "econverse@wisc.edu"
-  - name          : "Gary Lupyan"
+  - name          : "XXX"
     affiliation   : "2"
     email         : "glupyan@wisc.edu"
-  - name          : "Mark S. Seidenberg"
+  - name          : "XXX"
     affiliation   : "2"
     email         : "seidenberg@wisc.edu "
 affiliation:
   - id            : "1"
-    institution   : "Department of Psychology, Carnegie Mellon University"
+    institution   : "XXX"
   - id            : "2"
-    institution   : "Department of Psychology, University of Wisconsin, Madison"
+    institution   : "XXX"
     
 author_note: | 
-  MCB was supported by the Vilas Trust at UW-Madison and the Institute of Education Sciences, US Department of Education, through Award #R305B150003 to UW-Madison. The opinions expressed are those of the authors and do not represent views of the US Department of Education. EC was supported by the Summer Senior Thesis Research Grant awarded by the UW-Madison L&S Honors Program. Additional support was provided by a Vilas research award to MSS and the Deinlein Language and Literacy Research fund.
 
 abstract: |
   We investigated how gender is represented in children's books using a 200,000 word corpus comprising 249 popular, contemporary books for young children (0-5 years). Using human judgments and word co-occurrence data, we quantified the gender biases of words within the corpus and within individual books. We find that children's books contain large numbers of words that adults judge as more masculine or feminine. Semantic analyses based on co-occurrence data yielded word clusters related to gender stereotypes (e.g., feminine: emotions; masculine: tools). Co-occurrence data also indicate that books instantiate gender stereotypes found in other research (e.g., girls are better at reading and boys at math). Finally, we used large-scale data to estimate the gender distribution of the audience for individual books, and find that children tend to be exposed to gender stereotypes for their own gender. Together the data suggest that children's books may be an early source of gender stereotypes.
