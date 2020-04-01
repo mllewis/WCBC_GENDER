@@ -29,7 +29,10 @@ writeups/paper/kidbook_gender_files/figure-latex/*
 writeups/paper/kidbook_gender.log
 writeups/paper/kidbook_gender.pdf
 writeups/paper/kidbook_gender.tex
-
+writeups/paper/kidbookgender_cache/latex/*
+writeups/paper/kidbookgender_files/figure-latex/*
+writeups/paper/kidbookgender_psych_sci_cache/latex/*
+writeups/paper/kidbookgender_psych_sci_files/figure-latex/*
 writeups/paper/SI/rsconnect/*
 
 # LaTeX #
