@@ -20,7 +20,7 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
                     br(),
                     br(),
                     p("Descriptive labels are provided for each cluster where possible (empty labels indicate clusters lacks coherence). Hover over a cluster to see effect size (ES),
-                       and actual words included in the cluster. Effect size is Cohen's d from one sampled t-test with bootstrapped 95% confidence intervals. Larger effect sizes indicate larger degree of female bias."),
+                       and actual words included in the cluster. Effect size is Cohen's d from a one sampled t-test with bootstrapped 95% confidence intervals. Larger effect sizes indicate larger degree of female bias."),
                     br(),
                     br(),
                     plotlyOutput("bubbleplot", height = "1000px", width = "1000px")
@@ -30,7 +30,7 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
            HTML("The plot below shows the overall gender ratings based on the words in the text.
                        Y-axis shows each book in our corpus; X-axis shows female bias of book on a 5 pt scale. Toggle the Measure selector to change which words are used to calculate the gender score.
                        Toggle the Order and Point Color selectors to change how the data are displayed.
-                       Hover over a point to see the score value."),
+                       Hover over a point to see an individual book's gender score."),
            br(),
            br(),
            fluidRow(),

@@ -29,31 +29,31 @@ function(input, output, session) {
            char_main_gender = fct_recode(char_main_gender,
                                          female = "F",
                                          male = "M",
-                                         "non-binary" = "AND",
+                                         "indeterminate" = "AND",
                                          mixed = "MIXED"),
            char_main_gender = fct_relevel(char_main_gender,
-                                          "female", "male", "non-binary", "mixed", "none"),
+                                          "female", "male", "indeterminate", "mixed", "none"),
            char_second_gender = case_when(is.na(char_second_gender) ~ "none",
                                         TRUE ~ char_second_gender),
            char_second_gender = fct_recode(char_second_gender,
                                          female = "F",
                                          male = "M",
-                                         "non-binary" = "AND",
+                                         "indeterminate" = "AND",
                                          mixed = "MIXED"),
            char_second_gender = fct_relevel(char_second_gender,
-                                          "female", "male", "non-binary", "mixed", "none"))
+                                          "female", "male", "indeterminate", "mixed", "none"))
   # overall b0ok means data
   BOOK_MEANS_PATH <- "data/gender_token_type_by_book.csv"
   gender_rating_by_book_mean <- read_csv(BOOK_MEANS_PATH) %>%
     select(corpus_type, book_id, token_gender_mean, token_ci_lower, token_ci_upper, prop_present_token)  %>%
     left_join(character_tidy) %>%
     left_join(characters %>% select(book_id, author)) %>%
-    mutate(title = str_remove_all(title, "'"),
+    mutate(title = str_remove_all(str_to_title(str_squish(title)), "'"),
            author = str_remove_all(author, "'"),
            tooltip_string = paste0("Title: ",
-                                   title,
+                                   str_to_title(title),
                                    "\n Author: ",
-                                   author,
+                                   str_to_title(author),
                                    "\n Gender Score: ",
                                    as.character(round(token_gender_mean, 2))))
 
@@ -90,10 +90,12 @@ function(input, output, session) {
       ylab("Book Gender Score (female-ness)") +
       ggtitle(current_title) +
       geom_point_interactive(aes_string(color = input$plotcolor), size = 5) +
-      theme_classic(base_size = 24) +
+      #theme_classic(base_size = 24) +
+      theme_minimal(base_size = 24) +
       theme(axis.text.y = element_text(size = 12),
             legend.box.background = element_rect(colour =  "grey", size = 5),
-            legend.position = 'bottom')
+            legend.position = 'bottom',
+            text=element_text(family="helvetica"))
 
     # format color
     if (input$plotcolor == "char_main_gender"){

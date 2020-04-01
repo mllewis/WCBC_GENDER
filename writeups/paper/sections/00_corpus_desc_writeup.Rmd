@@ -4,6 +4,7 @@ library(here)
 ```
 
 # Children's Book Corpus
+## Method
 ```{r}
 CORPUS_PATH <- here('data/processed/books/tidy_full_corpus_all.csv')
 tidy_corpus <- read_csv(CORPUS_PATH)
