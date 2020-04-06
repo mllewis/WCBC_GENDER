@@ -23,7 +23,6 @@ review_data <- read_csv(REVIEWS_DATA_PATH)  %>%
 
 ```{r imdb}
 by_book_review_data <- review_data %>%
-  left_join(ibdb_data) %>%
   group_by(book_id, n_reviews_total, n_reviews_gendered,
            prop_review_gendered, char_only, no_char, child_gender)  %>%
   summarize(addressee_gender_score_token =
