@@ -17,23 +17,34 @@ character_data <- read_csv(CHARACTER_DATA) %>%
 # get the 25 most male and female biased books
 book_gender_means <- read_csv(BOOK_GENDER_MEANS) %>%
   select(book_id, corpus_type, title, token_gender_mean) %>%
-  filter(!(book_id %in% c("L102", "L112")))  %>% # hug and journey (no words; 1 word)
+  filter(!(book_id %in% c("L102")))  %>% # hug (1 word)
   left_join(character_data)  %>%
   filter(!is.na(char_name)) %>%
   filter(char_main_singular == "YES")
 
+book_text <- map_df(list(LCL_TIDY, MONTAG_TIDY), read_csv)
 
+# get books with N or fewer lines of text
+N_LINES_TEXT <- 125
+MIN_N_LINES_OF_TEXT <- 25
+short_books <- book_text %>%
+   count(book_id) %>%
+   filter(n <= N_LINES_TEXT,
+          n>=MIN_N_LINES_OF_TEXT) %>%
+   pull(book_id)
+
+N_BOOKS <- 25
 target_book_ids <- book_gender_means %>%
-  filter(corpus_type == "all") %>%
+  filter(corpus_type == "all",
+         book_id %in% short_books) %>%
   arrange(token_gender_mean) %>%
   mutate(gender_order = 1:n(),
-         gender_group = case_when(gender_order <= 20 ~ "male-biased",
-                                  gender_order >= (n()-19) ~ "female-biased")) %>%
+         gender_group = case_when(gender_order <= N_BOOKS ~ "male-biased",
+                                  gender_order >= (n()-(N_BOOKS-1)) ~ "female-biased")) %>%
   filter(!is.na(gender_group)) %>%
   select(-gender_order, -corpus_type)
 
-
-book_text <- map_df(list(LCL_TIDY, MONTAG_TIDY), read_csv)
+data.frame(target_book_ids)
 
 target_book_text <- book_text %>%
   filter(book_id %in% target_book_ids$book_id)
@@ -51,6 +62,7 @@ text_by_book <- target_book_text %>%
 ## This is the best I can do re backslashes, then in sublimed manually replaces \\ with \ (correct: \\" and \')
 all_data_to_save <- text_by_book %>%
   left_join(character_data) %>%
+  mutate(char_name = str_replace_all(char_name, "'", "\\\\'")) %>%
   select(book_id, text, char_name)
 
 write_json(all_data_to_save, JSON_OUTPATH)

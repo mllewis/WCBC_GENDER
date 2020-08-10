@@ -4,6 +4,7 @@
     <script src="jspsych-6.1.0/jspsych.js"></script>
     <script src="jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js"></script>
     <script src="jspsych-6.1.0/plugins/jspsych-image-keyboard-response.js"></script>
+    <script src="jspsych-6.1.0/plugins/jspsych-survey-text2.js"></script>
     <script src="jspsych-6.1.0/plugins/jspsych-html-button-response.js"> </script>
     <link href="jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css"></link>
     <script src="data.js"> </script>
@@ -16,6 +17,7 @@
   <script>
 
    var book_stimuli = JSON.parse(text); // this is defined in data.js (in json format)
+
     /* create timeline */
     var timeline = [];
 
@@ -48,70 +50,79 @@
     };
     timeline.push(instructions2);
 
-
-    /* test trials */
-
-    //var all_books = range(0, obj.length);
-    //var target_book_id = jsPsych.randomization.sampleWithoutReplacement(num_items, 1);
-    //book_stimuli
-    //var test_stimuli = [
-    //  { stimulus: "img/blue.png", data: { test_part: 'test', correct_response: 'f' } },
-    //  { stimulus: "img/orange.png", data: { test_part: 'test', correct_response: 'j' } }
-    //];
-
-    var book_stimuli_shuffled = jsPsych.randomization.repeat(book_stimuli, 1);
+    var book_stimuli_shuffled = jsPsych.randomization.sampleWithReplacement(book_stimuli, 1);
 
     var show_text = {
         type: 'html-button-response',
         stimulus: function() {
           var instructions = "<p style='font-style: italic;'> Carefully read the story below. When you have finished, hit the `Answer questions` button.  <p>"
           var current_text = jsPsych.timelineVariable('text', true)
-          var html_text = instructions + jsPsych.timelineVariable('book_id', true) +
+          var html_text = instructions +
            "<div style='width: 700px;' align = 'left'>"+
             "<p>" + current_text+ "</p>"
             "</div>"
-          return( html_text)
+          return(html_text)
         },
         choices: ['Answer Questions'],
         button_html: "<button class='jspsych-btn' style='background-color:#d3d3d3;'>%choice%</button>",
               post_trial_gap: 1000
-      }
+      };
 
-    var get_responses = {
-      type: 'html-keyboard-response',
-      stimulus: '<div style="font-size:60px;">+</div>',
-      choices: jsPsych.NO_KEYS,
-      trial_duration: function(){
-        return jsPsych.randomization.sampleWithoutReplacement([250, 500, 750, 1000, 1250, 1500, 1750, 2000], 1)[0];
-      },
-      data: {test_part: 'fixation'}
+   var activities_responses = {
+    type: 'survey-text',
+    postamble: function() {
+          var current_text = "<br>" + jsPsych.timelineVariable('text', true)
+          var html_text = "<div style='width: 700px;' align = 'left'>"+
+            "<p>" + current_text+ "</p>"
+            "</div>"
+          return(html_text)
+        },
+    questions: function() {
+      var char_name = jsPsych.timelineVariable('char_name', true)
+      var question_text =  [{prompt: '<b> List the five main activities ' + char_name + ' does in the story.</b> <br> <p style="font-style: italic;"> An example of an activity is "run", "play", or "eat." To help answer this question, you can reference the story below.</p>', columns: 15, required: true, placeholder: 'Activity 1', name: "A1"},
+      {prompt: '', columns: 15, required: true, placeholder: 'Activity 2', name: "A2"},
+      {prompt: '', columns: 15, required: true, placeholder: 'Activity 3', name: "A3"},
+      {prompt: '', columns: 15, required: true, placeholder: 'Activity 4', name: "A4"},
+      {prompt: '', columns: 15, required: true, placeholder: 'Activity 5', name: "A5"}]
+       return(question_text)
+    },
+  button_html: "<button class='jspsych-btn' style='background-color:#d3d3d3;'>%choice%</button>",
+
+  };
+
+   var description_responses = {
+    type: 'survey-text',
+    postamble: function() {
+          var current_text = jsPsych.timelineVariable('text', true)
+          var html_text = "<div style='width: 700px;' align = 'left'>"+
+            "<p>" + current_text+ "</p>"
+            "</div>"
+          return(html_text)
+        },
+    questions: function() {
+      var char_name = jsPsych.timelineVariable('char_name', true)
+      var question_text =  [{prompt: '<b> Use five words to describe ' + char_name + ' in the story.</b> <br> An example of a desciption word is "pretty", "loud", or "clever." To help answer this question, you can answer the story (below).', columns: 15, required: true, placeholder: 'Description 1', name: "D1"},
+      {prompt: '', columns: 15, required: true, placeholder: 'Description 2', name: "D2"},
+      {prompt: '', columns: 15, required: true, placeholder: 'Description 3', name: "D3"},
+      {prompt: '', columns: 15, required: true, placeholder: 'Description 4', name: "D4"},
+      {prompt: '', columns: 15, required: true, placeholder: 'Description 5', name: "D5"}]
+       return(question_text)
     }
+  };
 
-    // next steps: (1) -display each book one by one and fix encoding errors (2) add questions
     var test_procedure = {
-      timeline: [show_text, get_responses],
-      timeline_variables: book_stimuli, //book_stimuli_shuffled
+      timeline: [show_text, activities_responses, description_responses],
+      timeline_variables: book_stimuli_shuffled,
     }
     timeline.push(test_procedure);
 
     /* define debrief */
 
-    var debrief_block = {
+    var finished = {
       type: "html-keyboard-response",
-      stimulus: function() {
-
-        var trials = jsPsych.data.get().filter({test_part: 'test'});
-        var correct_trials = trials.filter({correct: true});
-        var accuracy = Math.round(correct_trials.count() / trials.count() * 100);
-        var rt = Math.round(correct_trials.select('rt').mean());
-
-        return "<p>You responded correctly on "+accuracy+"% of the trials.</p>"+
-        "<p>Your average response time was "+rt+"ms.</p>"+
-        "<p>Press any key to complete the experiment. Thank you!</p>";
-
-      }
+      stimulus:  "<p>Thank you for your participation!</p>"
     };
-    timeline.push(debrief_block);
+    timeline.push(finished);
 
     /* start the experiment */
     jsPsych.init({

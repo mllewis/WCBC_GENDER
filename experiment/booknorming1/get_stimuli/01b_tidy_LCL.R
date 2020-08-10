@@ -30,15 +30,15 @@ clean_text_from_transcription <- function(text) {
     str_replace_all( "\u0093", "'") %>%
     str_replace_all( "\u0094", "'") %>%
     str_replace_all( "â\u0080", "...") %>%
-    str_replace_all("", "\u00e0")
+    str_replace_all( "\u00e0", "") %>%
+    str_replace_all("\u0091", "'") %>%
     str_replace_all( "â\u0085", "...")
 }
 
-contraction_list <- read_csv(CONTRACTION_LIST)
 book_key <- read_csv(BOOKID_KEY)
 
 # read in raw corpus
-raw_lcnl_files <- list.files(LCNL_INFILE, full = T)[146]
+raw_lcnl_files <- list.files(LCNL_INFILE, full = T)
 lcnl_raw <- map(raw_lcnl_files, readLines, encoding = "latin1") %>%
   unlist()  %>%
   as.data.frame() %>%
