@@ -1,0 +1,219 @@
+---
+title: Math words in kidbook corpus
+subtitle: gender analysis
+author: Molly Lewis 
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    code_folding: hide
+    number_sections: no
+    toc: yes
+---
+  
+******
+
+```{r setup, include = F}
+# load packages
+library(knitr)
+library(rmarkdown)
+library(tidyverse)
+library(googlesheets4)
+library(broom)
+library(langcog)
+library(here)
+
+opts_chunk$set(echo = T, message = F, warning = F, 
+               error = F, tidy = F, cache = F)
+theme_set(theme_classic())
+
+```
+
+
+```{r}
+MATH_WORDS <-  "1GTdLmxLhIEa4hWCGf_relV54CcuVrqORKE1dS3Ajy0Q"
+math_words <- read_sheet(MATH_WORDS)
+```
+
+```{r}
+CORPUS_PATH <- here("data/processed/books/tidy_full_corpus_all.csv")
+corpus <- read_csv(CORPUS_PATH) %>%
+  select(-corpus_type)
+```
+
+```{r}
+REVIEWS_DATA_PATH <- here("data/processed/other/amazon_gender_scores.csv")
+review_data <- read_csv(REVIEWS_DATA_PATH) 
+
+by_book_review_data <- review_data %>%
+  group_by(book_id, n_reviews_total, n_reviews_gendered,
+           prop_review_gendered)  %>%
+  summarize(addressee_gender_score_token =
+              sum(n_female_token)/(sum(n_female_token) +
+                                     sum(n_male_token))) %>%
+  ungroup() %>%
+  select(book_id, addressee_gender_score_token)
+```
+
+
+## TOKEN analyses
+```{r}
+total_spatial_words_by_type <- corpus %>%
+  left_join(math_words) %>%
+  group_by(book_id, type) %>%
+  summarize(n_mathy = n()) %>%
+  ungroup() %>%
+  complete(book_id, type, fill = list(n_mathy = 0))  
+
+all_word_counts_token <- total_spatial_words_by_type %>%
+  group_by(book_id) %>%
+  summarize(total_words = sum(n_mathy, na.rm = T))
+
+spatial_words_by_type <- total_spatial_words_by_type %>%
+  filter(!is.na(type)) %>%
+  left_join(all_word_counts_token) %>%
+  mutate(prop_mathy = n_mathy/total_words,
+         log_prop_mathy = log(prop_mathy)) %>%
+  left_join(by_book_review_data)
+
+spatial_words_all <- spatial_words_by_type %>%
+  group_by(book_id) %>%
+  summarize(n_mathy = sum(n_mathy),
+            total_words = total_words[1],
+            addressee_gender_score_token = addressee_gender_score_token[1]) %>%
+    mutate(prop_mathy = n_mathy/total_words,
+           log_prop_mathy = log(prop_mathy)) 
+```
+
+### All words by addressee gender score
+```{r}
+ggplot(spatial_words_all, aes(x = addressee_gender_score_token, y = log_prop_mathy)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+spatial_words_all %>%
+  filter(is.finite(log_prop_mathy)) %>%
+  nest() %>%
+  mutate(temp = map(data, ~tidy(cor.test(.$addressee_gender_score_token,
+                                         .$log_prop_mathy)))) %>%
+  select(-data) %>%
+  unnest()
+  
+```
+
+### Mathy word type by addressee gender score
+```{r}
+  
+ggplot(spatial_words_by_type, aes(x = addressee_gender_score_token, y = log_prop_mathy)) +
+  facet_wrap(~type, scales= "free_y") +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+spatial_words_by_type %>%
+    filter(is.finite(log_prop_mathy)) %>%
+
+  nest(-type) %>%
+  mutate(temp = map(data, ~tidy(cor.test(.$addressee_gender_score_token,
+                                         .$log_prop_mathy)))) %>%
+  select(-data) %>%
+  unnest()
+```
+
+
+## TYPE analyses
+
+```{r}
+total_spatial_words_by_type_types <- corpus %>%
+  distinct(book_id, word) %>%
+  left_join(math_words) %>%
+  group_by(book_id, type) %>%
+  summarize(n_mathy = n()) %>%
+  ungroup() %>%
+  complete(book_id, type, fill = list(n_mathy = 0))  
+
+all_word_counts_types<- total_spatial_words_by_type_types %>%
+  group_by(book_id) %>%
+  summarize(total_words = sum(n_mathy, na.rm = T))
+
+spatial_words_by_type_types <- total_spatial_words_by_type_types %>%
+  filter(!is.na(type)) %>%
+  left_join(all_word_counts_types) %>%
+  mutate(prop_mathy = n_mathy/total_words,
+         log_prop_mathy = log(prop_mathy),
+         log_prop_mathy_corrected = log(prop_mathy + .001)) %>%
+  left_join(by_book_review_data)
+
+spatial_words_all_types <- spatial_words_by_type_types %>%
+  group_by(book_id) %>%
+  summarize(n_mathy = sum(n_mathy),
+            total_words = total_words[1],
+            addressee_gender_score_token = addressee_gender_score_token[1]) %>%
+    mutate(prop_mathy = n_mathy/total_words,
+           log_prop_mathy = log(prop_mathy),
+          log_prop_mathy_corrected = log(prop_mathy + .001))
+```
+
+### All words by addressee gender score
+```{r}
+ggplot(spatial_words_all_types, aes(x = addressee_gender_score_token, y = log_prop_mathy)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+spatial_words_all_types %>%
+  filter(is.finite(log_prop_mathy)) %>%
+  nest() %>%
+  mutate(temp = map(data, ~tidy(cor.test(.$addressee_gender_score_token,
+                                         .$log_prop_mathy)))) %>%
+  select(-data) %>%
+  unnest()
+```
+
+### Mathy word type by addressee gender score
+```{r}
+  
+ggplot(spatial_words_by_type_types, aes(x = addressee_gender_score_token, y = log_prop_mathy)) +
+  facet_wrap(~type, scales= "free_y") +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+spatial_words_by_type_types %>%
+  filter(is.finite(log_prop_mathy)) %>%
+  nest(-type) %>%
+  mutate(temp = map(data, ~tidy(cor.test(.$addressee_gender_score_token,
+                                         .$log_prop_mathy)))) %>%
+  select(-data) %>%
+  unnest()
+```
+
+## Character Gender
+```{r}
+CHARACTER_DATA <- here("data/raw/other/character_gender_by_book.csv")
+character_data <- read_csv(CHARACTER_DATA)
+
+tidy_character_data <- character_data %>%
+  select(book_id, char_main_gender)
+```
+
+### All words by book character 
+```{r}
+all_words_by_book_character <- spatial_words_all_types %>%  
+  filter(is.finite(log_prop_mathy)) %>%
+  left_join(tidy_character_data) %>%
+  group_by(char_main_gender) %>%
+  multi_boot_standard(col = "log_prop_mathy")
+
+ggplot(all_words_by_book_character, aes(x = char_main_gender, y = mean)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper))
+```
+
+### Mathy word type by addressee gender score
+```{r}
+words_type_by_book_character <- spatial_words_by_type_types %>%  
+  filter(is.finite(log_prop_mathy)) %>%
+  left_join(tidy_character_data) %>%
+  group_by(char_main_gender, type) %>%
+  multi_boot_standard(col = "log_prop_mathy")
+  
+ggplot(words_type_by_book_character, aes(x = char_main_gender, y = mean)) +
+  facet_wrap(~type, scales= "free_y") +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper))
+```

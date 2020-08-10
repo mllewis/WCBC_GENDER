@@ -60,7 +60,7 @@ all_book_means <- book_means %>%
                                  gender_order >= 109 &  gender_order <= 128 ~ "neutral",
                                  gender_order >= 230 ~ "female-biased"),
         gender_group = fct_relevel(gender_group, "female-biased", "neutral"),
-           title = str_to_title(title))%>%
+        title = str_to_title(title))%>%
   filter(!is.na(gender_group))
 
 ```

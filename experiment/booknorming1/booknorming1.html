@@ -1,0 +1,126 @@
+<html>
+  <head>
+    <title>My experiment</title>
+    <script src="jspsych-6.1.0/jspsych.js"></script>
+    <script src="jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js"></script>
+    <script src="jspsych-6.1.0/plugins/jspsych-image-keyboard-response.js"></script>
+    <script src="jspsych-6.1.0/plugins/jspsych-html-button-response.js"> </script>
+    <link href="jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+    <script src="data.js"> </script>
+
+  </head>
+
+  <body>  <div id="jspsych-target"></div>
+</body>
+
+  <script>
+
+   var book_stimuli = JSON.parse(text); // this is defined in data.js (in json format)
+
+    /* create timeline */
+    var timeline = [];
+
+    /* define instructions trial */
+    var instructions1 = {
+      type: 'html-button-response',
+      stimulus: "<img src='img/wisconsinlogo.png' alt='UW-Madison' style='display: block;margin: auto;'/>" +
+        "<div style='width: 700px;' align = 'left'>"+
+       "<p> The HIT you are about to do is sponsored by University of Wisconsin-Madison. You will complete a quick survey in which you will be shown some images, words, or hear some sounds and asked to make judgments about them. For example, you may be asked how typical a picture of a dog is of dogs in general, or to identify an ambiguous drawing, decide what word a sound makes you think of, to choose which visual pattern best completes a sequence of patterns, or indicate how vividly you see in your mind''s eye. HIT instructions will be provided on the next screen.    </p>" +
+        //" <br> " +
+
+        "<p> This task has no anticipated risks nor direct benefits. If you have any questions or concerns about this HIT please contact the principal investigator: Dr. Gary Lupyan at lupyan@wisc.edu. If you are not satisfied with response of the research team, have more questions, or want to talk with someone about your rights as a research participant, you should contact University of Wisconsin's Education Research and Social and Behavioral Science IRB Office at 608-263-2320. You are free to decline to participate, to end participation at any time for any reason.  </p> <br> </div>" ,
+         choices: ['Continue'],
+        button_html: "<button class='jspsych-btn' style='background-color:#d3d3d3;'>%choice%</button>",
+      post_trial_gap: 1000
+    };
+    timeline.push(instructions1);
+
+     var instructions2 = {
+      type: 'html-button-response',
+      stimulus:
+        "<div style='width: 700px;' align = 'left'>"+
+       "<p> In this experiment, you will be shown the text of a children's story.</p>" +
+       "<p> Your job is to carefully read the text and then answer questions about the main characters in the story. </p>" +
+        "<p> To begin, click the button below. </p>" +
+        " <br> ",
+         choices: ['Begin'],
+        button_html: "<button class='jspsych-btn' style='background-color:#d3d3d3;'>%choice%</button>",
+      post_trial_gap: 1000
+    };
+    timeline.push(instructions2);
+
+
+    /* test trials */
+
+    //var all_books = range(0, obj.length);
+    //var target_book_id = jsPsych.randomization.sampleWithoutReplacement(num_items, 1);
+    //book_stimuli
+    //var test_stimuli = [
+    //  { stimulus: "img/blue.png", data: { test_part: 'test', correct_response: 'f' } },
+    //  { stimulus: "img/orange.png", data: { test_part: 'test', correct_response: 'j' } }
+    //];
+
+    var book_stimuli_shuffled = jsPsych.randomization.repeat(book_stimuli, 1);
+
+    var show_text = {
+        type: 'html-button-response',
+        stimulus: function() {
+          var instructions = "<p style='font-style: italic;'> Carefully read the story below. When you have finished, hit the `Answer questions` button.  <p>"
+          var current_text = jsPsych.timelineVariable('text', true)
+          var html_text = instructions +
+           "<div style='width: 700px;' align = 'left'>"+
+            "<p>" + current_text+ "</p>"
+            "</div>"
+          return( html_text)
+        },
+        choices: ['Answer Questions'],
+        button_html: "<button class='jspsych-btn' style='background-color:#d3d3d3;'>%choice%</button>",
+              post_trial_gap: 1000
+      }
+
+    var get_responses = {
+      type: 'html-keyboard-response',
+      stimulus: '<div style="font-size:60px;">+</div>',
+      choices: jsPsych.NO_KEYS,
+      trial_duration: function(){
+        return jsPsych.randomization.sampleWithoutReplacement([250, 500, 750, 1000, 1250, 1500, 1750, 2000], 1)[0];
+      },
+      data: {test_part: 'fixation'}
+    }
+
+    // next steps: (1) -display each book one by one and fix encoding errors (2) add questions
+    var test_procedure = {
+      timeline: [show_text, get_responses],
+      timeline_variables: book_stimuli_shuffled,
+    }
+    timeline.push(test_procedure);
+
+    /* define debrief */
+
+    var debrief_block = {
+      type: "html-keyboard-response",
+      stimulus: function() {
+
+        var trials = jsPsych.data.get().filter({test_part: 'test'});
+        var correct_trials = trials.filter({correct: true});
+        var accuracy = Math.round(correct_trials.count() / trials.count() * 100);
+        var rt = Math.round(correct_trials.select('rt').mean());
+
+        return "<p>You responded correctly on "+accuracy+"% of the trials.</p>"+
+        "<p>Your average response time was "+rt+"ms.</p>"+
+        "<p>Press any key to complete the experiment. Thank you!</p>";
+
+      }
+    };
+    timeline.push(debrief_block);
+
+    /* start the experiment */
+    jsPsych.init({
+      timeline: timeline,
+      display_element: 'jspsych-target',
+      on_finish: function() {
+        jsPsych.data.displayData();
+      }
+    });
+  </script>
+</html>
