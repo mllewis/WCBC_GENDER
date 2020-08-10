@@ -17,10 +17,8 @@ character_data <- read_csv(CHARACTER_DATA) %>%
 # get the 25 most male and female biased books
 book_gender_means <- read_csv(BOOK_GENDER_MEANS) %>%
   select(book_id, corpus_type, title, token_gender_mean) %>%
-  filter(!(book_id %in% c("L102", "L112")))  %>% # hug and journey (no words; 1 word)
-  left_join(character_data)  %>%
-  filter(!is.na(char_name)) %>%
-  filter(char_main_singular == "YES")
+  filter(str_detect(book_id, "L"))
+  filter(!(book_id %in% c("L102", "L112")))
 
 
 target_book_ids <- book_gender_means %>%
@@ -29,11 +27,10 @@ target_book_ids <- book_gender_means %>%
   mutate(gender_order = 1:n(),
          gender_group = case_when(gender_order <= 20 ~ "male-biased",
                                   gender_order >= (n()-19) ~ "female-biased")) %>%
-  filter(!is.na(gender_group)) %>%
   select(-gender_order, -corpus_type)
 
 
-book_text <- map_df(list(LCL_TIDY, MONTAG_TIDY), read_csv)
+book_text <- map_df(list(LCL_TIDY), read_csv)
 
 target_book_text <- book_text %>%
   filter(book_id %in% target_book_ids$book_id)

@@ -16,7 +16,6 @@
   <script>
 
    var book_stimuli = JSON.parse(text); // this is defined in data.js (in json format)
-
     /* create timeline */
     var timeline = [];
 
@@ -67,7 +66,7 @@
         stimulus: function() {
           var instructions = "<p style='font-style: italic;'> Carefully read the story below. When you have finished, hit the `Answer questions` button.  <p>"
           var current_text = jsPsych.timelineVariable('text', true)
-          var html_text = instructions +
+          var html_text = instructions + jsPsych.timelineVariable('book_id', true) +
            "<div style='width: 700px;' align = 'left'>"+
             "<p>" + current_text+ "</p>"
             "</div>"
@@ -91,7 +90,7 @@
     // next steps: (1) -display each book one by one and fix encoding errors (2) add questions
     var test_procedure = {
       timeline: [show_text, get_responses],
-      timeline_variables: book_stimuli_shuffled,
+      timeline_variables: book_stimuli, //book_stimuli_shuffled
     }
     timeline.push(test_procedure);
 

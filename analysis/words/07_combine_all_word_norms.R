@@ -4,13 +4,24 @@ library(tidyverse)
 library(here)
 library(janitor)
 
-OUTFILE <- here("data/processed/words/all_word_measures_tidy.csv")
 TASA_PATH <- here("data/raw/other_norms/TASA formatted.txt")
 KIDBOOK_FREQ_PATH <- here("data/processed/books/all_corpus_word_frequency.csv")
 SUBTLEXUS_PATH <- here("data/raw/other_norms/SUBTLEXus_corpus.txt")
 EMOT_PATH <- here("data/raw/other_norms/BRM-emot-submit.csv")
 CONC_PATH <- here("data/raw/other_norms/brysbaert_corpus.csv")
 AOA_PATH <- here("data/raw/other_norms/AoA_ratings_Kuperman_et_al_BRM.csv")
+GENDER_RATINGS <- here("data/processed/words/gender_ratings_mean.csv")
+
+OUTFILE <- here("data/processed/words/all_word_measures_tidy.csv")
+
+# gender ratings
+
+by_word_means <- read_csv(GENDER_RATINGS)
+
+mean_rating_no_sense <- by_word_means %>%
+  mutate(word = map_chr(word, ~unlist(str_split(.x, " "))[[1]])) %>%
+  group_by(word) %>%
+  summarize(gender = mean(mean))
 
 ## frequency
 # tasa norms

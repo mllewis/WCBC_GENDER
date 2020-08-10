@@ -76,6 +76,7 @@ lcnl_tidy_clean <- lcnl_tidy %>%
            text = replace_contraction(text, contraction.key = contraction_list), # replace contractions with uncontrated forms (do this before lowercasing)
            text = str_replace_all(text, "'s", ""), # for characters (e.g. "George's") - this is important for our character schor
            text = gsub('[[:punct:] ]+', ' ', text), # get rid of punctuation
+           text = str_squish(text),
            text = tolower(text))
 
 write_csv(lcnl_tidy_clean, LCL_OUTPATH)

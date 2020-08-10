@@ -14,18 +14,19 @@ get_tidy_corr_text <- function(df, var1, var2) {
 }
 
 get_tidy_one_sample_t_test_text <- function(x_value, mu_value){
-  tidy_t <- t.test(x = x_value, 
+  tidy_t <- t.test(x = x_value,
          mu = mu_value) %>%
-    tidy()  
+    tidy()
 
-  tidy_effect_size <- rstatix::cohens_d(data.frame(x_value = x_value), 
-                         x_value ~ 1, mu = mu_value, 
+  tidy_effect_size <- rstatix::cohens_d(data.frame(x_value = x_value),
+                         x_value ~ 1, mu = mu_value,
                          ci = T) %>%
+                as.data.frame() %>%
                 select(effsize, conf.low, conf.high) %>%
                 rename(conf_low_d = conf.low,
                        conf_high_d = conf.high) %>%
                 mutate_all(round, 2)
-  
+
   bind_cols(tidy_t, tidy_effect_size) %>%
     mutate(pval2 = case_when((p.value > .01) ~ round(p.value, 2),
                              TRUE ~ round(p.value, 3)),
@@ -33,5 +34,5 @@ get_tidy_one_sample_t_test_text <- function(x_value, mu_value){
                                  TRUE ~ paste0(" _p_ = ", pval2))) %>%
     mutate(t_print = glue("_t_({parameter}) = {round(statistic,2)}, {t_p_value}; _d_ = {effsize} [{conf_low_d}, {conf_high_d}]")) %>%
     pull(t_print)
-  
+
 }

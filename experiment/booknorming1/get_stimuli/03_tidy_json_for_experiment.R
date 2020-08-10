@@ -12,4 +12,4 @@ new_text<- paste0('var text = \'', raw_text, "\'")
 
 write_lines(new_text, JS_OUTPATH)
 
-#NEXT: in sublime, manually replace slashes (correct: \\" and \')
+#NEXT: in sublime, manually replace slashes in data.js (correct: \\" and \')
