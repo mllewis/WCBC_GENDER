@@ -42,9 +42,10 @@ target_book_ids <- book_gender_means %>%
          gender_group = case_when(gender_order <= N_BOOKS ~ "male-biased",
                                   gender_order >= (n()-(N_BOOKS-1)) ~ "female-biased")) %>%
   filter(!is.na(gender_group)) %>%
-  select(-gender_order, -corpus_type)
+  select(-gender_order, -corpus_type) %>%
+  left_join(distinct(target_book_text, book_id, author))
 
-data.frame(target_book_ids)
+#data.frame(target_book_ids)
 
 target_book_text <- book_text %>%
   filter(book_id %in% target_book_ids$book_id)
