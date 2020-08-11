@@ -1,72 +1,92 @@
 <html>
   <head>
     <title>My experiment</title>
-    <script src="jspsych-6.1.0/jspsych.js"></script>
-    <script src="jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js"></script>
-    <script src="jspsych-6.1.0/plugins/jspsych-image-keyboard-response.js"></script>
-    <script src="jspsych-6.1.0/plugins/jspsych-survey-text2.js"></script>
-    <script src="jspsych-6.1.0/plugins/jspsych-html-button-response.js"> </script>
-    <link href="jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css"></link>
-    <script src="data.js"> </script>
-
+    <script src="js/jspsych-6.1.0/jspsych.js"></script> <!-- js psych stuff -->
+    <script src="js/jspsych-6.1.0/plugins/jspsych-survey-text2.js"></script>
+    <script src="js/jspsych-6.1.0/plugins/jspsych-html-button-response.js"> </script>
+    <script src="js/jspsych-6.1.0/plugins/jspsych-instructions.js"></script>
+    <script src="js/helpers/get_completion_code.js"> </script>  <!-- helper stuff -->
+    <script src="js/helpers/get_turk_params.js"> </script>
+    <link href="js/jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+    <script src="data.js"> </script> <!-- this is where all the story data is -->
   </head>
-
   <body>  <div id="jspsych-target"></div>
 </body>
 
   <script>
 
-   var book_stimuli = JSON.parse(text); // this is defined in data.js (in json format)
+ /* get metadata */
+ var iso_date = getDate()
+ var worker_id = getWorkerId()
+ var qualtrics_id = getQualtricsId()
+ var assignment_id = getAssignmentId()
+ var hit_id = getHitId()
+ var completion_code = getCode("_G_", 3, 3, random = false, symbols = "letters")
 
-    /* create timeline */
+ jsPsych.data.addProperties({
+    workerId: worker_id,
+    qualtricsId: qualtrics_id,
+    assignmentId: assignment_id,
+    hitId: hit_id,
+    iso_identifier: iso_date,
+    completionCode: completion_code
+  });
+  
+ /* get stim data */
+ var book_stimuli = JSON.parse(text); // this is defined in data.js (in json format)
+ var book_stimuli_shuffled = jsPsych.randomization.sampleWithReplacement(book_stimuli, 1);
+
+  jsPsych.data.addProperties({
+    book_id: book_stimuli_shuffled[0].book_id,
+  });
+
+  /* create timeline */
     var timeline = [];
 
-    /* define instructions trial */
-    var instructions1 = {
+  /* define instructions trial */
+  var instructions1 = {
+    type: 'html-button-response',
+    stimulus: "<img src='img/wisconsinlogo.png' alt='UW-Madison' style='display: block;margin: auto;'/>" +
+      "<div style='width: 700px;' align = 'left'>"+
+     "<p> The HIT you are about to do is sponsored by University of Wisconsin-Madison. You will complete a quick survey in which you will be shown some images, words, or hear some sounds and asked to make judgments about them. For example, you may be asked how typical a picture of a dog is of dogs in general, or to identify an ambiguous drawing, decide what word a sound makes you think of, to choose which visual pattern best completes a sequence of patterns, or indicate how vividly you see in your mind''s eye. HIT instructions will be provided on the next screen.    </p>" +
+      //" <br> " +
+
+      "<p> This task has no anticipated risks nor direct benefits. If you have any questions or concerns about this HIT please contact the principal investigator: Dr. Gary Lupyan at lupyan@wisc.edu. If you are not satisfied with response of the research team, have more questions, or want to talk with someone about your rights as a research participant, you should contact University of Wisconsin's Education Research and Social and Behavioral Science IRB Office at 608-263-2320. You are free to decline to participate, to end participation at any time for any reason.  </p> <br> </div>" ,
+       choices: ['Continue'],
+      button_html: "<button class='jspsych-btn' style='background-color:#d3d3d3;'>%choice%</button>",
+    post_trial_gap: 1000
+  };
+  timeline.push(instructions1);
+
+   var instructions2 = {
+    type: 'html-button-response',
+    stimulus:
+      "<div style='width: 700px;' align = 'left'>"+
+     "<p> In this experiment, you will be shown the text of a children's story.</p>" +
+     "<p> Your job is to carefully read the text and then answer questions about the main characters in the story. </p>" +
+      "<p> To begin, click the button below. </p>" +
+      " <br> ",
+       choices: ['Begin'],
+      button_html: "<button class='jspsych-btn' style='background-color:#d3d3d3;'>%choice%</button>",
+    post_trial_gap: 1000
+  };
+  timeline.push(instructions2);
+
+  var show_text = {
       type: 'html-button-response',
-      stimulus: "<img src='img/wisconsinlogo.png' alt='UW-Madison' style='display: block;margin: auto;'/>" +
-        "<div style='width: 700px;' align = 'left'>"+
-       "<p> The HIT you are about to do is sponsored by University of Wisconsin-Madison. You will complete a quick survey in which you will be shown some images, words, or hear some sounds and asked to make judgments about them. For example, you may be asked how typical a picture of a dog is of dogs in general, or to identify an ambiguous drawing, decide what word a sound makes you think of, to choose which visual pattern best completes a sequence of patterns, or indicate how vividly you see in your mind''s eye. HIT instructions will be provided on the next screen.    </p>" +
-        //" <br> " +
-
-        "<p> This task has no anticipated risks nor direct benefits. If you have any questions or concerns about this HIT please contact the principal investigator: Dr. Gary Lupyan at lupyan@wisc.edu. If you are not satisfied with response of the research team, have more questions, or want to talk with someone about your rights as a research participant, you should contact University of Wisconsin's Education Research and Social and Behavioral Science IRB Office at 608-263-2320. You are free to decline to participate, to end participation at any time for any reason.  </p> <br> </div>" ,
-         choices: ['Continue'],
-        button_html: "<button class='jspsych-btn' style='background-color:#d3d3d3;'>%choice%</button>",
-      post_trial_gap: 1000
+      stimulus: function() {
+        var instructions = "<p style='font-style: italic;'> Carefully read the story below. When you have finished, click the `Answer questions` button.  <p>"
+        var current_text = jsPsych.timelineVariable('text', true)
+        var html_text = instructions +
+         "<div style='width: 700px;' align = 'left'>"+
+          "<p>" + current_text+ "</p>"
+          "</div>"
+        return(html_text)
+      },
+      choices: ['Answer Questions'],
+      button_html: "<button class='jspsych-btn' style='background-color:#d3d3d3;'>%choice%</button>",
+            post_trial_gap: 1000
     };
-    timeline.push(instructions1);
-
-     var instructions2 = {
-      type: 'html-button-response',
-      stimulus:
-        "<div style='width: 700px;' align = 'left'>"+
-       "<p> In this experiment, you will be shown the text of a children's story.</p>" +
-       "<p> Your job is to carefully read the text and then answer questions about the main characters in the story. </p>" +
-        "<p> To begin, click the button below. </p>" +
-        " <br> ",
-         choices: ['Begin'],
-        button_html: "<button class='jspsych-btn' style='background-color:#d3d3d3;'>%choice%</button>",
-      post_trial_gap: 1000
-    };
-    timeline.push(instructions2);
-
-    var book_stimuli_shuffled = jsPsych.randomization.sampleWithReplacement(book_stimuli, 1);
-
-    var show_text = {
-        type: 'html-button-response',
-        stimulus: function() {
-          var instructions = "<p style='font-style: italic;'> Carefully read the story below. When you have finished, hit the `Answer questions` button.  <p>"
-          var current_text = jsPsych.timelineVariable('text', true)
-          var html_text = instructions +
-           "<div style='width: 700px;' align = 'left'>"+
-            "<p>" + current_text+ "</p>"
-            "</div>"
-          return(html_text)
-        },
-        choices: ['Answer Questions'],
-        button_html: "<button class='jspsych-btn' style='background-color:#d3d3d3;'>%choice%</button>",
-              post_trial_gap: 1000
-      };
 
    var activities_responses = {
     type: 'survey-text',
@@ -79,7 +99,7 @@
         },
     questions: function() {
       var char_name = jsPsych.timelineVariable('char_name', true)
-      var question_text =  [{prompt: '<b> List the five main activities ' + char_name + ' does in the story.</b> <br> <p style="font-style: italic;"> An example of an activity is "run", "play", or "eat." To help answer this question, you can reference the story below.</p>', columns: 15, required: true, placeholder: 'Activity 1', name: "A1"},
+      var question_text =  [{prompt: '<b> List the five main activities ' + char_name + ' does in the story.</b> <br> <p style="font-style: italic;"> An example of an activity is "run", "play", or "eat." To help answer these questions, you can reference the story below.</p>', columns: 15, required: true, placeholder: 'Activity 1', name: "A1"},
       {prompt: '', columns: 15, required: true, placeholder: 'Activity 2', name: "A2"},
       {prompt: '', columns: 15, required: true, placeholder: 'Activity 3', name: "A3"},
       {prompt: '', columns: 15, required: true, placeholder: 'Activity 4', name: "A4"},
@@ -101,7 +121,7 @@
         },
     questions: function() {
       var char_name = jsPsych.timelineVariable('char_name', true)
-      var question_text =  [{prompt: '<b> Use five words to describe ' + char_name + ' in the story.</b> <br> An example of a desciption word is "pretty", "loud", or "clever." To help answer this question, you can answer the story (below).', columns: 15, required: true, placeholder: 'Description 1', name: "D1"},
+      var question_text =  [{prompt: '<b> Use five words to describe ' + char_name + ' in the story.</b> <br> <p style="font-style: italic;">An example of a desciption word is "pretty", "loud", or "clever." To help answer these questions, you can reference the story below.</p>', columns: 15, required: true, placeholder: 'Description 1', name: "D1"},
       {prompt: '', columns: 15, required: true, placeholder: 'Description 2', name: "D2"},
       {prompt: '', columns: 15, required: true, placeholder: 'Description 3', name: "D3"},
       {prompt: '', columns: 15, required: true, placeholder: 'Description 4', name: "D4"},
@@ -110,19 +130,39 @@
     }
   };
 
-    var test_procedure = {
-      timeline: [show_text, activities_responses, description_responses],
-      timeline_variables: book_stimuli_shuffled,
-    }
-    timeline.push(test_procedure);
+  var test_procedure = {
+    timeline: [show_text, activities_responses, description_responses],
+    timeline_variables: book_stimuli_shuffled,
+  }
+  timeline.push(test_procedure);
 
-    /* define debrief */
 
-    var finished = {
-      type: "html-keyboard-response",
-      stimulus:  "<p>Thank you for your participation!</p>"
-    };
-    timeline.push(finished);
+   /* final_instructions/debrief */
+  var final_instructions = {
+    type: 'instructions',
+    size: 400,
+    pages: [
+           'Thanks for participating! This HIT is an experiment in which we are investigating the messages in children\'s books.  If you have any questions, please feel free to send us a message (lupyanlab@gmail.com)!'
+          +"<br>" + "<br>"
+          +'<center>Your completion code for <u>mTurk</u> is</center>'
+          +"<br>"
+          +'<center><u><b style="font-size:20px">' + completion_code + '</b></u></center>'
+          +"<br>"
+          +'<center>Please copy/paste this code into the mTurk box.</center>'
+          ],
+    show_clickable_nav: true
+  }
+  
+    timeline.push(final_instructions);
+
+
+  // function for storing data
+  function saveData(name, data){
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({filename: name, filedata: data}));
+  };
 
     /* start the experiment */
     jsPsych.init({
@@ -130,7 +170,12 @@
       display_element: 'jspsych-target',
       on_finish: function() {
         jsPsych.data.displayData();
-      }
+
+        //jsPsych.data.get().localSave('csv','test.csv');
+        //saveData("WCBC_gend_norm_"+ worker_id + "_" date, jsPsych.data.get().csv());
+          jsPsych.init({
+                   timeline: experiment_final});
+    },
     });
   </script>
 </html>
