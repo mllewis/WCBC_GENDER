@@ -10,7 +10,7 @@ library(tidytext)
 library(here)
 library(googlesheets4)
 
-SHEET_KEY <- "1NrnRFZ-14VlMoXftB12b9CMVNS6HWfVI7WG65o_oI9w"
+SHEET_KEY <- "1TwbqezPQj4kjGD2v5y1jKzHcD9oJoTDg09QboFEAxPA" #1NrnRFZ-14VlMoXftB12b9CMVNS6HWfVI7WG65o_oI9w"
 BOOK_GENDER_MEANS <- here("data/processed/books/gender_token_type_by_book.csv")
 LCL_TIDY <-  here("experiment/booknorming1/get_stimuli/data/tidy_lcl_text_for_exp.csv")
 MONTAG_TIDY <- here("experiment/booknorming1/get_stimuli/data/tidy_montag_text_for_exp.csv")
@@ -24,7 +24,7 @@ character_data <- read_csv(CHARACTER_DATA)
 
 # get the 25 most male and female biased books
 book_gender_means <- read_csv(BOOK_GENDER_MEANS) %>%
-  select(book_id, corpus_type, title, type_gender_mean) %>%
+  select(book_id, corpus_type, title, token_gender_mean) %>%
   left_join(character_data)
 book_text <- map_df(list(LCL_TIDY, MONTAG_TIDY), read_csv)
 
@@ -45,10 +45,11 @@ target_books <- coded_data %>%
 
 # downsample to 15 per group
 final_target_book_ids <- distinct(target_books, book_id, .keep_all = T) %>%
-  arrange(type_gender_mean) %>%
+  arrange(token_gender_mean) %>%
   group_by(gender_group) %>%
   slice(1:15)
 
+#count(final_target_book_ids %>% select(-n), gender_group )
 final_target_book_character_data <- target_books %>%
   filter(book_id %in% final_target_book_ids$book_id) %>%
   mutate(character_name = toupper(character_name))

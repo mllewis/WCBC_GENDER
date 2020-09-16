@@ -177,8 +177,8 @@
     randomize_question_order: true,
     on_finish: function() {
         //jsPsych.data.displayData();
-       ///jsPsych.data.get().localSave('csv','test.csv');
-       $.post(php_script, {postresult_string: jsPsych.data.get().csv, subjectid: worker_id})
+       jsPsych.data.get().localSave('csv','test.csv');
+       //$.post(php_script, {postresult_string: jsPsych.data.get().csv, subjectid: worker_id})
     }
   };
 
