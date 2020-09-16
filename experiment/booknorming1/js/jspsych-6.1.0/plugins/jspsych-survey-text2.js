@@ -108,6 +108,8 @@ jsPsych.plugins['survey-text'] = (function() {
       question_order = jsPsych.randomization.shuffle(question_order);
     }
 
+    var target_question = trial.questions[question_order[0]].prompt;
+
     // add questions
     for (var i = 0; i < trial.questions.length; i++) {
       var question = trial.questions[question_order[i]];
@@ -159,10 +161,12 @@ jsPsych.plugins['survey-text'] = (function() {
         obje[name] = val;
         Object.assign(question_data, obje);
       }
+
       // save data
       var trialdata = {
         "rt": response_time,
-        "responses": JSON.stringify(question_data)
+        "responses": JSON.stringify(question_data),
+        "question_prompt": target_question
       };
 
       display_element.innerHTML = '';

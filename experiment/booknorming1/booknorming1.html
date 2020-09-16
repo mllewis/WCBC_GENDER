@@ -1,13 +1,15 @@
 <html>
   <head>
-    <title>My experiment</title>
+    <title>Children's Stories</title>
     <script src="js/jspsych-6.1.0/jspsych.js"></script> <!-- js psych stuff -->
     <script src="js/jspsych-6.1.0/plugins/jspsych-survey-text2.js"></script>
     <script src="js/jspsych-6.1.0/plugins/jspsych-html-button-response.js"> </script>
+    <script src="js/jspsych-6.1.0/plugins/jspsych-survey-multi-choice.js"> </script>
     <script src="js/jspsych-6.1.0/plugins/jspsych-instructions.js"></script>
     <script src="js/helpers/get_completion_code.js"> </script>  <!-- helper stuff -->
     <script src="js/helpers/get_turk_params.js"> </script>
     <link href="js/jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js "></script>
     <script src="data.js"> </script> <!-- this is where all the story data is -->
   </head>
   <body>  <div id="jspsych-target"></div>
@@ -22,26 +24,24 @@
  var assignment_id = getAssignmentId()
  var hit_id = getHitId()
  var completion_code = getCode("_G_", 3, 3, random = false, symbols = "letters")
+ var current_char_num = 0
+ var current_n_chars = 0
+ var php_script = "http://127.0.0.1:8000/savetrialdata.php" // php script or saving data
 
  jsPsych.data.addProperties({
     workerId: worker_id,
     qualtricsId: qualtrics_id,
     assignmentId: assignment_id,
     hitId: hit_id,
-    iso_identifier: iso_date,
-    completionCode: completion_code
+    iso_identifier: iso_date
   });
-  
+
  /* get stim data */
  var book_stimuli = JSON.parse(text); // this is defined in data.js (in json format)
- var book_stimuli_shuffled = jsPsych.randomization.sampleWithReplacement(book_stimuli, 1);
-
-  jsPsych.data.addProperties({
-    book_id: book_stimuli_shuffled[0].book_id,
-  });
+ var book_stimuli_shuffled = jsPsych.randomization.sampleWithoutReplacement(book_stimuli, 3);
 
   /* create timeline */
-    var timeline = [];
+  var timeline = [];
 
   /* define instructions trial */
   var instructions1 = {
@@ -62,8 +62,8 @@
     type: 'html-button-response',
     stimulus:
       "<div style='width: 700px;' align = 'left'>"+
-     "<p> In this experiment, you will be shown the text of a children's story.</p>" +
-     "<p> Your job is to carefully read the text and then answer questions about the main characters in the story. </p>" +
+     "<p> In this experiment, you will be shown the text of three children's stories.</p>" +
+     "<p> Your job is to carefully read the text and then answer questions about the main characters in the stories. </p>" +
       "<p> To begin, click the button below. </p>" +
       " <br> ",
        choices: ['Begin'],
@@ -75,6 +75,7 @@
   var show_text = {
       type: 'html-button-response',
       stimulus: function() {
+        current_n_chars = jsPsych.timelineVariable('char_name', true).length
         var instructions = "<p style='font-style: italic;'> Carefully read the story below. When you have finished, click the `Answer questions` button.  <p>"
         var current_text = jsPsych.timelineVariable('text', true)
         var html_text = instructions +
@@ -90,6 +91,8 @@
 
    var activities_responses = {
     type: 'survey-text',
+    data: {book_id: jsPsych.timelineVariable('book_id'), question_type: "activity",
+          char_name: jsPsych.timelineVariable('char_name'), char_num: current_char_num}, 
     postamble: function() {
           var current_text = "<br>" + jsPsych.timelineVariable('text', true)
           var html_text = "<div style='width: 700px;' align = 'left'>"+
@@ -98,12 +101,12 @@
           return(html_text)
         },
     questions: function() {
-      var char_name = jsPsych.timelineVariable('char_name', true)
-      var question_text =  [{prompt: '<b> List the five main activities ' + char_name + ' does in the story.</b> <br> <p style="font-style: italic;"> An example of an activity is "run", "play", or "eat." To help answer these questions, you can reference the story below.</p>', columns: 15, required: true, placeholder: 'Activity 1', name: "A1"},
+      var char_name = jsPsych.timelineVariable('char_name', true)[current_char_num]
+      var question_text =  [{prompt: '<b> List 2-5 main activities ' + char_name + ' does in the story.</b> <br> <p style="font-style: italic;"> An example of an activity is "run", "play", or "eat." To help answer these questions, you can reference the story below.</p>', columns: 15, required: true, placeholder: 'Activity 1', name: "A1"},
       {prompt: '', columns: 15, required: true, placeholder: 'Activity 2', name: "A2"},
-      {prompt: '', columns: 15, required: true, placeholder: 'Activity 3', name: "A3"},
-      {prompt: '', columns: 15, required: true, placeholder: 'Activity 4', name: "A4"},
-      {prompt: '', columns: 15, required: true, placeholder: 'Activity 5', name: "A5"}]
+      {prompt: '', columns: 15, required: false, placeholder: 'Activity 3', name: "A3"},
+      {prompt: '', columns: 15, required: false, placeholder: 'Activity 4', name: "A4"},
+      {prompt: '', columns: 15, required: false, placeholder: 'Activity 5', name: "A5"}]
        return(question_text)
     },
   button_html: "<button class='jspsych-btn' style='background-color:#d3d3d3;'>%choice%</button>",
@@ -112,6 +115,8 @@
 
    var description_responses = {
     type: 'survey-text',
+    data: {book_id: jsPsych.timelineVariable('book_id'), question_type: "description", 
+      char_name: jsPsych.timelineVariable('char_name'), char_num: current_char_num},
     postamble: function() {
           var current_text = jsPsych.timelineVariable('text', true)
           var html_text = "<div style='width: 700px;' align = 'left'>"+
@@ -120,26 +125,69 @@
           return(html_text)
         },
     questions: function() {
-      var char_name = jsPsych.timelineVariable('char_name', true)
-      var question_text =  [{prompt: '<b> Use five words to describe ' + char_name + ' in the story.</b> <br> <p style="font-style: italic;">An example of a desciption word is "pretty", "loud", or "clever." To help answer these questions, you can reference the story below.</p>', columns: 15, required: true, placeholder: 'Description 1', name: "D1"},
+      var char_name = jsPsych.timelineVariable('char_name', true)[current_char_num]
+      var question_text =  [{prompt: '<b> Use 2-5 words to describe ' + char_name + ' in the story.</b> <br> <p style="font-style: italic;">An example of a description word is "pretty", "loud", or "clever." To help answer these questions, you can reference the story below.</p>', columns: 15, required: true, placeholder: 'Description 1', name: "D1"},
       {prompt: '', columns: 15, required: true, placeholder: 'Description 2', name: "D2"},
-      {prompt: '', columns: 15, required: true, placeholder: 'Description 3', name: "D3"},
-      {prompt: '', columns: 15, required: true, placeholder: 'Description 4', name: "D4"},
-      {prompt: '', columns: 15, required: true, placeholder: 'Description 5', name: "D5"}]
+      {prompt: '', columns: 15, required: false, placeholder: 'Description 3', name: "D3"},
+      {prompt: '', columns: 15, required: false, placeholder: 'Description 4', name: "D4"},
+      {prompt: '', columns: 15, required: false, placeholder: 'Description 5', name: "D5"}]
        return(question_text)
     }
   };
 
+   var loop_activities_description_responses = {
+    timeline: [activities_responses, description_responses],
+    loop_function: function(data){
+        current_char_num  = current_char_num + 1
+        if(current_n_chars == current_char_num){
+            current_char_num = 0
+            return false;
+        } else {
+            return true;
+        }
+    }
+  };
+
   var test_procedure = {
-    timeline: [show_text, activities_responses, description_responses],
-    timeline_variables: book_stimuli_shuffled,
+    timeline: [show_text, loop_activities_description_responses],
+    timeline_variables: book_stimuli_shuffled
   }
   timeline.push(test_procedure);
 
+  /* book familarity */
+  var book_familarity_qs = {
+    type: 'survey-multi-choice',
+    data: {book_1: book_stimuli_shuffled[0].title, book_2: book_stimuli_shuffled[1].title, book_3: book_stimuli_shuffled[2].title},
+    preamble: "For each of the book titles below, please indicate whether or not you are familiar with the story.",
+    questions: function() {
+      var familiarity_q_text = [{prompt: book_stimuli_shuffled[0].title, options: ["not familiar", "familiar"], required: true, horizontal: false, name: "book_1"}, 
+                                {prompt: book_stimuli_shuffled[1].title, options: ["not familiar", "familiar"], required: true, horizontal: false, name: "book_2"},
+                                {prompt: book_stimuli_shuffled[2].title, options: ["not familiar", "familiar"], required: true, horizontal: false, name: "book_3"}]
+      return(familiarity_q_text)
+    },
+  };
+    timeline.push(book_familarity_qs);
+
+    /* participant gender */
+  var gender_q = {
+    type: 'survey-text',
+    questions: [
+      {prompt: 'What is your gender?', columns: 6, required: true, name: 'gender'},
+    ],
+    randomize_question_order: true,
+    on_finish: function() {
+        //jsPsych.data.displayData();
+       ///jsPsych.data.get().localSave('csv','test.csv');
+       $.post(php_script, {postresult_string: jsPsych.data.get().csv, subjectid: worker_id})
+    }
+  };
+
+  timeline.push(gender_q);
 
    /* final_instructions/debrief */
   var final_instructions = {
     type: 'instructions',
+    data: {completion_code: completion_code},
     size: 400,
     pages: [
            'Thanks for participating! This HIT is an experiment in which we are investigating the messages in children\'s books.  If you have any questions, please feel free to send us a message (lupyanlab@gmail.com)!'
@@ -150,32 +198,16 @@
           +"<br>"
           +'<center>Please copy/paste this code into the mTurk box.</center>'
           ],
-    show_clickable_nav: true
+    show_clickable_nav: false
   }
-  
-    timeline.push(final_instructions);
 
-
-  // function for storing data
-  function saveData(name, data){
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(JSON.stringify({filename: name, filedata: data}));
-  };
+  timeline.push(final_instructions);
 
     /* start the experiment */
     jsPsych.init({
       timeline: timeline,
+      show_progress_bar: false,
       display_element: 'jspsych-target',
-      on_finish: function() {
-        jsPsych.data.displayData();
-
-        //jsPsych.data.get().localSave('csv','test.csv');
-        //saveData("WCBC_gend_norm_"+ worker_id + "_" date, jsPsych.data.get().csv());
-          jsPsych.init({
-                   timeline: experiment_final});
-    },
     });
   </script>
 </html>
