@@ -48,7 +48,7 @@
     type: 'html-button-response',
     stimulus: "<img src='img/wisconsinlogo.png' alt='UW-Madison' style='display: block;margin: auto;'/>" +
       "<div style='width: 700px;' align = 'left'>"+
-     "<p> The HIT you are about to do is sponsored by University of Wisconsin-Madison. You will complete a quick survey in which you will be shown some images, words, or hear some sounds and asked to make judgments about them. For example, you may be asked how typical a picture of a dog is of dogs in general, or to identify an ambiguous drawing, decide what word a sound makes you think of, to choose which visual pattern best completes a sequence of patterns, or indicate how vividly you see in your mind''s eye. HIT instructions will be provided on the next screen.    </p>" +
+     "<p> The HIT you are about to do is sponsored by University of Wisconsin-Madison. You will complete a quick survey in which you will be shown some images, words, or hear some sounds and asked to make judgments about them. For example, you may be asked how typical a picture of a dog is of dogs in general, or to identify an ambiguous drawing, decide what word a sound makes you think of, to choose which visual pattern best completes a sequence of patterns, or indicate how vividly you see in your mind's eye. HIT instructions will be provided on the next screen.    </p>" +
       //" <br> " +
 
       "<p> This task has no anticipated risks nor direct benefits. If you have any questions or concerns about this HIT please contact the principal investigator: Dr. Gary Lupyan at lupyan@wisc.edu. If you are not satisfied with response of the research team, have more questions, or want to talk with someone about your rights as a research participant, you should contact University of Wisconsin's Education Research and Social and Behavioral Science IRB Office at 608-263-2320. You are free to decline to participate, to end participation at any time for any reason.  </p> <br> </div>" ,
@@ -177,8 +177,8 @@
     randomize_question_order: true,
     on_finish: function() {
         //jsPsych.data.displayData();
-       jsPsych.data.get().localSave('csv','test.csv');
-       //$.post(php_script, {postresult_string: jsPsych.data.get().csv, subjectid: worker_id})
+       //jsPsych.data.get().localSave('csv','test.csv');
+       $.post(php_script, {postresult_string: jsPsych.data.get().csv, subjectid: worker_id})
     }
   };
 
