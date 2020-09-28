@@ -1,4 +1,4 @@
-# read in raw corpus and save tidied version
+# read in raw jspych output and get responses out of nested json, merge in book metadata
 library(tidyverse)
 library(tidytext)
 library(jsonlite)
@@ -6,12 +6,17 @@ library(here)
 
 RAW_DATA_PATH <- here("data/raw/character_norming/exp1/")
 BOOK_DATA_PATH <- here("experiment/booknorming1/get_stimuli/data/books_to_norm.csv")
+TIDY_FULL_DF <- here("data/processed/character_norming/exp1/exp1_tidy_unprocessed_data.csv")
 
 book_data <- read_csv(BOOK_DATA_PATH) %>%
-  select(book_id, title, character_name, character_gender, gender_group)
+  select(book_id, title, character_name, character_type,
+         character_gender, gender_group,)
 
 raw_df <- map_df(list.files(RAW_DATA_PATH, full.names = T), read_csv) %>%
-  select(trial_type, workerId, responses, question_prompt, question_type, book_id)
+  select(trial_type, trial_index, workerId, responses,
+         question_prompt, question_type, book_id,
+         time_elapsed) %>%
+  rename(participant_id = workerId)
 
 tidy_responses <- function(response_string){
   fromJSON(response_string) %>%
@@ -21,7 +26,7 @@ tidy_responses <- function(response_string){
                  values_to = "response")
 }
 
-tidy_df <- raw_df %>%
+tidy_responses_df <- raw_df %>%
   filter(str_detect(trial_type, "survey")) %>%
   select(-trial_type) %>%
   mutate(question_type = case_when(str_detect(responses, "book_1") ~ "familiarity",
@@ -38,51 +43,6 @@ tidy_df <- raw_df %>%
   select(-responses) %>%
   unnest(data) %>%
   filter(response != "") %>%
-  left_join(book_data, by = c("book_id","character_name")) %>%
-  rename(participant_id = workerId)
+  left_join(book_data, by = c("book_id","character_name")) # merge in book meta data
 
-
-
-
-m = tidy_df %>%
-  filter(!(question_type %in% c("familiarity", "participant_gender")))
-
-
-m %>%
-  filter(character_gender == "m", question_type == "activity") %>%
-  pull(response)
-
-m %>%
-  filter(character_gender == "m", question_type == "description") %>%
-  pull(response)
-
-
-
-m %>%
-  filter(gender_group == "male-biased", question_type == "activity") %>%
-  pull(response)
-
-m %>%
-  filter(character_gender == "f", question_type == "description") %>%
-  pull(response)
-
-tidy_df %>%
-  filter(!(question_type %in% c("familiarity", "participant_gender"))) %>%
-  count(paricipant_id, question_type, book_id, character_name) %>%
-  arrange(paricipant_id, character_name, book_id, question_type)  %>%
-  data.frame()
-
-
-tidy_df %>%
-  filter(question_type == "familiarity") %>%
-  count(paricipant_id, question_type, book_id, character_name) %>%
-  arrange(paricipant_id, character_name, book_id, question_type)  %>%
-  data.frame()
-
-tidy_df %>%
-  ungroup() %>%
-  distinct(book_id, participant_id) %>%
-  count(book_id)
-
-
-
+write_csv(tidy_responses_df, TIDY_FULL_DF)

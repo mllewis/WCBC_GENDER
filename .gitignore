@@ -18,6 +18,7 @@ data/raw/gender_norms/*
 data/processed/books/*
 
 data/processed/iat/*
+data/raw/character_norming/
 
 data/processed/other/coca_fiction_sampled/*
 data/processed/other/slices_cleaned/*
