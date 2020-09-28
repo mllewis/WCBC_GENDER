@@ -9,7 +9,7 @@ METADATA_DF <- here("data/processed/character_norming/exp1/exp1_meta_data.csv")
 FAMILIARITY_DF <- here("data/processed/character_norming/exp1/exp1_familiarity_data.csv")
 
 
-tidy_responses_df <- read_csv(TIDY_FULL_DF)
+tidy_responses_df <- read_csv(TIDY_FULL_DF, col_type = c("dcccdccccccc"))
 
 #### tidy df of participant meta-data ####
 total_time <- tidy_responses_df %>%

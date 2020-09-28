@@ -12,11 +12,25 @@ book_data <- read_csv(BOOK_DATA_PATH) %>%
   select(book_id, title, character_name, character_type,
          character_gender, gender_group,)
 
-raw_df <- map_df(list.files(RAW_DATA_PATH, full.names = T), read_csv) %>%
+raw_df <- map_df(list.files(RAW_DATA_PATH, full.names = T), read_csv, col_types = "dcdcddcccccccccccdcccc") %>%
   select(trial_type, trial_index, workerId, responses,
          question_prompt, question_type, book_id,
          time_elapsed) %>%
   rename(participant_id = workerId)
+
+# anonymize turk data
+turk_participant_key <- raw_df %>%
+  distinct(participant_id) %>%
+  filter(str_detect(participant_id, "A")) %>%
+  rename(participant_id_old = participant_id) %>%
+  mutate(participant_id = 1:n(),
+         participant_id = paste0("T", participant_id))
+
+raw_df_A <- raw_df %>%
+  left_join(turk_participant_key, by = c("participant_id" = "participant_id_old")) %>%
+  mutate(participant_id = case_when(!is.na(participant_id.y) ~ participant_id.y,
+                          TRUE~ paste0("P", participant_id))) %>%
+  select(-participant_id.y)
 
 tidy_responses <- function(response_string){
   fromJSON(response_string) %>%
@@ -26,7 +40,7 @@ tidy_responses <- function(response_string){
                  values_to = "response")
 }
 
-tidy_responses_df <- raw_df %>%
+tidy_responses_df <- raw_df_A %>%
   filter(str_detect(trial_type, "survey")) %>%
   select(-trial_type) %>%
   mutate(question_type = case_when(str_detect(responses, "book_1") ~ "familiarity",

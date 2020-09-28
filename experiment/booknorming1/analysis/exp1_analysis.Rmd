@@ -1,0 +1,135 @@
+---
+title: Character action/description norming
+author: Molly Lewis 
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    code_folding: hide
+    number_sections: no
+    toc: yes
+---
+  
+******
+
+```{r setup, include = F}
+# load packages
+library(knitr)
+library(rmarkdown)
+library(tidyverse)
+library(langcog)
+library(here)
+library(lme4) 
+
+
+opts_chunk$set(echo = T, message = F, warning = F, 
+               error = F, tidy = F, cache = F)
+theme_set(theme_classic())
+
+```
+
+# Data description
+```{r}
+CLEANED_RESPONSES_DF <- here("data/processed/character_norming/exp1/exp1_response_data.csv")
+cleaned_responses_with_norms <- read_csv(CLEANED_RESPONSES_DF) %>%
+    mutate(gender_group = fct_relevel(gender_group, "male-biased", "neutral")) 
+```
+
+Average N judgments per book:
+```{r}
+n_judgments <- cleaned_responses_with_norms %>%
+  distinct(book_id, participant_id) %>%
+  group_by(book_id) %>%
+  count() %>%
+  arrange(n) 
+
+#kable(n_judgments)
+mean(n_judgments$n)
+```
+
+There were about 4 words per question on average. 
+```{r}
+cleaned_responses_with_norms %>%
+  group_by(participant_id, book_id,character_name,  question_type) %>%
+  count() %>%
+  group_by(question_type) %>%
+  multi_boot_standard(col = "n") %>%
+  kable()
+```
+
+```{r}
+cleaned_responses_with_norms_filtered <- cleaned_responses_with_norms %>%
+  filter(correct_pos %in% c("action", "description"))
+
+n_wrong_type <- nrow(cleaned_responses_with_norms) - nrow(cleaned_responses_with_norms_filtered)
+```
+`r n_wrong_type` words were removed for being of the wrong part of speech. 
+
+After lemmatizing, here are how many words (tokens) we have human judgments for (from our prior norming):
+```{r}
+cleaned_responses_with_norms_filtered %>%
+  mutate(missing_human = is.na(human_gender_estimate_us)) %>%
+  count(question_type, missing_human) %>%
+  kable()
+```
+
+Note that lemmatizing helps, and our norms have better coverage than glasgow. 
+
+# Group means from human judgments
+```{r}
+by_group_means <-  cleaned_responses_with_norms_filtered %>%
+  mutate(gender_group = fct_relevel(gender_group, "male-biased", "neutral")) %>%
+  filter(!is.na(human_gender_estimate_us)) %>%
+  group_by(book_id, gender_group, question_type, participant_id) %>%
+  summarize(mean_gender = mean(human_gender_estimate_us)) %>%
+  group_by(book_id, gender_group, question_type) %>%
+  summarize(mean_gender = mean(mean_gender)) %>%
+  group_by(gender_group, question_type) %>%
+  langcog::multi_boot_standard(col = "mean_gender")
+
+ggplot(by_group_means, aes(x = gender_group, y = mean)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  #geom_bar(stat = "identity") +
+  facet_wrap(~question_type) +
+  theme_classic(base_size = 14)
+```
+
+
+Mixed effect models:
+```{r}
+lmer(human_gender_estimate_us ~  gender_group+ (1|book_id) + (1|participant_id),
+     data = cleaned_responses_with_norms_filtered %>% filter(question_type == "activity")) %>%
+  summary()
+
+lmer(human_gender_estimate_us ~  gender_group+ (1|book_id) + (1|participant_id),
+     data = cleaned_responses_with_norms_filtered %>% filter(question_type == "description")) %>%
+  summary()
+```
+
+# Continuous book estimates
+```{r}
+BOOK_MEANS <- here("data/processed/books/gender_token_type_by_book.csv")
+book_means <- read_csv(BOOK_MEANS) %>%
+  filter(corpus_type == "all")
+
+by_book_means <-  cleaned_responses_with_norms_filtered %>%
+  filter(!is.na(human_gender_estimate_us)) %>%
+  group_by(book_id, gender_group, question_type, participant_id) %>%
+  summarize(mean_gender = mean(human_gender_estimate_us)) %>%
+  group_by(book_id, gender_group, question_type)  %>%
+    summarize(mean_gender = mean(mean_gender)) %>%
+  left_join(book_means)
+
+ggplot(by_book_means, aes(x = token_gender_mean, y = mean_gender)) +
+  facet_wrap(~question_type) +
+  geom_point(aes( color = gender_group)) +
+  ylab("Action word gender") +
+  xlab("Overall book gender") +
+ # geom_label(aes(label = book_id)) +
+  geom_smooth(method = "lm")
+
+```
+
+TO DO: 
+* get estimates from wiki model
+*  by character gender
+
