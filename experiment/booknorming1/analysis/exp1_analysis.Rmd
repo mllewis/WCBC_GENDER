@@ -49,20 +49,23 @@ mean(n_judgments$n)
 There were about 4 words per question on average. 
 ```{r}
 cleaned_responses_with_norms %>%
-  group_by(participant_id, book_id,character_name,  question_type) %>%
+  group_by(participant_id, book_id, character_name,  question_type) %>%
   count() %>%
   group_by(question_type) %>%
   multi_boot_standard(col = "n") %>%
   kable()
 ```
 
+Remove responses with wrong POS or greater than 35 characters.
 ```{r}
 cleaned_responses_with_norms_filtered <- cleaned_responses_with_norms %>%
-  filter(correct_pos %in% c("action", "description"))
+  filter(correct_pos %in% c("action", "description"))  %>%
+  mutate(nchar = nchar(raw_response)) %>%
+  filter(nchar < 35) # remove responses 35 chars or more (tend to be full sentences)
 
 n_wrong_type <- nrow(cleaned_responses_with_norms) - nrow(cleaned_responses_with_norms_filtered)
 ```
-`r n_wrong_type` words were removed for being of the wrong part of speech. 
+`r n_wrong_type` words were removed for being of the wrong part of speech/too long. 
 
 After lemmatizing, here are how many words (tokens) we have human judgments for (from our prior norming):
 ```{r}
@@ -89,6 +92,7 @@ by_group_means <-  cleaned_responses_with_norms_filtered %>%
 ggplot(by_group_means, aes(x = gender_group, y = mean)) +
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
   #geom_bar(stat = "identity") +
+  ylab("Human judgment of word female bias") +
   facet_wrap(~question_type) +
   theme_classic(base_size = 14)
 ```
@@ -105,8 +109,9 @@ lmer(human_gender_estimate_us ~  gender_group+ (1|book_id) + (1|participant_id),
   summary()
 ```
 
+
+```{r, eval = F, include = F}
 # Continuous book estimates
-```{r}
 BOOK_MEANS <- here("data/processed/books/gender_token_type_by_book.csv")
 book_means <- read_csv(BOOK_MEANS) %>%
   filter(corpus_type == "all")
@@ -129,7 +134,139 @@ ggplot(by_book_means, aes(x = token_gender_mean, y = mean_gender)) +
 
 ```
 
-TO DO: 
-* get estimates from wiki model
-*  by character gender
+# Estimates by participant gender
 
+There is no interaction with participant gender.
+
+```{r}
+META_DF <- here("data/processed/character_norming/exp1/exp1_meta_data.csv")
+meta_df <- read_csv(META_DF) %>%
+  rename(participant_gender = gender)
+```
+
+Particpants by gender:
+```{r}
+meta_df %>%
+  count(participant_gender)
+```
+
+```{r, fig.width = 9}
+cleaned_responses_with_norms_filtered_with_gender <- cleaned_responses_with_norms_filtered %>%
+  left_join(meta_df) 
+
+by_group_means_p_gender <-  cleaned_responses_with_norms_filtered_with_gender %>%
+  filter(!is.na(participant_gender)) %>%
+  mutate(gender_group = fct_relevel(gender_group, "male-biased", "neutral")) %>%
+  filter(!is.na(human_gender_estimate_us)) %>%
+  group_by(book_id, gender_group, question_type, participant_id, participant_gender) %>%
+  summarize(mean_gender = mean(human_gender_estimate_us)) %>%
+  group_by(book_id, gender_group, question_type, participant_gender) %>%
+  summarize(mean_gender = mean(mean_gender)) %>%
+  group_by(gender_group, question_type, participant_gender) %>%
+  langcog::multi_boot_standard(col = "mean_gender")
+
+ggplot(by_group_means_p_gender, aes(x = gender_group, y = mean, color = participant_gender, group = participant_gender)) +
+  geom_line() +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  #geom_bar(stat = "identity") +
+  ylab("Human judgment of word female bias") +
+  facet_wrap(~question_type) +
+  theme_classic(base_size = 14)
+```
+
+Mixed effect models:
+```{r}
+lmer(human_gender_estimate_us ~  gender_group*participant_gender+ (1|book_id) + (1|participant_id),
+     data = cleaned_responses_with_norms_filtered_with_gender %>% filter(question_type == "activity")) %>%
+  summary()
+
+lmer(human_gender_estimate_us ~  gender_group*participant_gender+ (1|book_id) + (1|participant_id),
+     data = cleaned_responses_with_norms_filtered_with_gender %>% filter(question_type == "description")) %>%
+  summary()
+```
+
+# Estimates by book familarity
+
+For description, the effect is bigger for people not familiar with the text (i.e. people less likely to take into account the pictures).
+
+```{r, fig.width = 9}
+FAM_DF <- here("data/processed/character_norming/exp1/exp1_familiarity_data.csv")
+fam_df <- read_csv(FAM_DF) %>%
+  rename(familiarity = response)
+
+cleaned_responses_with_norms_filtered_fam <- cleaned_responses_with_norms_filtered %>%
+  left_join(fam_df)
+
+by_group_means_fam <-  cleaned_responses_with_norms_filtered_fam %>%
+  mutate(gender_group = fct_relevel(gender_group, "male-biased", "neutral")) %>%
+  filter(!is.na(human_gender_estimate_us)) %>%
+  group_by(book_id, gender_group, question_type, participant_id, familiarity) %>%
+  summarize(mean_gender = mean(human_gender_estimate_us)) %>%
+  group_by(book_id, gender_group, question_type, familiarity) %>%
+  summarize(mean_gender = mean(mean_gender)) %>%
+  group_by(gender_group, question_type, familiarity) %>%
+  langcog::multi_boot_standard(col = "mean_gender")
+
+ggplot(by_group_means_fam, aes(x = gender_group, y = mean, color = familiarity, group = familiarity)) +
+  geom_line() +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  ylab("Human judgment of word female bias") +
+  #geom_bar(stat = "identity") +
+  facet_wrap(~question_type) +
+  theme_classic(base_size = 14)
+
+```
+
+```{r}
+lmer(human_gender_estimate_us ~  gender_group*familiarity+ (1|book_id) + (1|participant_id),
+     data = cleaned_responses_with_norms_filtered_fam %>% filter(question_type == "activity")) %>%
+  summary()
+
+lmer(human_gender_estimate_us ~  gender_group*familiarity+ (1|book_id) + (1|participant_id),
+     data = cleaned_responses_with_norms_filtered_fam %>% filter(question_type == "description")) %>%
+  summary()
+
+
+```
+
+# Gender estimates from wiki model
+
+The pattern is the same here as for human judgements, but weaker
+```{r}
+WIKI_WORD_DF <- here("data/processed/character_norming/exp1/response_embedding_gender_scores.csv")
+
+wiki_word <- read_csv(WIKI_WORD_DF)
+
+cleaned_responses_with_norms_filtered_wiki <- cleaned_responses_with_norms_filtered %>%
+  left_join(wiki_word, by = c("word_tidy_lemma" = "word"))
+```
+
+```{r}
+by_group_means_wiki <-  cleaned_responses_with_norms_filtered_wiki %>%
+  mutate(gender_group = fct_relevel(gender_group, "male-biased", "neutral")) %>%
+  filter(!is.na(male_score)) %>%
+  group_by(book_id, gender_group, question_type, participant_id) %>%
+  summarize(male_score = mean(-male_score)) %>%
+  group_by(book_id, gender_group, question_type) %>%
+  summarize(male_score = mean(male_score)) %>%
+  group_by(gender_group, question_type) %>%
+  langcog::multi_boot_standard(col = "male_score")
+
+ggplot(by_group_means_wiki, aes(x = gender_group, y = mean)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  ylab("female embedding score") +
+  #geom_bar(stat = "identity") +
+  facet_wrap(~question_type) +
+  theme_classic(base_size = 14)
+```
+
+Mixed effect models:
+```{r}
+lmer(male_score ~  gender_group+ (1|book_id) + (1|participant_id),
+     data = cleaned_responses_with_norms_filtered_wiki %>% filter(question_type == "activity")) %>%
+  summary()
+
+lmer(male_score ~  gender_group+ (1|book_id) + (1|participant_id),
+     data = cleaned_responses_with_norms_filtered_wiki %>% filter(question_type == "description")) %>%
+  summary()
+```

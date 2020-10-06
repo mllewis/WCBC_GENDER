@@ -12,45 +12,45 @@ GENDER_BIAS_DF <- here("data/processed/words/all_word_measures_tidy.csv")
 GLASGOW_GENDER_BIAS_DF <- here("data/raw/other_norms/GlasgowNorms.csv")
 CLEANED_RESPONSES_DF <- here("data/processed/character_norming/exp1/exp1_response_data.csv")
 
-tidy_responses_df <- read_csv(TIDY_FULL_DF)
+tidy_responses_df <- read_csv(TIDY_FULL_DF) %>%
+  filter(question_type %in% c("activity", "description")) %>%
+  rename(raw_response = response)
 
-####  tidy df of responses on critical trials ####
+#### tidy df of responses on critical trials ####
 pos_info <- read_csv(POS_INFO) %>% # get pos from subtlex
   clean_names() %>%
   select(word, dom_po_s_subtlex, all_po_s_subtlex)
 
 # merge in POS info
 tidy_responses_df_with_pos <- tidy_responses_df %>%
-  filter(question_type %in% c("activity", "description")) %>%
-  mutate(word = tolower(response),
+  mutate(word = tolower(raw_response),
          word = str_trim(word),
          word = str_replace_all(word, "[[:punct:]]", ""), # strip punctuation
          word = map_chr(word, ~strsplit(., " ")[[1]][1])) %>% # if contains multiple words, take first word
   left_join(pos_info) %>%
   mutate(present_subtlexus = !is.na(dom_po_s_subtlex))
 
-# correct spelling mistakes
-spelling_errors <- tidy_responses_df_with_pos %>%
+# correct spelling mistakes (check spelling for words not in subtlexus)
+corrected_spelling_errors <- tidy_responses_df_with_pos %>%
   mutate(spell_correct = case_when(!present_subtlexus ~ hunspell_check(word),
                                    present_subtlexus ~ TRUE),
          hunspell_corrected_spelling = case_when(!spell_correct ~ map_chr(word, ~hunspell_suggest(.)[[1]][1]),
-                                                 TRUE ~ word)) %>%
+                                                 TRUE ~ word),
+         hunspell_corrected_spelling = map_chr(hunspell_corrected_spelling, ~strsplit(., " ")[[1]][1]), # if contains multiple words, take first word (as above)
+         hunspell_corrected_spelling = tolower(hunspell_corrected_spelling)) %>%
   filter(!spell_correct) %>%
   select(question_type, word, hunspell_corrected_spelling)
-# do some manual spell checking here?
 
 # get correct pos based on subtlexus
 cleaned_responses <-  tidy_responses_df_with_pos %>%
-  left_join(spelling_errors) %>%
+  left_join(corrected_spelling_errors) %>% # merge in
   select(-contains("subtlex")) %>%
   mutate(word_tidy = case_when(is.na(hunspell_corrected_spelling) ~ word,
-                               TRUE ~ hunspell_corrected_spelling),
-         word_tidy = map_chr(word_tidy, ~strsplit(., " ")[[1]][1])) %>% # if contains multiple words, take first word
+                               TRUE ~ hunspell_corrected_spelling)) %>%
   left_join(pos_info, by = c("word_tidy" = "word")) %>% # merge back in pos after correcting spelling
-  mutate(correct_pos = case_when(str_detect(all_po_s_subtlex, "Verb") & question_type == "activity" ~ "action",
+  mutate(correct_pos = case_when(str_detect(all_po_s_subtlex, "Verb") & question_type == "activity" ~ "action", # define what pos count as corret for each category
                                  str_detect(all_po_s_subtlex, "Noun|Adjective|Adverb") & question_type == "description" ~ "description",
                                  TRUE ~ NA_character_)) %>%
-  rename(raw_response = response) %>%
   select(participant_id, trial_index, book_id, title,  gender_group, question_type, character_name,
          character_type, character_gender, question_id, raw_response, word_tidy, correct_pos)
 
@@ -72,4 +72,3 @@ cleaned_responses_with_norms <- cleaned_responses_lemma %>%
   left_join(gender_bias_estimates_glasgow , by= c("word_tidy_lemma" = "word"))
 
 write_csv(cleaned_responses_with_norms, CLEANED_RESPONSES_DF)
-

@@ -801,7 +801,7 @@ P67929,12,M89,WINTER DAYS IN THE BIG WOODS,female-biased,activity,MA,s,f,A1,chur
 P67929,12,M89,WINTER DAYS IN THE BIG WOODS,female-biased,activity,MA,s,f,A2,begin,begin,action,begin,3,4.2
 P67929,12,M89,WINTER DAYS IN THE BIG WOODS,female-biased,activity,MA,s,f,A3,work,work,action,work,2.75,4.8824
 P67929,12,M89,WINTER DAYS IN THE BIG WOODS,female-biased,activity,MA,s,f,A4,see,see,action,see,2.9,NA
-P67929,12,M89,WINTER DAYS IN THE BIG WOODS,female-biased,activity,MA,s,f,A5,becky,Becky,NA,Becky,NA,NA
+P67929,12,M89,WINTER DAYS IN THE BIG WOODS,female-biased,activity,MA,s,f,A5,becky,becky,NA,becky,NA,NA
 P67929,13,M89,WINTER DAYS IN THE BIG WOODS,female-biased,description,MA,s,f,D1,loud,loud,description,loud,2.0714285714285716,4.9394
 P67929,13,M89,WINTER DAYS IN THE BIG WOODS,female-biased,description,MA,s,f,D2,pretty,pretty,description,pretty,4.714285714285714,1.5484
 P67929,13,M89,WINTER DAYS IN THE BIG WOODS,female-biased,description,MA,s,f,D3,cozy,cozy,description,cozy,3.7333333333333334,NA
@@ -3442,11 +3442,11 @@ T2,9,M66,FROGGY GOES TO BED,neutral,activity,FROGGY,m,m,A5,"A universal redux ve
 T2,10,M66,FROGGY GOES TO BED,neutral,description,FROGGY,m,m,D1,"A universal redux version of my Meteor attempt at Words with Friends (online ... ,did,from,his,when,going,man,take,where,time,",a,description,a,NA,NA
 T2,10,M66,FROGGY GOES TO BED,neutral,description,FROGGY,m,m,D2,Lyrics to Goodnight by Laurie Berkner from the Laurie album,lyrics,description,lyric,NA,NA
 T2,10,M66,FROGGY GOES TO BED,neutral,description,FROGGY,m,m,D3,"It's evening in the forest and Little Owl wakes up from his day. ... Hedgehog sniffs for mushrooms, Skunk nibbles at berries, Frog croaks",its,NA,its,3,NA
-T2,10,M66,FROGGY GOES TO BED,neutral,description,FROGGY,m,m,D4,"- As he said this, other villains appeared around him. ... Si and Am: All the coolest cats fit in so purr-fectly",NA,NA,NA,NA,NA
+T2,10,M66,FROGGY GOES TO BED,neutral,description,FROGGY,m,m,D4,"- As he said this, other villains appeared around him. ... Si and Am: All the coolest cats fit in so purr-fectly",,NA,,NA,NA
 T2,10,M66,FROGGY GOES TO BED,neutral,description,FROGGY,m,m,D5,"It's evening in the forest and Little Owl wakes up from his day. ... Hedgehog sniffs for mushrooms, Skunk nibbles at berries, Frog croaks",its,NA,its,3,NA
 T2,11,M66,FROGGY GOES TO BED,neutral,activity,MOTHER,s,f,A1,"'Hello, Danielle,' my mother said, sounding froggy-throated and sedate. It was the ... finish my coffee while she went into my closet to get out my winter clothes.",hello,NA,hello,3.2666666666666666,NA
 T2,11,M66,FROGGY GOES TO BED,neutral,activity,MOTHER,s,f,A2,"“I'm so sorry, Your Highness, but we must get the queen to safety ... Beauty looked out the window just in time to see a soldier and his horse",im,action,im,NA,NA
-T2,11,M66,FROGGY GOES TO BED,neutral,activity,MOTHER,s,f,A3,"- As he said this, other villains appeared around him. ... Si and Am: All the coolest cats fit in so purr-fectly",NA,NA,NA,NA,NA
+T2,11,M66,FROGGY GOES TO BED,neutral,activity,MOTHER,s,f,A3,"- As he said this, other villains appeared around him. ... Si and Am: All the coolest cats fit in so purr-fectly",,NA,,NA,NA
 T2,11,M66,FROGGY GOES TO BED,neutral,activity,MOTHER,s,f,A4,"My mother said that her and my Auntie Stefania had been close, like you are ... You see, the last time we invited someone into our family like this, I was hurt",my,NA,my,2.9,NA
 T2,11,M66,FROGGY GOES TO BED,neutral,activity,MOTHER,s,f,A5,"My mother said that her and my Auntie Stefania had been close, like you are ... You see, the last time we invited someone into our family like this, I was hurt",my,NA,my,2.9,NA
 T2,12,M66,FROGGY GOES TO BED,neutral,description,MOTHER,s,f,D1,"You'd love to stay and argue, but you have to rush out and buy him ... years about his teeth and whether they really need so much brushing.",youd,description,youd,NA,NA
