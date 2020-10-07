@@ -67,7 +67,7 @@ n_wrong_type <- nrow(cleaned_responses_with_norms) - nrow(cleaned_responses_with
 ```
 `r n_wrong_type` words were removed for being of the wrong part of speech/too long. 
 
-After lemmatizing, here are how many words (tokens) we have human judgments for (from our prior norming):
+After lemmatizing, here are how many words (tokens) we have human judgments for:
 ```{r}
 cleaned_responses_with_norms_filtered %>%
   mutate(missing_human = is.na(human_gender_estimate_us)) %>%
@@ -75,6 +75,16 @@ cleaned_responses_with_norms_filtered %>%
   kable()
 ```
 
+After lemmatizing, here are how many types we have human judgments for:
+
+```{r}
+cleaned_responses_with_norms_filtered %>%
+  distinct(word_tidy_lemma, human_gender_estimate_us, question_type) %>%
+  mutate(missing_human = is.na(human_gender_estimate_us)) %>%
+  count(question_type, missing_human) %>%
+  kable()
+```
+  
 Note that lemmatizing helps, and our norms have better coverage than glasgow. 
 
 # Group means from human judgments

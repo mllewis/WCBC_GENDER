@@ -9,6 +9,7 @@ library(here)
 TIDY_FULL_DF <-  here("data/processed/character_norming/exp1/exp1_tidy_unprocessed_data.csv")
 POS_INFO <- here("data/raw/other_norms/SUBTLEX-US\ frequency\ list\ with\ PoS\ information.csv")
 GENDER_BIAS_DF <- here("data/processed/words/all_word_measures_tidy.csv")
+GENDER_BIAS_DESC_ACT <- here("data/processed/words/gender_ratings_desc_act_mean.csv") # supplemental words we normed
 GLASGOW_GENDER_BIAS_DF <- here("data/raw/other_norms/GlasgowNorms.csv")
 CLEANED_RESPONSES_DF <- here("data/processed/character_norming/exp1/exp1_response_data.csv")
 
@@ -58,9 +59,16 @@ cleaned_responses_lemma <- cleaned_responses %>%
   mutate(word_tidy_lemma = lemmatize_words(word_tidy)) # from textstem package (lemmatize)
 
 # merge in human judgment info
-gender_bias_estimates <- read_csv(GENDER_BIAS_DF) %>%
+gender_bias_estimates_run123 <- read_csv(GENDER_BIAS_DF) %>%
   select(word, gender) %>%
   rename(human_gender_estimate_us = gender)
+
+gender_bias_estimates_desc_act <- read_csv(GENDER_BIAS_DESC_ACT) %>%
+  select(word, mean) %>%
+  rename(human_gender_estimate_us = mean)
+
+gender_bias_estimates <- bind_rows(gender_bias_estimates_run123,
+                                   gender_bias_estimates_desc_act)
 
 gender_bias_estimates_glasgow <- read_csv(GLASGOW_GENDER_BIAS_DF) %>%
   clean_names() %>%
