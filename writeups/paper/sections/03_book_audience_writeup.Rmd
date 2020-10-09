@@ -5,7 +5,7 @@
 The results so far suggest that the text of popular children’s books contains rich information about gender. In this final study, we sought to begin to understand the processes through which this information might influence children’s socialization into gender stereotypes by examining who is being exposed to these books.  We created a novel measure based on the content of book reviews on a large online bookstore and validated this measure using existing survey data directly measuring the audience of a book. These data indicate that children’s books more frequently read to girls tend to have both more female content and more female characters, and children’s books more frequently read to boys tend to have both more male content and more male characters. 
 
 
-## Method
+### Method
 ```{r}
 # our measures of book gender
 book_content_measures <- book_means %>%
@@ -143,7 +143,7 @@ cowplot::plot_grid(violin_plot1, violin_plot2, ncol = 2,
 ```
 
 
-## Results
+### Results
 
 We compared our audience gender score for each book to the measures of book genderedness described above. Both the content gender scores  (`r content_addressee_corr`) and book character gender scores (`r char_addressee_corr`) were correlated with audience gender scores: Books that contained more female-biased content words and more female characters tended to be read more often to girls. In an additive linear model predicting audience gender with both types of gender scores, both content  ($\beta$ `r model_estimates %>% filter(term == "no_char") %>% pull(string)`) and character gender scores ($\beta$ `r model_estimates %>% filter(term == "char_only") %>% pull(string)`) predicted independent, and roughly equal, variance. Together, they accounted for `r r_squared`%  of the total variance in audience gender. 
 

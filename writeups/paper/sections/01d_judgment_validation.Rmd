@@ -1,0 +1,10 @@
+## Study 1d: Validation of human judgments as estimates of book bias
+
+```{r}
+library(tidyverse)
+library(here)
+library(numform)
+library(rstatix)
+library(lme4)
+```
+

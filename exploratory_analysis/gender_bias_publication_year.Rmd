@@ -1,0 +1,131 @@
+---
+title: Gender Bias and Publication Year
+subtitle: gender analysis
+author: Molly Lewis 
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    code_folding: hide
+    number_sections: no
+    toc: yes
+---
+  
+******
+
+```{r setup, include = F}
+# load packages
+library(knitr)
+library(rmarkdown)
+library(tidyverse)
+library(googlesheets4)
+library(broom)
+library(langcog)
+library(here)
+library(ggrepel)
+
+opts_chunk$set(echo = T, message = F, warning = F, 
+               error = F, tidy = F, cache = F)
+theme_set(theme_classic())
+
+```
+
+```{r}
+YEAR_DATA <- here("data/raw/other/isbn_year_by_book.csv")
+GENDER_SCORES <- here("data/processed/books/gender_token_type_by_book.csv")
+AUDIENCE_GENDER <- here("data/processed/other/tidy_amazon_gender_scores.csv")
+CHARACTER_GENDER <- here("data/raw/other/character_gender_by_book.csv")
+
+year_data <- read_csv(YEAR_DATA) %>%
+  select(book_id, title, earliest_publication)
+
+gender_scores <- read_csv(GENDER_SCORES) %>%
+  select(book_id, corpus_type, token_gender_mean) %>%
+  pivot_wider(names_from = corpus_type, values_from = token_gender_mean)
+
+audience_gender_scores <- read_csv(AUDIENCE_GENDER) %>%
+  select(book_id, addressee_gender_score_token)
+
+tidy_df <-  list(year_data, 
+                 gender_scores,
+                 audience_gender_scores) %>%
+  reduce(left_join)
+```
+
+```{r}
+# turn data into nested table
+data_nested <- tidy_df %>% 
+  gather(variable, value, -book_id, -title) %>%
+  group_by(variable) %>%
+  nest() %>%
+  arrange(variable)
+
+cor_data <- cross_df(list(variable1 = data_nested$variable,
+                          variable2 = data_nested$variable)) %>%
+  left_join(rename(data_nested, variable1 = variable, data1 = data)) %>%
+  left_join(rename(data_nested, variable2 = variable, data2 = data)) %>% 
+  filter(variable1 == "earliest_publication", 
+         variable2 != "earliest_publication") %>%
+  mutate(
+    cor = map2(data1, data2, ~cor.test(.x$value, .y$value)),
+    estimate = map_dbl(cor, ~.x$estimate),
+    p.value = map_dbl(cor, ~.x$p.value),
+    statistic = map_dbl(cor, ~.x$statistic),
+    parameter = map_dbl(cor, ~.x$parameter),
+    ci_lower = map_dbl(cor, ~.$conf.int[[1]]),
+    ci_upper = map_dbl(cor, ~.$conf.int[[2]])) %>%
+  select(-data1, -data2, -cor, -variable1)
+```
+
+```{r}
+LABELED_BOOKS <- c("M36", "M49", "M45", "M9", "L239", "L142",
+                   "M19", "L257", "L128", "L240", "L220", "M41", "L230")
+
+book_labels <- tidy_df %>% 
+  select(book_id, title) %>%
+  filter(book_id %in% LABELED_BOOKS) %>%
+  mutate(#title = case_when(title == "GOODNIGHT, GOODNIGHT, CONSTRUCTION SITE" ~ 
+          #                   "GOODNIGHT, GOODNIGHT,\nCONSTRUCTION SITE", TRUE~ title),
+         title_print = str_to_title(title))
+
+tidy_df %>%
+  left_join(book_labels) %>%
+  mutate(point_class = case_when(!is.na(title_print) ~ "l", TRUE ~ "h")) %>%
+  ggplot(aes(x = earliest_publication, y  = all)) +
+  geom_point( aes( alpha = point_class)) +
+  geom_hline(aes(yintercept = 3), linetype = 2) +
+  geom_smooth(method = "lm") +
+  geom_text_repel(aes(label = title_print), size = 2.5, 
+                  min.segment.length = 0) +
+  scale_alpha_manual(values = c(.15, .9)) +
+  xlab("Earliest Publication Year") +
+  ylab("Book Gender Score (female-ness)") +
+  ggtitle("Book Gender Bias vs. Publication Year") +
+  theme_classic(base_size = 11) +
+  theme(axis.line = element_line(size = .8),
+        legend.position = "none")
+
+```
+
+```{r}
+character_gender <- read_csv(CHARACTER_GENDER) %>%
+  select(book_id, char_main_gender, char_second_gender) %>%
+  left_join(year_data)
+
+char_main_gender_counts <- character_gender %>%
+  mutate(year_bin = cut(earliest_publication, 
+                        breaks = seq(1900, 2020, 5),
+                        labels = FALSE)) %>%
+  group_by(year_bin, char_main_gender) %>%
+  summarize(n = n()) %>%
+  mutate(prop = n/sum(n)) %>%
+  filter(!is.na(char_main_gender)) %>%
+  mutate(char_main_gender = as.factor(char_main_gender),
+         char_main_gender = fct_relevel(char_main_gender, rev))
+
+ggplot(char_main_gender_counts, 
+       aes(x = year_bin, y = prop, color = char_main_gender)) +
+  geom_point() +
+  geom_smooth() +
+  geom_line()
+  geom_bar(stat = "identity")
+```

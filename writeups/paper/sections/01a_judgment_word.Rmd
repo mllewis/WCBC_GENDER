@@ -5,12 +5,13 @@ library(janitor)
 options(knitr.table.format = "latex")
 ```
 
+# Study 1: Measuring gender bias with human judgments
 
-# Study 1A: Measuring word gender bias
+## Study 1a: Gender bias in words
 As a first step in understanding the genderedness of words in the book corpus, we had adult English speakers rate words on genderedness using a 5-point scale from masculine to feminine [@scott2019glasgow]. These ratings were quite systematic; words such as *cuddle* and *pink* were rated as feminine, *axe* and *engine* as masculine, and *exactly* and *nose* as neutral.
 
 
-## Method
+### Method
 
 ```{r}
 RATING_DEMO_PATH <- here("data/processed/words/gender_ratings_demographics.csv")
@@ -255,7 +256,8 @@ We assessed correlations between rated gender and other lexical properties using
 "log_kidbook_freq") %>% pull(corr_print_text)`; all reported ranges indicate 95% confidence intervals), and the magnitudes are similar to ones reported previously [e.g., @zevin2004age]. They also yielded very similar correlations with the other lexical measures. Below we report the results using the TASA frequencies and the `r format(nrow(all_words_with_norms_no_na), big.mark = ",")` words for which there are data for the 4 additional measures. Results using the other frequency measures are included in the SI (https://mlewis.shinyapps.io/SI_WCBC_GENDER/). 
 
 
-## Results
+
+### Results
 
 ```{r wordcorrs}
 tidy_corrs <-  expand.grid(names(all_words_with_norms_no_na[,-1]),

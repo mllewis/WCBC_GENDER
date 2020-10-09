@@ -173,6 +173,10 @@ AoA = Age of acquisition; WCBC = Wisconsin Children's Book Corpus; TASA = Zeno e
                        br(),
                        h4("Predicting audience gender in reviews with charcter and content gender scores"),
                        tableOutput('char_content_table')
-           )
+           ),
+         tabPanel("Supplemental Analyses",
+                  h2("Gender bias and publication year"),
+
+         )
 )
 
