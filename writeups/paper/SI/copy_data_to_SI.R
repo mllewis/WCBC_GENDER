@@ -19,18 +19,22 @@ data_for_SI <-
     here("data/processed/words/gender_word_tsne_coordinates.csv"),
     here("data/processed/words/gender_ratings_mean.csv"),
     here("data/processed/words/gender_pairwise_corrs.csv"),
-    here("data/processed/other/audience_mixed_effect_models.csv")
+    here("data/processed/other/audience_mixed_effect_models.csv"),
+    here("data/processed/other/year_interaction_model.csv"), # year analyses
+    here("data/processed/other/year_all_plot.jpeg"),
+    here("data/processed/other/year_char_plot.jpeg")
 
 )
 
 copy_to_si_dir <- function(old_filepath) {
-  current_file <- read_csv(old_filepath)
-  new_file_path <- paste0("writeups/paper/SI/data/", tail(str_split(old_filepath, "/")[[1]],1))
-  write_csv(current_file, here(new_file_path))
+  if (str_detect(old_filepath, ".csv")){
+    current_file <- read_csv(old_filepath)
+    new_file_path <- paste0("writeups/paper/SI/data/", tail(str_split(old_filepath, "/")[[1]],1))
+    write_csv(current_file, here(new_file_path))
+  } else {
+    new_file_path <- here("writeups/paper/SI/data/")
+    file.copy(old_filepath, new_file_path)
+    }
 }
 
 walk(data_for_SI, copy_to_si_dir)
-
-
-
-

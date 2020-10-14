@@ -217,7 +217,7 @@ function(input, output, session) {
     mutate_all(~replace_na(.,"")) %>%
     rename(" " = X1)
 
-  output$pairwise_corr_table <- renderTable(pairwise_corr,  striped = TRUE, bordered = TRUE)
+  output$pairwise_corr_table <- renderTable(pairwise_corr, striped = TRUE, bordered = TRUE)
 
   AUDIENCE_MODEL_PARAM_PATH <-  "data/audience_mixed_effect_models.csv"
   audience_data <- read_csv(AUDIENCE_MODEL_PARAM_PATH)
@@ -225,6 +225,24 @@ function(input, output, session) {
   output$char_table <- renderTable({filter(audience_data, model_type == "char") %>% select(-model_type)},  striped = TRUE, bordered = TRUE)
   output$content_table <- renderTable({filter(audience_data, model_type == "content") %>% select(-model_type)},  striped = TRUE, bordered = TRUE)
   output$char_content_table <- renderTable({filter(audience_data, model_type == "char_content") %>% select(-model_type)},  striped = TRUE, bordered = TRUE)
+
+  YEAR_SCATTER_PLOT_PATH <- "data/year_all_plot.jpeg"
+  output$year_all <- renderImage({
+    filename <- normalizePath(YEAR_SCATTER_PLOT_PATH)
+    list(src = filename)
+
+  }, deleteFile = FALSE)
+
+  YEAR_INTERACTION_MODEL_PARAM_PATH <-  "data/year_interaction_model.csv"
+  year_model_data <- read_csv(YEAR_INTERACTION_MODEL_PARAM_PATH)
+  output$year_model_table <- renderTable(year_model_data,  striped = TRUE, bordered = TRUE)
+
+  YEAR_CHAR_PLOT_PATH <- "data/year_char_plot.jpeg"
+  output$year_char <- renderImage({
+    filename <- normalizePath(YEAR_CHAR_PLOT_PATH)
+    list(src = filename)
+
+  }, deleteFile = FALSE)
 
 
 }

@@ -20,7 +20,7 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
                     br(),
                     br(),
                     p("Descriptive labels are provided for each cluster where possible (empty labels indicate clusters lacks coherence). Hover over a cluster to see effect size (ES),
-                       and actual words included in the cluster. Effect size is Cohen's d from a one sampled t-test with bootstrapped 95% confidence intervals. Larger effect sizes indicate larger degree of female bias."),
+                       and actual words included in the cluster. Effect size is Cohen's d  from a one sampled t-test with bootstrapped 95% confidence intervals. Larger effect sizes indicate larger degree of female bias."),
                     br(),
                     br(),
                     plotlyOutput("bubbleplot", height = "1000px", width = "1000px")
@@ -110,11 +110,15 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
                     h2("References"),
                     HTML("Caliskan, A., Bryson, J. J., & Narayanan, A. (2017). Semantics derived automatically from language corpora contain human-like biases. Science, 356(6334), 183-186."),
                     br(),
+                    br(),
                     HTML("Davies, M (2008). The Corpus of Contemporary American English: 450 million words, 1990-present."),
+                    br(),
                     br(),
                     HTML("Lewis, M., & Lupyan, G. (2019). What are we learning from language? Associations between gender biases and distributional semantics in 25 languages."),
                     br(),
+                    br(),
                     HTML("Mikolov T, Chen K, Corrado G, Dean J (2013). Efficient estimation of word representations in vector space."),
+                    br(),
                     br(),
                     HTML("Řehůřek, R., & Sojka, P. (2010). Software Framework for Topic Modelling with Large Corpora.
                          In Proceedings of the LREC 2010 Workshop on New Challenges for NLPFrameworks (pp. 45–50). Valletta, Malta: ELRA")
@@ -130,7 +134,7 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
 
                        h3("Pairwise correlation between all measures"),
                        tableOutput('pairwise_corr_table'),
-                       h5("Values are Pearson's r. Asterisks indicate statistical significance (p < .05: *;  p < .01: **;  p < .001: ***). Word frequency measures are log transformed.
+                       h5("Values are Pearson's r. Asterisks indicate statistical significance (p < .05: *;  p   < .01: **; p < .001: ***). Word frequency measures are log transformed.
 AoA = Age of acquisition; WCBC = Wisconsin Children's Book Corpus; TASA = Zeno et al., 1995 Corpus; SUBLEX-us = Brysbaert & New, 2009 Corpus."),
                        br(),
 
@@ -157,7 +161,8 @@ AoA = Age of acquisition; WCBC = Wisconsin Children's Book Corpus; TASA = Zeno e
 
                        HTML( "In the Main Text, we present analyses  predicting the gender of a book's audience based on counts of gendered kinship terms (e.g., 'daughter', 'son', etc.) in online book reviews.
                              The  Main Text reports analyses predicting the  proportion of female kinship terms (tokens) present relative to all target kinship word for each book. Here we
-                             present mixed-effect logistic regression models predicting the raw counts of gendered kinship terms at the review level with a random intercept for each book. The results of the mixed effect logistic models
+                             present mixed-effect logistic regression models predicting the raw counts of gendered kinship terms at the review level with a random intercept for each book.
+                             The results of the mixed effect logistic models
                              are qualitatively the same as the simpler, correlational analyses presented in the Main Text."),
                        br(),
                        br(),
@@ -174,9 +179,42 @@ AoA = Age of acquisition; WCBC = Wisconsin Children's Book Corpus; TASA = Zeno e
                        h4("Predicting audience gender in reviews with charcter and content gender scores"),
                        tableOutput('char_content_table')
            ),
-         tabPanel("Supplemental Analyses",
-                  h2("Gender bias and publication year"),
-
+         tabPanel("Gender Bias and Publication Year",
+                  HTML("Are there historical trends in gender bias in books across the corpus? To answer this question, we coded the first year each book was published using <a href='https://www.worldcat.org/'>WorldCat</a>, and examined how publication year related to the measures of gender we
+                       report in the Main Text. There was a small positive correlation between publicaiton year and the average gender score
+                       of each book based on human judgments of all word tokens in each book (<i>r </i> = 0.15 [0.03, 0.27], <i> p </i> = 0.02; see figure below), suggesting that more
+                       recent books have more female associations in them. There was no relationship between publication year
+                       and the other gender measures reported in the Main Text (content score: <i> r </i> = 0.06 [-0.06, 0.19], <i> p </i> = 0.32; character score: <i> r </i> = 0.1 [-0.04, 0.24], <i> p </i> = 0.15;
+                       audience gender: <i> r </i> = 0.03 [-0.1, 0.15], <i> p </i> = 0.69)."),
+                  br(),
+                  br(),
+                  imageOutput("year_all",  height = "100px", width = "100px", inline = TRUE),
+                  br(),
+                  br(),
+                  HTML("The relationship between overall book gender association and publication year suggests that more recent books have more female associations, but it does not address whether more recent books contain more or less gender stereotypes than older books.
+                  To answer this question, we fit a linear model predicting book content gender score with
+                  book character gender score and publication year. The model included additive terms
+                  for both predictors as well as their interation. The table below shows the model results.
+                  Critically, there was no interaction between character gender score and publication year,
+                  suggesting that the strength of the relationship between character and content gender scores
+                  reported in the Main Text is not related to publication year."),
+                  br(),
+                  br(),
+                  tableOutput('year_model_table'),
+                  br(),
+                  br(),
+                  HTML("Finally, we examined the relationship between the gender of the main characters in each book and the book's publication year.
+                       The plot below shows the proportion of books with main characters in each gender category
+                       (male, female, mixed and indeterminate) as a function of publication year.
+                       The width of the bars corresponds to the number of books in our corpus published in the each decade.
+                       The data suggest a trend for more recent books to have proportionally fewer male main characters,
+                       and more main characters with indeterminate gender."),
+                  br(),
+                  br(),
+                  imageOutput("year_char",  height = "100px", width = "100px", inline = TRUE),
+                  br(),
+                  br(),
          )
 )
+
 

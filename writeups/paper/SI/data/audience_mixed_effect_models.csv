@@ -1,10 +1,10 @@
 term,Beta,SE,Z,p,model_type
 (Intercept),-1.19,0.14,-8.41,<.001,ibdb
 "prop. female, Kam and Matthewson (2017)",2.2,0.29,7.69,<.001,ibdb
-(Intercept),-1.01,0.14,-7.12,<.001,char
-character score,0.41,0.05,8.17,<.001,char
-(Intercept),-9.49,1.19,-7.97,<.001,content
-content score,3.12,0.39,7.95,<.001,content
-(Intercept),-12.08,1.59,-7.6,<.001,char_content
-character score,0.33,0.05,6.91,<.001,char_content
-content score,3.73,0.53,6.99,<.001,char_content
+(Intercept),-1.02,0.14,-7.13,<.001,char
+character score,0.42,0.05,8.16,<.001,char
+(Intercept),-9.48,1.12,-8.47,<.001,content
+content score,3.12,0.37,8.45,<.001,content
+(Intercept),-12.05,2.61,-4.62,<.001,char_content
+character score,0.33,0.05,6.67,<.001,char_content
+content score,3.72,0.88,4.25,<.001,char_content

@@ -9,8 +9,6 @@ get_tidy_corr_text <- function(df, var1, var2) {
                                  TRUE ~ paste0(" _p_ = ", pval2))) %>%
     mutate(corr_print = glue("_r_ = {round(estimate,2)} [{round(conf.low,2)}, {round(conf.high,2)}], {r_p_value}")) %>%
     pull(corr_print)
-
-
 }
 
 get_tidy_one_sample_t_test_text <- function(x_value, mu_value){
