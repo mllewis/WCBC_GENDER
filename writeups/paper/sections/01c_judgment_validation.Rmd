@@ -1,4 +1,4 @@
-## Study 1d: Validation of human judgments as estimates of book bias
+## Study 1c: Validation of human judgments as estimates of book bias
 
 ```{r}
 library(tidyverse)

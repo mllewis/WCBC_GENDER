@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>word_norms.utf8</title>
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+
+</div>
+
+
+<p>An important question is whether genderedness (as rated by adults) is related to properties of words potentially relevant to the development of gender stereotypes: <em>valence</em> (degree of pleasantness), <em>arousal</em> (intensity of emotion), <em>concreteness</em> (whether a word refers to something that can be experienced directly or is more abstract), <em>age of acquisition</em> (<em>AoA</em>, an estimate of the age at which a word is learned), and <em>word frequency</em> (how often a word occurs in a language sample). Valence and arousal are implicated in common gender stereotypes (e.g., girls nice, boys aggressive); age of acquisition and word frequency provide evidence about children’s exposure to words with these properties; the concrete-abstract dimension reflects the conceptual complexity of words.</p>
+<p>We assessed correlations between rated gender and other lexical properties using existing norms. Warriner, Kuperman, and Brysbaert (2013) provide valence ratings on a 1 (happy) to 9 (unhappy) point scale and arousal ratings on a 1 (excited) to 9 (calm) scale. For age of acquisition (Kuperman, Stadthagen-Gonzalez, &amp; Brysbaert, 2012), participants estimated the age in years at which they learned each word. For concreteness, participants rated the extent to which the meaning of a word can be experienced “directly through one of the five senses”, rating each word on a 1 (abstract) to 5 (concrete) scale. Word frequency estimates depend on properties of the language sample that is used. We therefore conducted the correlational analyses using frequencies from three sources: (1) our corpus of children’s books, (2) the cumulative frequency measure from the TASA norms (Zeno, Ivens, Millard, &amp; Duvvuri, 1995) derived from a much larger sample of books from a broad range of reading levels, and (3) a large corpus of movie subtitles (Subtlex-US: Brysbaert &amp; New, 2009). All frequency measures wore log transformed. Because word sense was not disambiguated in these norms, we averaged across words with the same word forms (but different senses) in our dataset for these analyses. Frequency measures from all three sources were available for 1,954 words in the WCBC. The three frequency measures were correlated (TASA-Subtlex: <em>r</em> = 0.84 [0.82, 0.85], <em>p</em> &lt; .001; TASA-WCBC: <em>r</em> = 0.76 [0.74, 0.78], <em>p</em> &lt; .001; WCBC-Subtlex: <em>r</em> = 0.72 [0.69, 0.74], <em>p</em> &lt; .001; all reported ranges indicate 95% confidence intervals), and the magnitudes are similar to ones reported previously (e.g., Zevin &amp; Seidenberg, 2004. They also yielded very similar correlations with the other lexical measures.</p>
+<p>Table 1 below shows the pairwise correlation between all word measures, subsetting to those words available for all measures (<em>N</em> = 1,185). Words that were rated as more feminine tended to be more positively valenced (<em>r</em> = 0.36 [0.31, 0.41], <em>p</em> &lt; .001). More feminine words were also associated with lower arousal (<em>r</em> = -0.07 [-0.12, -0.01], <em>p</em> = 0.02), less concrete (<em>r</em> = -0.12 [-0.18, -0.07], <em>p</em> &lt; .001), and learned earlier (<em>r</em> = -0.08 [-0.14, -0.02], <em>p</em> = 0.006). Word frequency in the WCBC corpus was correlated with word gender (<em>r</em> = 0.09 [0.03, 0.14], <em>p</em> = 0.003), but the other frequency measures were not.</p>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+Table 1: Pairwise correlation between all word measures.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Gender (fem.)
+</th>
+<th style="text-align:right;">
+Arousal
+</th>
+<th style="text-align:right;">
+Valence
+</th>
+<th style="text-align:right;">
+Concreteness
+</th>
+<th style="text-align:right;">
+AoA
+</th>
+<th style="text-align:right;">
+Frequency (WCBC)
+</th>
+<th style="text-align:right;">
+Frequency (TASA)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Arousal
+</td>
+<td style="text-align:right;">
+-0.07*
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Valence
+</td>
+<td style="text-align:right;">
+0.36***
+</td>
+<td style="text-align:right;">
+-0.09**
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Concreteness
+</td>
+<td style="text-align:right;">
+-0.12***
+</td>
+<td style="text-align:right;">
+-0.18***
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AoA
+</td>
+<td style="text-align:right;">
+-0.08**
+</td>
+<td style="text-align:right;">
+0.02
+</td>
+<td style="text-align:right;">
+-0.19***
+</td>
+<td style="text-align:right;">
+-0.25***
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Frequency (WCBC)
+</td>
+<td style="text-align:right;">
+0.09**
+</td>
+<td style="text-align:right;">
+-0.05
+</td>
+<td style="text-align:right;">
+0.21***
+</td>
+<td style="text-align:right;">
+-0.07*
+</td>
+<td style="text-align:right;">
+-0.5***
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Frequency (TASA)
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+-0.07**
+</td>
+<td style="text-align:right;">
+0.15***
+</td>
+<td style="text-align:right;">
+-0.21***
+</td>
+<td style="text-align:right;">
+-0.4***
+</td>
+<td style="text-align:right;">
+0.71***
+</td>
+<td style="text-align:right;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Frequency (SUBTLEX-us)
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+<td style="text-align:right;">
+0.09**
+</td>
+<td style="text-align:right;">
+0.13***
+</td>
+<td style="text-align:right;">
+-0.37***
+</td>
+<td style="text-align:right;">
+-0.36***
+</td>
+<td style="text-align:right;">
+0.66***
+</td>
+<td style="text-align:right;">
+0.84***
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; border:0;" colspan="100%">
+<sup>a</sup> Values are Pearson’s r. Asterisks indicate statistical significance (p &lt; .05; p &lt; .01; p &lt; .001). Word frequency measures are log transformed.<br />AoA = Age of acquisition; WCBC = Wisconsin Children’s Book Corpus; TASA = Zeno et al., 1995 Corpus; SUBLEX-us = Brysbaert &amp; New, 2009 Corpus.
+</td>
+</tr>
+</tfoot>
+</table>
+<p>We next fit an additive linear model to estimate the independent variance in gender explained by the other word measures. We fit seperate models with each of the three frequency measures, since the frequency measures were highly colinear with eachother. All five measures predicted independent variance in gender ratings. The table below shows the model parameters for the three models with different frequency predictors. In the model with the TASA measure of frequency (Table 2) the <span class="math inline">\(R^2\)</span> was 0.17, with valence being the strongest predictor of a word’s gender association (i.e, more positively valenced words tend to be rated as more feminine; <span class="math inline">\(\beta\)</span> = 0.35, <em>SE</em> = 0.03, <em>Z</em> = 12.88, <em>p</em> &lt;.001). The other models showed similiar patterns (Tables 3-4).</p>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+Table 2: Model parameters predicting word gender association with TASA frequency measure
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Term
+</th>
+<th style="text-align:right;">
+Std. Beta
+</th>
+<th style="text-align:right;">
+SE
+</th>
+<th style="text-align:right;">
+Z
+</th>
+<th style="text-align:right;">
+p
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+&gt;.99
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Arousal
+</td>
+<td style="text-align:right;">
+-0.08
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+-2.87
+</td>
+<td style="text-align:right;">
+0.004
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Valence
+</td>
+<td style="text-align:right;">
+0.35
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+12.88
+</td>
+<td style="text-align:right;">
+&lt;.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Concreteness
+</td>
+<td style="text-align:right;">
+-0.20
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+-6.64
+</td>
+<td style="text-align:right;">
+&lt;.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AoA
+</td>
+<td style="text-align:right;">
+-0.12
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+-3.86
+</td>
+<td style="text-align:right;">
+&lt;.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Log Frequency
+</td>
+<td style="text-align:right;">
+-0.15
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+-4.67
+</td>
+<td style="text-align:right;">
+&lt;.001
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; border:0;" colspan="100%">
+<sup>a</sup> Larger gender values indicate greater association with females. AoA = Age of acquisition.
+</td>
+</tr>
+</tfoot>
+</table>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+Table 3: Model parameters predicting word gender association with SUBTLEX-us frequency measure
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Term
+</th>
+<th style="text-align:right;">
+Std. Beta
+</th>
+<th style="text-align:right;">
+SE
+</th>
+<th style="text-align:right;">
+Z
+</th>
+<th style="text-align:right;">
+p
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+&gt;.99
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Arousal
+</td>
+<td style="text-align:right;">
+-0.06
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+-2.17
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Valence
+</td>
+<td style="text-align:right;">
+0.35
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+12.73
+</td>
+<td style="text-align:right;">
+&lt;.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Concreteness
+</td>
+<td style="text-align:right;">
+-0.20
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+-6.20
+</td>
+<td style="text-align:right;">
+&lt;.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AoA
+</td>
+<td style="text-align:right;">
+-0.11
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+-3.25
+</td>
+<td style="text-align:right;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Log Frequency
+</td>
+<td style="text-align:right;">
+-0.11
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+-3.29
+</td>
+<td style="text-align:right;">
+0.001
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+Table 4: Model parameters predicting word gender association with children’s book corpus frequency measure
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Term
+</th>
+<th style="text-align:right;">
+Std. Beta
+</th>
+<th style="text-align:right;">
+SE
+</th>
+<th style="text-align:right;">
+Z
+</th>
+<th style="text-align:right;">
+p
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+&gt;.99
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Arousal
+</td>
+<td style="text-align:right;">
+-0.06
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+-2.28
+</td>
+<td style="text-align:right;">
+0.022
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Valence
+</td>
+<td style="text-align:right;">
+0.35
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+12.55
+</td>
+<td style="text-align:right;">
+&lt;.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Concreteness
+</td>
+<td style="text-align:right;">
+-0.16
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+-5.33
+</td>
+<td style="text-align:right;">
+&lt;.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AoA
+</td>
+<td style="text-align:right;">
+-0.07
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+-2.10
+</td>
+<td style="text-align:right;">
+0.036
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Log Frequency
+</td>
+<td style="text-align:right;">
+-0.03
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+-1.01
+</td>
+<td style="text-align:right;">
+0.314
+</td>
+</tr>
+</tbody>
+</table>
+<p>In summary, many of the most frequent content-bearing words in children’s books have strong gender associations (54%), according to adult judgments. Words judged as more feminine were associated with more positive valence and lower arousal. More feminine words are also higher in frequency, less concrete, and learned somewhat earlier (i.e., have a lower age of acquisition, holding frequency and the other variables listed in  constant).</p>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Kuperman, V., Stadthagen-Gonzalez, H., &amp; Brysbaert, M. (2012). Age-of-acquisition ratings for 30,000 English words. *Behavior Research Methods&amp;, 44 (4), 978–990.</p>
+<p>Warriner, A. B., Kuperman, V., &amp; Brysbaert, M. (2013). Norms of valence, arousal, and dominance for 13,915 English lemmas. <em>Behavior Research Methods</em>, 45(4), 1191–1207.</p>
+<p>Zeno, S., Ivens, S. H., Millard, R. T., &amp; Duvvuri, R. (1995). <em>The Educator’s Word Frequency Guide</em>. Brewster, NY: Touchstone Applied Science Associates.</p>
+<p>Zevin, J. D., &amp; Seidenberg, M. S. (2004). Age-of-acquisition effects in reading aloud: Tests of cumulative frequency and frequency trajectory. <em>Memory &amp; Cognition</em>, 32(1), 31–38.</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

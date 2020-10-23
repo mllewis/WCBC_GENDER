@@ -17,10 +17,11 @@ characters <- read_csv(CHARACTER_PATH)
 
 book_means <- gender_rating_by_book_mean_only %>%
   left_join(characters %>% select(book_id,char_main_gender, 
-                                  char_second_gender))
+                                  char_second_gender)) %>%
+  filter(!(book_id %in% c("L105", "L112"))) # "Journey" and "Anno's Journey" are pictures books
 ```
 
-## Study 1c: Gender bias in books
+## Study 1b: Gender bias in books
 We next use the word gender bias judgments derived in Study 1a to quantify the genderedness of individual books. 
 
 ### Method and Results
@@ -116,7 +117,7 @@ ggplot(all_book_means, aes(x = reorder(title, token_gender_mean),
 ```
 
 
-```{r charactercontentplot, fig.height = 5, fig.width = 5, fig.cap = "Mean content gender score for each book as a function of mean character gender score. Higher values indicate a greater propensity for female-biased words. Error bar shows the standard error of the linear model fit."}
+```{r charactercontentplot"}
 
 LABELED_BOOKS <- c("L143", "M81", "M25", "M56",  "M44", "L142", "L239",
                   "L213", "M68", "M39", "M548", "L136", "L220",   "M49", "L111",  "L160")
@@ -134,7 +135,7 @@ book_labels <- gender_rating_by_book_mean_only %>%
                              "KATY AND THE\nBIG SNOW", TRUE~ title),
          title = str_to_title(title))
 
-  corr_df %>%
+charactercontentplot <- corr_df %>%
   left_join(book_labels) %>%
   filter(!is.na(char_only)) %>%
   mutate(point_class = case_when(!is.na(title) ~ "l", TRUE ~ "h")) %>%
@@ -146,8 +147,8 @@ book_labels <- gender_rating_by_book_mean_only %>%
     geom_point( aes( alpha = point_class)) +
     geom_text_repel(aes(label = title), size = 2.5, 
                   min.segment.length = 0) +
-   scale_alpha_manual(values = c(.15, .9)) +
-    ggtitle("Book Content vs. Book Character Gender Scores") +
+    scale_alpha_manual(values = c(.15, .9)) +
+    ggtitle("Book Content vs.\nCharacter Gender Scores") +
     scale_x_continuous(breaks = c(1,2,3,4,5), 
                      label = c("1\n(male-\nbiased)",  "2" ,"3", "4", "5\n(female-\nbiased)")) +
     scale_y_continuous(breaks = c(2.7, 2.8,3.0,3.2,3.4), 
@@ -155,10 +156,11 @@ book_labels <- gender_rating_by_book_mean_only %>%
                      limits = c(2.68, 3.45) ) +
     annotate("text", x = 4, y = 2.75, label = paste0("italic(r) ==  ", 
                                                      f_num(cor(corr_df$no_char, corr_df$char_only, use = "complete"), 2)),
-           color = "red", size = 5, parse = T) +
-    theme_classic(base_size = 11) +
-    theme(axis.line = element_line(size = .8),
-          legend.position = "none")
+           color = "red", size = 4, parse = T) +
+    theme_classic(base_size = 10) +
+    theme(#axis.line = element_line(size = .8),
+          legend.position = "none",
+          axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 ```{r}
@@ -221,7 +223,7 @@ primary_chi_es_text <- esc_chisq(chisq = primary_chi$statistic,
 
 Whereas the character gender score above reflects the extent to which males and females are mentioned in a book, the gender of the story protagonist may be particularly influential for children. For each book, we manually coded the name of the primary protagonist character(s) and the character’s gender as determined from the text (i.e., not based on the illustrations). A character was considered a protagonist if that character was the primary agent of the story, even if in a collaborative fashion with another protagonist. The main character(s) were classified as either female, male, mixed, or indeterminate [@wagner2017factors]. If there was more than one primary character, and their gender composition was heterogeneous, that group was classified as mixed. If a given primary character had a gender that could not be determined, no gender attribute was assigned (“indeterminate”). Two research assistants and the second author coded character gender.  Coders agreed on the protagonist type for 97% of books. Discrepancies were resolved through discussion.
 
-```{r characterplot}
+```{r characterplot, out.width = "\\textwidth", fig.cap = "(a) Mean content gender score for each book as a function of mean character gender score. Higher values indicate a greater propensity for female-biased words. Error bar shows the standard error of the linear model fit. (b) Distribution across books of content gender score as a function of primary character gender. Colored points show individuals books (one point excluded for visibility). Dashed line shows content gender score grand mean. Black points and ranges show mean and bootstrapped 95\\% percent confidence intervals for books of each primary character gender type."}
 violin_data <- book_means %>%
     mutate_if(is.character, as.factor)   %>%
     mutate(char_main_gender2 = case_when(is.na(char_main_gender) ~ "none",
@@ -230,7 +232,7 @@ violin_data <- book_means %>%
                                           male = "M",
                                           mixed = "MIXED",
                                           "indeterminate" = "AND"),
-          char_main_gender2 = fct_relevel(char_main_gender2, "female", "male", "indeterminate",
+          char_main_gender2 = fct_relevel(char_main_gender2, "male", "female", "indeterminate",
                                          "mixed", "none"))  %>%
   filter(corpus_type == "no_char") 
 
@@ -253,19 +255,22 @@ violin_plot1 <- ggplot(violin_data %>% filter(token_gender_mean < 3.5), # exclud
    geom_hline(aes(yintercept = mean(violin_data$token_gender_mean)),
               linetype = 2, size = .4) +
    scale_color_manual(
-      values = rev(c("pink"," lightblue", "lightgoldenrod1", 
+      values = rev(c(" lightblue","pink", "lightgoldenrod1", 
                      "lightgreen", 
                       "lightgrey")), 
-      name = "Main character\ngender", guide = F)+
+      name = "Main character\ngender", guide = F) +
     scale_y_continuous(breaks = c(2.7, 2.8,3.0,3.2,3.4), 
                      label = c("(male-\nbiased)",  "2.8", "3.0" ,"3.2", "3.4\n(female-\nbiased)"),
                      limits = c(2.68, 3.45) ) +
-  ggtitle("Book Content Gender Score vs.\nPrimary Character Gender") +
+  ggtitle("Book Content vs.\nCharacter Gender") +
   xlab("Primary Character Gender") +
   ylab("Content Gender Score") +
   theme_classic(base_size = 10) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-# plotted in 04
+
+cowplot::plot_grid(charactercontentplot, violin_plot1, ncol = 2,
+                             labels = c('a','b'), label_size = 14, rel_widths = c(1.6,1))
+
 ```
 
 

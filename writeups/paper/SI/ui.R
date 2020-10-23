@@ -13,6 +13,14 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
                     br(),
                     dataTableOutput("wordratingtable"),
            ),
+         tabPanel("Word Gender and Other Word Measures",
+
+               #   includeMarkdown('word_norms.Rmd')
+                  includeHTML('word_norms.html')
+
+         ),
+
+
            tabPanel("Word Gender Semantics",
                     HTML( "Words are clustered based on the Wikipedia English embeddings Bojanowski et al. (2016).
                     Red indicates clusters that are significantly female biased based on the adult word ratings in a one-sample t-test relative to the overall mean;
@@ -125,38 +133,6 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
            ),
 
               tabPanel("Supplemental Models",
-                       h2("Models Predicting Word Gender"),
-                       HTML( "In the Main Text, we present analyses that include estimates of word frequency from the TASA corpus (Zeno, Ivens, Millard, & Duvvuri, 1995). This frequency measure was used because  it relies on a corpus of child-directed text, but is larger
-              than the WCBC corpus. Here we present our analyses with two other frequency measures for comparsion: Frequency as estimated from the WCBC and frequency as measured from movie subtitles (SUBTLEX-us norms; Brysbaert & New, 2009). The SUBTLEX-us
-              norms provide a benchmark for estimates from a much larger corpus of text."),
-                       br(),
-                       br(),
-
-                       h3("Pairwise correlation between all measures"),
-                       tableOutput('pairwise_corr_table'),
-                       h5("Values are Pearson's r. Asterisks indicate statistical significance (p < .05: *;  p   < .01: **; p < .001: ***). Word frequency measures are log transformed.
-AoA = Age of acquisition; WCBC = Wisconsin Children's Book Corpus; TASA = Zeno et al., 1995 Corpus; SUBLEX-us = Brysbaert & New, 2009 Corpus."),
-                       br(),
-
-                       h3("Models parameters predicting word gender association"),
-                       h5("Larger values indicate stronger association with females."),
-                       br(),
-                       h4("Model with WCBC frequency:"),
-                       tableOutput('cbc_freq_model'),
-
-                       br(),
-
-                       h4("Model with SUBTLEX-us frequency:"),
-                       tableOutput('subtlex_freq_model'),
-
-                       br(),
-
-                       h4("Model with TASA frequency (as in Main Text):"),
-                       tableOutput('tasa_freq_model'),
-
-                       br(),
-                       br(),
-
                        h2("Models Predicting Audience Gender"),
 
                        HTML( "In the Main Text, we present analyses  predicting the gender of a book's audience based on counts of gendered kinship terms (e.g., 'daughter', 'son', etc.) in online book reviews.

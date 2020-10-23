@@ -23,7 +23,8 @@ ibdb_data <- read_csv(IBDB_TIDY_PATH)
 
 review_data <- read_csv(REVIEWS_DATA_PATH)  %>%
   left_join(book_content_measures) %>%
-  left_join(ibdb_data)
+  left_join(ibdb_data) %>%
+  filter(!(book_id %in% c("L105", "L112"))) # "Journey" and "Anno's Journey" are pictures books
 
 make_model_pretty <- function(md, type) {
 

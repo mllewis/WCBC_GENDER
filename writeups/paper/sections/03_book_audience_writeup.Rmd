@@ -104,17 +104,19 @@ other_t_text <- get_tidy_one_sample_t_test_text(x_value =
 
 
 
-```{r characterplots,  fig.height = 3.8, out.width = "\\textwidth", fig.cap="(a) Distribution across books of content gender score as a function of primary character gender. Colored points show individuals books (one point excluded for visibility). Dashed line shows content gender score grand mean. (b) Distribution across books of audience gender as a function of primary character gender. Colored points show individuals books. Dashed line shows grand mean of proportion female audience. Black points and ranges show mean and bootstrapped 95\\% percent confidence intervals for books of each primary character gender type.", cache = F}
+```{r characterplots,  fig.height = 3.8, fig.width = 3.8, fig.cap="Distribution across books of audience gender as a function of primary character gender. Colored points show individuals books. Dashed line shows grand mean of proportion female audience. Black points and ranges show mean and bootstrapped 95\\% percent confidence intervals for books of each primary character gender type.", cache = F}
 
 
 addressee_char_data_primary_data <- character_bar_data %>%
   select(book_id, char_main_gender2) %>%
   left_join(by_book_review_data) %>%
-  rename(char_type = char_main_gender2) 
+  rename(char_type = char_main_gender2)  %>%
+  mutate(char_type = fct_relevel(char_type, "male", "female", "indeterminate",
+                                         "mixed", "none"))  
 
 addressee_char_data_primary <- addressee_char_data_primary_data %>%
   group_by(char_type) %>%
-  tidyboot_mean(column = addressee_gender_score_token, na.rm = T) 
+  tidyboot_mean(column = addressee_gender_score_token, na.rm = T)
 
 violin_plot2 <- ggplot(addressee_char_data_primary_data, 
          aes(x = char_type, y = addressee_gender_score_token, color = fct_rev(char_type))) +
@@ -130,7 +132,7 @@ violin_plot2 <- ggplot(addressee_char_data_primary_data,
                  size = .6) +
   geom_hline(aes(yintercept = .5), linetype = 2) +
   scale_color_manual(
-      values = rev(c("pink"," lightblue", "lightgoldenrod1",  "lightgreen", 
+      values = rev(c( "lightblue","pink", "lightgoldenrod1",  "lightgreen", 
                       "lightgrey")),guide = F)+
   ggtitle("Prop. Female Audience vs.\nPrimary Character Gender") +
   xlab("Primary Character Gender") +
@@ -138,8 +140,7 @@ violin_plot2 <- ggplot(addressee_char_data_primary_data,
   theme_classic(base_size = 10) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-cowplot::plot_grid(violin_plot1, violin_plot2, ncol = 2,
-                             labels = c('a','b'), label_size = 12, rel_widths = c(1,1))
+violin_plot2
 ```
 
 

@@ -27,7 +27,7 @@ opts_chunk$set(echo = T, message = F, warning = F,
 ```
 
 ```{r language}
-IAT_ES_PATH_LANGUAGE <- here("exploratory_analyses/5_IAT_tests/data/other/iat_es_by_model.csv")
+IAT_ES_PATH_LANGUAGE <-  here("data/processed/iat/other/iat_es_by_model.csv")
 
 iat_es_language <- read_csv(IAT_ES_PATH_LANGUAGE) %>%
   filter(corpus %in% c("kidbook_sampled", "coca_sampled", "wiki")) %>%
@@ -48,7 +48,7 @@ iat_es_language <- read_csv(IAT_ES_PATH_LANGUAGE) %>%
 
 
 ```{r behavior}
-IAT_ES_PATH_BEHAVIOR <- here("exploratory_analyses/5_IAT_tests/data/other/kid iat stim - implicit ES.csv")
+IAT_ES_PATH_BEHAVIOR <- here("data/processed/iat/other/kid\ iat\ stim\ -\ implicit\ ES.csv")
 
 iat_es <- read_csv(IAT_ES_PATH_BEHAVIOR) %>%
   select(short_citation, bias2, n, group_type, age_months, participant_gender, d, d_var) %>%

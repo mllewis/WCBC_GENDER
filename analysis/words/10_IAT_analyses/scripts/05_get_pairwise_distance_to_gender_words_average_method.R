@@ -7,10 +7,10 @@ library(here)
 MALE_WORDS = c("man", "boy", "brother", "he", "him", "son")
 FEMALE_WORDS = c("woman", "girl", "sister", "she", "her",  "daughter")
 
-MODEL_PATHS_COCA <- here("exploratory_analyses/5_IAT_tests/data/models/trained_sampled_coca/")
-MODEL_PATHS_KIDBOOK <- here("exploratory_analyses/5_IAT_tests/data/models/trained_sampled_kidbook/")
+MODEL_PATHS_COCA <- here("data/processed/iat/models/trained_sampled_coca/")
+MODEL_PATHS_KIDBOOK <- here("data/processed/iat/models/trained_sampled_kidbook/")
 WIKI_PATH <- "/Users/mollylewis/Documents/research/Projects/1_in_progress/VOCAB_SEEDS/exploratory_analyses/0_exploration/wiki.en.vec"
-SCORE_OUTPATH <- here("exploratory_analyses/5_IAT_tests/data/other/by_word_gender_scores.csv")
+SCORE_OUTPATH <- here("data/processed/iat/other/by_word_gender_scores.csv")
 
 all_models <- c(WIKI_PATH, list.files(MODEL_PATHS_COCA, full.names = T),
                 list.files(MODEL_PATHS_KIDBOOK, full.names = T))

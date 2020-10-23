@@ -13,13 +13,12 @@ data_for_SI <-
     here("data/raw/other/advert_age_by_book.csv"),
     here("data/processed/books/gender_token_type_by_book.csv"),
     here("data/raw/other/character_gender_by_book.csv"),
-    here("data/processed/words/gender_regression_models.csv"),
     here("data/processed/words/cluster_labels.csv"),
     here("data/processed/words/gender_centroids_tsne_coordinates.csv"),
     here("data/processed/words/gender_word_tsne_coordinates.csv"),
     here("data/processed/words/gender_ratings_mean.csv"),
-    here("data/processed/words/gender_pairwise_corrs.csv"),
     here("data/processed/other/audience_mixed_effect_models.csv"),
+    here("data/processed/words/all_word_measures_tidy.csv"),
     here("data/processed/other/year_interaction_model.csv"), # year analyses
     here("data/processed/other/year_all_plot.jpeg"),
     here("data/processed/other/year_char_plot.jpeg")

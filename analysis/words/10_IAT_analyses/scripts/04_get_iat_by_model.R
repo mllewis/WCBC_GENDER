@@ -6,17 +6,16 @@ library(here)
 library(data.table)
 library(glue)
 
-source(here("exploratory_analyses/5_IAT_tests/scripts/IAT_utils.R"))
+source(here("analysis/words/10_IAT_analyses/scripts/IAT_utils.R"))
 
 # Outfile
-ES_OUTFILE <- here("exploratory_analyses/5_IAT_tests/data/other/iat_es_by_model.csv")
+ES_OUTFILE <- here("data/processed/iat/other/iat_es_by_model.csv")
 
 # Model paths
-KIDBOOK_FULL_PATH <- here("exploratory_analyses/5_IAT_tests/data/models/trained_kid_model_5_count.csv")
-KIDBOOK_SAMPLED_PREFIX <-  here("exploratory_analyses/5_IAT_tests/data/models/trained_sampled_kidbook/trained_sampled_kidbook_5_count_")
-COCA_SAMPLED_PREFIX <-  here("exploratory_analyses/5_IAT_tests/data/models/trained_sampled_coca/trained_sampled_coca_5_count_")
+KIDBOOK_FULL_PATH <- here("data/processed/iat/models/trained_kid_model_5_count.csv")
+KIDBOOK_SAMPLED_PREFIX <- here("data/processed/iat/models/trained_sampled_kidbook/trained_sampled_kidbook_5_count_")
+COCA_SAMPLED_PREFIX <-  here("data/processed/iat/models/trained_sampled_coca/trained_sampled_coca_5_count_")
 WIKI_PATH <- "/Users/mollylewis/Documents/research/Projects/1_in_progress/VOCAB_SEEDS/exploratory_analyses/0_exploration/wiki.en.vec"
-SUB_PATH <- "/Volumes/wilbur_the_great/subtitle_models/sub.en.vec"
 
 # Stimuli
 MATH_ARTS_KID  <- list(test_name = "WEAT_7_2",
@@ -95,26 +94,12 @@ wiki_model <- fread(
 wiki_es <- map_df(test_list, get_ES, wiki_model) %>%
   mutate(corpus = "wiki")
 
-## sub
-sub_model <- fread(
-  SUB_PATH,
-  header = FALSE,
-  skip = 1,
-  quote = "",
-  encoding = "UTF-8",
-  data.table = TRUE,
-  col.names = c("word",
-                unlist(lapply(2:301, function(x) paste0("V", x)))))
-
-sub_es <- map_df(test_list, get_ES, sub_model) %>%
-  mutate(corpus = "subtitles")
 
 ### Bind ES together
 all_es <- list(kidbook_full_es,
                kidbook_sampled_es,
                coca_sampled_es,
-               wiki_es,
-               sub_es)  %>%
+               wiki_es)  %>%
             reduce(bind_rows)
 
 # write to csv

@@ -12,6 +12,7 @@ options(knitr.table.format = "latex")
 # Study 2: Measuring gender bias through co-occurrence statistics 
 So far we have presented findings about gendered information in children's books based on adult gender norms and semantic representations derived from adult text. The results are relevant to the beliefs of adults who read books with children, which they may convey in conversation during shared reading. However, we also want to understand what a child may learn about gender from the statistics in children’s books alone. 
 
+We then trained word embedding models on the WCBC itself to understand what gender biases are present in the texts themselves, independent of other information sources. We find that the gender bias of words---estimated only from word co-occurrences in the corpus itself---is correlated with adult judgments of gender association.
 
 ## Study 2a: Word gender associations in the Children's Book Corpus
 
@@ -209,3 +210,4 @@ language_plot_data %>%
 
  \autoref{fig:languageiat} shows the effect size for each of the four biases from models trained on each of the three corpora types. Positive values indicate a bias to associate women with the stereotypical female category (e.g. women-family). Three of the four gender biases were present in the co-occurrence statistics of the WCBC -- Language-Math, Arts-Math, and Family-Career. Importantly, these biases were larger in children’s books than in corpora containing mostly adult-directed language. This finding that behaviorally measurable gender biases are present in an exaggerated form in books for young children provides additional evidence that these books instantiate gender stereotypes that may influence children's learning of gender stereotypes.
 
+In summary, we  find that specific gender biases that have been demonstrated behaviorally in adults and children, such as the bias to associate girls with language and boys with math, are also present in the co-occurrence statistics of the children’s book corpus.

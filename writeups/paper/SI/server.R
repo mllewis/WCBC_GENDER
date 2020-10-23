@@ -55,7 +55,8 @@ function(input, output, session) {
                                    "\n Author: ",
                                    str_to_title(author),
                                    "\n Gender Score: ",
-                                   as.character(round(token_gender_mean, 2))))
+                                   as.character(round(token_gender_mean, 2)))) %>%
+    filter(!(book_id %in% c("L105", "L112"))) # "Journey" and "Anno's Journey" are pictures books
 
   all_book_means <- list("all" = gender_rating_by_book_mean %>% filter(corpus_type == "all"),
                          "content" = gender_rating_by_book_mean %>% filter(corpus_type == "no_char"),
@@ -206,18 +207,6 @@ function(input, output, session) {
   output$forestplot <- renderggiraph(get_forest_plot())
   output$bubbleplot <- renderPlotly(get_bubble_plot())
 
-  MODEL_PARAM_PATH <-  "data/gender_regression_models.csv"
-  model_data <- read_csv(MODEL_PARAM_PATH)
-  output$cbc_freq_model <- renderTable({filter(model_data, model_type == "CB") %>% select(-model_type)},  striped = TRUE, bordered = TRUE)
-  output$subtlex_freq_model <- renderTable({filter(model_data, model_type == "SUBTLEX-us") %>% select(-model_type)},  striped = TRUE, bordered = TRUE)
-  output$tasa_freq_model <- renderTable({filter(model_data, model_type == "TASA") %>% select(-model_type)},  striped = TRUE, bordered = TRUE)
-
-  PAIRWISE_CORR_PATH <- "data/gender_pairwise_corrs.csv"
-  pairwise_corr <- read_csv(PAIRWISE_CORR_PATH) %>%
-    mutate_all(~replace_na(.,"")) %>%
-    rename(" " = X1)
-
-  output$pairwise_corr_table <- renderTable(pairwise_corr, striped = TRUE, bordered = TRUE)
 
   AUDIENCE_MODEL_PARAM_PATH <-  "data/audience_mixed_effect_models.csv"
   audience_data <- read_csv(AUDIENCE_MODEL_PARAM_PATH)

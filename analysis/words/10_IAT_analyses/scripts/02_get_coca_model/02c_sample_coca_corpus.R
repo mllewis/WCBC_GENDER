@@ -2,16 +2,16 @@
 library(tidyverse)
 library(here)
 
-KIDBOOK_LENGTHS <-  here("exploratory_analyses/5_IAT_tests/data/other/kid_books_lengths.csv")
-COCA_TIDY <-  here("exploratory_analyses/5_IAT_tests/data/other/tidy_coca_corpus_full.csv")
-SAMPLED_OUTPATH <- here("exploratory_analyses/5_IAT_tests/data/corpora/coca_sampled/")
+KIDBOOK_LENGTHS <-  here("data/processed/iat/other/kid_books_lengths.csv")
+COCA_TIDY <-  here("data/processed/iat/corpora/tidy_coca_corpus_full.csv")
+SAMPLED_OUTPATH <- here("data/processed/iat/corpora/coca_sampled/")
 NSAMPLES <- 10
 
 # get target coca books
 coca_tidy <- read_csv(COCA_TIDY)
 
 # get kidbook lengths
-kidbook_lengths <- read_csv(KIDBOOK_LENGTHS) 
+kidbook_lengths <- read_csv(KIDBOOK_LENGTHS)
 
 # select only those coca books that have at least the max words of a kid book
 target_coca_books <- coca_tidy %>%

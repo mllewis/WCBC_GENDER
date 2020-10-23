@@ -28,7 +28,7 @@ affiliation:
     
 author_note: | 
 abstract: |
-  We investigated how gender is represented in children's books using a 200,000 word corpus comprising 248 popular, contemporary books for young children (0-5 years). Using human judgments and word co-occurrence data, we quantified the gender biases of words within the corpus and within individual books. We find that children's books contain large numbers of words that adults judge as more masculine or feminine. Semantic analyses based on co-occurrence data yielded word clusters related to gender stereotypes (e.g., feminine: emotions; masculine: tools). Co-occurrence data also indicate that books instantiate gender stereotypes found in other research (e.g., girls are better at reading and boys at math). Finally, we used large-scale data to estimate the gender distribution of the audience for individual books, and find that children tend to be exposed to gender stereotypes for their own gender. Together the data suggest that children's books may be an early source of gender stereotypes.
+  We investigated how gender is represented in children's books using a 200,000 word corpus comprising 247 popular, contemporary books for young children (0-5 years). Using human judgments and word co-occurrence data, we quantified the gender biases of words within the corpus and within individual books. We find that children's books contain large numbers of words that adults judge as more masculine or feminine. Semantic analyses based on co-occurrence data yielded word clusters related to gender stereotypes (e.g., feminine: emotions; masculine: tools). Co-occurrence data also indicate that books instantiate gender stereotypes found in other research (e.g., girls are better at reading and boys at math). Finally, we used large-scale data to estimate the gender distribution of the audience for individual books, and find that children tend to be exposed to gender stereotypes for their own gender. Together the data suggest that children's books may be an early source of gender stereotypes.
   
   STATMENT OF RELEVANCE:  Gender stereotypes such as that girls are better at reading and boys are better at math have origins in early childhood. We examined the extent to which popular children's books may expose young 0-5 year old children to information about gender stereotypes. Our data suggest that children's books have rich information about gender stereotypes, and that some of these stereotypes are more strongly represented in children's books than in adult fiction. These findings suggest that popular children's books may be unintentionally teaching young children about gender stereotypes, and that changing the books read to children could be a straight-forward intervention.
   
@@ -101,7 +101,7 @@ Here, we examine a particular potentially pervasive source of information about 
 
 Much of the past work on how gender is represented in books has used “content analysis” which emphasizes detailed analyses of a small number of texts. For example, @diekman2004learning presented college students with books for middle-schoolers previously categorized as “sexist” or “nonsexist”. Students rated them on a 72-item questionnaire. Questions probed whether books conveyed common gender stereotypes and inequalities, such as “Males, but not females, are shown as dominant” and “The book depicts female characters as the natural servants of male characters.” The results suggested that gender differences and inequalities were expressed even in books intended to be nonsexist.
 
-Our goal was to conduct a broader analysis of gender representation in books aimed at young (0-5 year old) children and to better understand who is being exposed to them. By using human norms and automated analyses of distributional semantics, our approach provides a scalable and reproducible method of estimating gender biases without requiring explicit judgments of pre-specified properties of texts [as in studies such as @diekman2004learning].
+Our goal was to conduct a broader analysis of gender representation in books aimed at young (0-5 year old) children and to better understand who is being exposed to them. We operationalize the notion of gender representations by examining the extent to which individual concepts are differentially associated with a particular gender. By using human norms and automated analyses of distributional semantics, our approach provides a scalable and reproducible method of estimating gender biases without requiring explicit judgments of pre-specified properties of texts [as in studies such as @diekman2004learning].
 
 We begin by describing the creation of the Wisconsin Children’s Book Corpus (WCBC). We then assess the genderedness of words used in these books. We measure genderedness using adult judgments and describe how word gender bias relates to other word properties (e.g., age of acquisition; concreteness; Study 1A). We next characterize the semantics of word gender biases using word embedding models, and compare the word biases in our corpus to those in adult fiction (Study 1B). In Study 2, we quantify the gender bias of individual books. In Study 3, we use automated analyses of book reviews to estimate whether each book is being read primarily to boys or girls. To the extent that children are more likely to imitate those that are like them [@bussey1999social], finding that books containing boy and girl stereotypes are read to boys and girls, respectively, would suggest that gender stereotypes in books may present particularly potent opportunities for learning.
 
@@ -112,13 +112,10 @@ We begin by describing the creation of the Wisconsin Children’s Book Corpus (W
 ```{r child = "sections/01a_judgment_word.Rmd"}
 ```
 
-```{r child = "sections/01b_judgment_semantics.Rmd"}
+```{r child = "sections/01b_judgment_books.Rmd"}
 ```
 
-```{r child = "sections/01c_judgment_books.Rmd"}
-```
-
-```{r child = "sections/01d_judgment_validation.Rmd"}
+```{r child = "sections/01c_judgment_validation.Rmd"}
 ```
 
 ```{r child = "sections/02_cooccurrence_stats.Rmd"}

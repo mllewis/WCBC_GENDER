@@ -159,6 +159,8 @@ Because it was not feasible to collect gender norms for all `r format(nrow(disti
 Participants were instructed to rate the gender of each word on a 1-5 scale with the intervals labeled “Very masculine,” “Somewhat masculine,” “Neither masculine nor feminine,” “Somewhat feminine,” and “Very feminine”. The instructions did not provide explicit definitions of masculine or feminine; raters were encouraged to base ratings on their own intuitions. Each participant rated between `r pull(N_ratings_per_subject, min)` and `r pull(N_ratings_per_subject, max)` words. Words were quasirandomly assigned to participants to ensure that each word received at least 10 ratings; mean number of ratings per word was `r pull(N_ratings_per_word, mean)` (_SD_ = `r N_ratings_per_word$sd`). 
 
 
+### Results
+
 ```{r, cache = TRUE}
 rating_summary_stats <- by_word_means %>%
   tidyboot_mean(column = mean_rating) %>%
@@ -211,154 +213,74 @@ targ_word_ratigns <- mean_rating_no_sense %>%
  filter(word %in% TARG_WORDS)
 ```
 
+The overall mean gender rating was  `r pull(rating_summary_stats, mean)` (`r pull(rating_summary_stats, print_mean)`), i.e., very close to the midpoint. `r filter(perc_gendered, gender_bias == "f") %>% pull(percentage)`% of the words were significantly female biased, `r filter(perc_gendered, gender_bias == "m") %>% pull(percentage)`% significantly male biased, and the remaining did not differ from the overall mean gender rating. There was a numerically small, marginal effect of participant gender. Female participants  (`r male_vs_female_participants_summary %>% filter(group == "female") %>% pull(print_mean)`) rated words as more feminine on average compared to male raters (`r male_vs_female_participants_summary %>% filter(group == "male") %>% pull(print_mean)`; paired *t*-test: _t_(`r male_vs_female_participants_t$parameter`) = `r male_vs_female_participants_t$statistic`; _p_ = `r male_vs_female_participants_t$p.value`; *d* = `r male_vs_participants_d`). Gender ratings for   `r prettyNum(num_in_glasgow, big.mark = ",")` of our words were also obtained by @scott2019glasgow  and the two sets of ratings are highly correlated, `r glasgow_cor`. Data can be explored interactively at https://mlewis.shinyapps.io/SI_WCBC_GENDER/.  See SI for analyses of how word gender ratings relate to other word measures, such as concreteness and frequency.
+
 
 ```{r}
-ALL_WORD_MEASURES <- here("data/processed/words/all_word_measures_tidy.csv")
-all_words_with_norms <- read_csv(ALL_WORD_MEASURES) 
+LABEL_DATA <- here("data/processed/words/cluster_labels.csv")
+cluster_labels <- read_csv(LABEL_DATA)
+
+TNSE_DATA <- here("data/processed/words/gender_centroids_tsne_coordinates.csv")
+centroid_df <- read_csv(TNSE_DATA)  %>%
+    left_join(cluster_labels)  %>%
+    select(cluster_id, n, effect_size, eff_conf_low, eff_conf_high, 
+           cluster_label, gender_bias)
+
+gender_bias_counts <- count(centroid_df, gender_bias)
 ```
 
-```{r freqcorrs}
-get_pairwise_tidy_corr <- function(v1, v2, df) {
-  cor.test(pull(df, v1), pull(df,v2)) %>%
-    tidy()
-}
 
-freq_words_with_norms_no_na <- all_words_with_norms %>%
-  select(log_kidbook_freq, log_subt_freq, log_tasa_freq) %>%
-  drop_na()
+```{r clusterexamples,  results = 'asis'}
+target_clusters <- c("zoo animals", "airborne actions", "tools", "professions",
+                     "transportation (ground)", "communication verbs", "affection",
+                     "modifiers", "school", "food",
+                     "body parts", "spatial terms", "family relationships", "house parts",
+                     "quantifiers")
 
-freq_corrs <- expand.grid(names(freq_words_with_norms_no_na),
-            names(freq_words_with_norms_no_na), stringsAsFactors = FALSE) %>%
-  mutate(temp = map2(Var1, Var2, get_pairwise_tidy_corr, freq_words_with_norms_no_na)) %>%
-  unnest() %>%
-  rowwise() %>%
-  mutate(pval2 = case_when((p.value > .01)~round(p.value, 2),
-                                                 TRUE~ round(p.value, 3)),
-          r_p_value = case_when(p.value < .001 ~ " _p_ < .001", 
-                                     TRUE ~ paste0(" _p_ = ", pval2))) %>%
+target_cluster_df <- centroid_df %>%
+  filter(cluster_label %in% target_clusters) %>%
+  arrange(effect_size)
+
+cluster_examples <- tibble(cluster_id = c(75, 50, 17, 97, 86, 89, 24, 96, 23, 13,
+                                          68, 71, 43, 36, 33),
+       example_words = c("judge, policemen, guard, sailor, mayor, clerk",
+                         "car, bicycle, trains, ambulance, engine, traffic",
+                         "axe, blade, knife, bow, stick, wood",
+                         "climbed, tossed, jumped, knocked, pulled, swung",
+                         "giraffe, elephant, gorilla, lion, monkey, zebra",
+                         "meatballs, soup, eggs, milk, pie, salad",
+                         "learning, practicing, school, students, writing, book",
+                         "spoke, listened, heard, explained, asked, answered",
+                         "probably, whenever, truly, likely, completely, yet",
+                         "kisses, loved, smile, tears, heart, care",
+                         "across, long, low, through, close",
+                         "few, almost, many, most, whole",
+                         "bedroom, floor, lamp, roof, window",
+                         "eye, knee, ankle, hair, bone",
+                         "children, brother, sister, uncle, aunt")) %>%
+  left_join(target_cluster_df) %>%
+  mutate(gender_bias = fct_relevel(gender_bias, "female", "neither")) %>%
+  arrange(gender_bias, -effect_size)%>%
   mutate_if(is.numeric, round, 2) %>%
-  mutate(corr_print_text = glue("_r_ = {estimate} [{conf.low}, {conf.high}], {r_p_value}"))
+  mutate(ES_string = paste0(effect_size, " [", eff_conf_low, ", ", eff_conf_high, "]")) %>%
+  select(cluster_label, ES_string, n, example_words) 
+
+kable(cluster_examples,  "latex", booktabs = T,  escape = F, longtable = F,
+      caption = "Examples of Clusters from Multi-Dimensional Embeddings",
+      col.names = linebreak(c("Category", "Effect Size", "$N$", "Examples"))) %>%
+  kable_styling(latex_options = c("scale_down")) %>%
+  pack_rows("Female-Biased Clusters", 1, 5) %>%
+  pack_rows("Neutral Clusters", 6, 10) %>%
+  pack_rows("Male-Biased Clusters", 11, 15)  %>%
+  footnote(general = "Effect size measure is Cohen's $d$ based on a one-sample $t$-test comparing the mean gender of words in a cluster to the overall word gender mean. Brackets give bootstrapped 95 percent confidence intervals. $N$ indicates number of words in each cluster.", general_title = "Note:", footnote_as_chunk = T, threeparttable = T, escape = F)
+
 ```
 
-```{r papercorrs}
-# data frame with the variables reported in the main text (only one frequency measure, WCBC)
-all_words_with_norms_no_na <- all_words_with_norms %>%
-  select(-log_kidbook_freq, -log_subt_freq) %>%
-  drop_na()
-```
+Next, we identified the semantic neighborhoods of words judged to be relatively more masculine or feminine. We identified semantic neighborhoods using a  word embedding model [@mikolov2013efficient], a method for deriving lexical semantic representations based on patterns of co-occurrence. Word embedding models characterize words as similar to the extent that they occur in similar contexts [“distributional statistics”; e.g., @landauer1997solution]. Semantic representations extracted in this way capture important aspects of meaning and correlate with human judgments of semantic similarity [@hill2015simlex], though not without limitations [@chen2017evaluating]. 
 
-A further question is whether genderedness (as rated by adults) is related to properties of words potentially relevant to the development of gender stereotypes: *valence* (degree of pleasantness), *arousal* (intensity of emotion), *concreteness* (whether a word refers to something that can be experienced directly or is more abstract), *age of acquisition* (*AoA*, an estimate of the age at which a word is learned), and *word frequency* (how often a word occurs in a language sample). Valence and arousal are implicated in common gender stereotypes (e.g., girls nice, boys aggressive);  age of acquisition and word frequency provide evidence about children’s exposure to words with these properties; the concrete-abstract dimension reflects the conceptual complexity of words.
+To identify semantic neighborhoods of masculine and feminine words, we obtained semantic coordinates for each word in our sample (a 300 dimensional vector) from a word embedding model pre-trained on English Wikipedia [@bojanowski2016enriching]. We then reduced the dimensionality of these coordinates to two using the t-sne algorithm [@maaten2008visualizing], an algorithm similar to PCA but better suited for high-dimensional spaces. Finally, we clustered the words into 100 clusters based on their coordinates using k-means clustering. Clustering is an unsupervised machine learning method for dividing observations into *k& clusters by minimizing within-cluster distance and maximizing across-cluster distance. We determined the gender bias of each cluster by comparing the mean gender bias of words in that cluster to the gender bias of all words in our sample. 
 
+The clustering procedure yielded semantically coherent clusters with an average of  `r mean(centroid_df$n)` words (_SD_ = `r sd(centroid_df$n)`) per cluster (\autoref{tab:clusterexamples}; see  SI for complete results). The average rated genderedness of the words in these clusters was calculated using the gender norms. For each word cluster, we tested whether the mean gender rating of words in that cluster significantly differed from the overall mean gender rating of words. Of the 100 clusters, `r filter(gender_bias_counts, gender_bias == "female") %>% pull(n)`  were female-biased, `r filter(gender_bias_counts, gender_bias == "male") %>% pull(n)` were male-biased, and the remaining `r prettyNum(filter(gender_bias_counts, gender_bias == "neither") %>% pull(n), big.mark = ",")` were neutral. Table 3 shows examples of female-biased, male-biased and neutral clusters along with representative words. The gendered clusters differ in ways that reflect gender stereotyping. For example, female clusters were associated with mental states (feelings, beliefs) and interactions with others (communicating, caregiving). Male clusters, in contrast, tended to be more closely associated with events in the physical realm (e.g., sports, tools, transportation). These findings suggest that gender is an organizing dimension of semantic space for words found in children's books: Meanings semantically similiar to each other tend to have similiar gender associations.
 
-We assessed correlations between rated gender and other lexical properties using existing norms. @warriner2013norms provide valence ratings on a 1 (happy) to 9 (unhappy) point scale and arousal ratings on a 1 (excited) to 9 (calm) scale. For age of acquisition [@kuperman2012age], participants estimated the age in years at which they learned each word. For concreteness,  participants rated the extent to which the meaning of a word can be experienced "directly through one of the five senses", rating each word on a 1 (abstract)  to 5 (concrete) scale.  Word frequency estimates depend on properties of the language sample that is used. We therefore conducted the correlational analyses using frequencies from three sources: (1) our corpus of children’s books, (2) the cumulative frequency measure from the TASA norms [@tasa_norms] derived from a much larger sample of books from a broad range of reading levels, and (3) a large corpus of movie subtitles [Subtlex-US: @brysbaert2009moving]. All frequency measures wore log transformed. Because word sense was not disambiguated in these norms, we averaged across words with the same word forms (but different senses) in our dataset for these analyses. Frequency measures from all three sources were available for `r format(nrow(freq_words_with_norms_no_na), big.mark = ",")` words in the WCBC. The three frequency measures were correlated (TASA-Subtlex: `r filter(freq_corrs, Var1 == "log_tasa_freq", Var2 == 
-"log_subt_freq") %>% pull(corr_print_text)`; TASA-WCBC: `r filter(freq_corrs, Var1 == "log_tasa_freq", Var2 == 
-"log_kidbook_freq") %>% pull(corr_print_text)`; WCBC-Subtlex: `r filter(freq_corrs, Var1 == "log_subt_freq", Var2 == 
-"log_kidbook_freq") %>% pull(corr_print_text)`; all reported ranges indicate 95% confidence intervals), and the magnitudes are similar to ones reported previously [e.g., @zevin2004age]. They also yielded very similar correlations with the other lexical measures. Below we report the results using the TASA frequencies and the `r format(nrow(all_words_with_norms_no_na), big.mark = ",")` words for which there are data for the 4 additional measures. Results using the other frequency measures are included in the SI (https://mlewis.shinyapps.io/SI_WCBC_GENDER/). 
-
-
-
-### Results
-
-```{r wordcorrs}
-tidy_corrs <-  expand.grid(names(all_words_with_norms_no_na[,-1]),
-            names(all_words_with_norms_no_na[,-1]), stringsAsFactors = FALSE) %>%
-  filter(Var1 != Var2) %>%
-  mutate(temp = map2(Var1, Var2, get_pairwise_tidy_corr, all_words_with_norms_no_na)) %>%
-  unnest() %>%
-  mutate(sig = case_when(p.value < .01 ~ "*", TRUE ~ "\   "), # the spacing makes it so you can right align the numbers in the table
-         estimate_round = sprintf("%.2f", round(estimate,2)), # preserves trailing zeros
-         estimate_round = case_when(abs(estimate) < .01 ~ "0.00",
-                                    TRUE ~ estimate_round),
-         estimate_print = as.character(glue("{estimate_round}{sig}")))
-
-
-VAR_ORDER <-  c("gender", "arousal", "valence", "concreteness", "adult_aoa",  "log_tasa_freq")
-VAR_ORDER_LABS <-  c("Gender (fem.)", "Arousal", "Valence", "Concreteness", "AoA")
-VAR_ORDER_LABS2 <-  c("Gender (fem.)", "Arousal", "Valence", "Concreteness", "AoA",  "Log Frequency (TASA)")
-
-cor_table <- tidy_corrs %>%
-  select(Var1, Var2, estimate_print) %>%
-  pivot_wider(names_from = Var1, values_from = estimate_print, values_fill = list(estimate_print = "")) %>%
-  select(Var2, VAR_ORDER) %>%
-  slice(match(VAR_ORDER, Var2)) %>%
-  mutate(Var2 = VAR_ORDER_LABS2)  %>%
-  column_to_rownames(var = "Var2") %>%
-  as.matrix()
-
-cor_table[upper.tri(cor_table)] <- ""
-
-cor_table_tidy <- cor_table %>%
-  as.data.frame() %>%
-  rownames_to_column("Var2") %>%
-  slice(-1) %>% # get rid of empty column/rows due to missing top diag
-  select(-7)
-```
-
-
-
-The overall mean gender rating was  `r pull(rating_summary_stats, mean)` (`r pull(rating_summary_stats, print_mean)`), i.e., very close to the midpoint. `r filter(perc_gendered, gender_bias == "f") %>% pull(percentage)`% of the words were significantly female biased, `r filter(perc_gendered, gender_bias == "m") %>% pull(percentage)`% significantly male biased, and the remaining did not differ from the overall mean gender rating. There was a numerically small, marginal effect of participant gender. Female participants  (`r male_vs_female_participants_summary %>% filter(group == "female") %>% pull(print_mean)`) rated words as more feminine on average compared to male raters (`r male_vs_female_participants_summary %>% filter(group == "male") %>% pull(print_mean)`; paired *t*-test: _t_(`r male_vs_female_participants_t$parameter`) = `r male_vs_female_participants_t$statistic`; _p_ = `r male_vs_female_participants_t$p.value`; *d* = `r male_vs_participants_d`). Gender ratings for   `r prettyNum(num_in_glasgow, big.mark = ",")` of our words were also obtained by @scott2019glasgow  and the two sets of ratings are highly correlated, `r glasgow_cor`. Data can be explored interactively at https://mlewis.shinyapps.io/SI_WCBC_GENDER/. 
-
-
-```{r, results = 'asis'}
-apa_table(cor_table_tidy, align = 'lrrrr',
-      caption = "Pairwise correlation between all word measures.",
-      "Values are Pearson's r. Asterisks indicate statistical significance at the .01 level. AoA = Age of acquisition; TASA = Zeno et al., 1995 Corpus.", 
-      col.names = linebreak(c("", VAR_ORDER_LABS)), escape = T)
-```
-
-```{r text_rs}
-text_tidy_corrs <- tidy_corrs %>%
-  filter(Var1 == "gender") %>%
-  rowwise() %>%
-  mutate(pval2 = case_when((p.value > .01)~round(p.value, 2),
-                                                 TRUE~ round(p.value, 3)),
-          r_p_value = case_when(p.value < .001 ~ " _p_ < .001", 
-                                     TRUE ~ paste0(" _p_ = ", pval2))) %>%
-  mutate_if(is.numeric, round, 2) %>%
-  mutate(corr_print_text = glue("_r_ = {estimate} [{conf.low}, {conf.high}], {r_p_value}"))
-```
-
-Table 1 shows the pairwise correlation between all word measures. Words that were rated as more feminine tended to be more positively valenced (`r filter(text_tidy_corrs, Var2 == "valence") %>% pull(corr_print_text)`). More feminine words were also associated with lower arousal (`r filter(text_tidy_corrs, Var2  == "arousal") %>% pull(corr_print_text)`), less concrete (`r filter(text_tidy_corrs, Var2  == "concreteness")%>% pull(corr_print_text)`), and learned earlier (`r filter(text_tidy_corrs, Var2  == "adult_aoa")%>% pull(corr_print_text)`). Word frequency was not correlated with word gender (`r filter(text_tidy_corrs, Var2 == "log_tasa_freq") %>% pull(corr_print_text)`).
-
-
-```{r}
-model <- all_words_with_norms_no_na %>%
-  mutate_if(is.numeric, base::scale)  %>%
-  lm(gender ~ log_tasa_freq + valence + arousal  + concreteness + adult_aoa,
-     data = .) 
-
-pretty_model <- model %>%
-  tidy() %>%
-  rename(Beta = estimate, SE = std.error, Z = statistic, p = p.value) %>%
-    mutate(p = case_when(p < .001 ~  "<.001",
-                          TRUE ~ as.character(round(p, 3)))) %>%
-  mutate_if(is.numeric, ~ round(.,2)) %>%
-  select(-term) %>%
-  mutate(Term = c("(Intercept)",
-                  "Log Frequency (TASA)",
-                  "Valence",
-                  "Arousal",
-                  "Concreteness",
-                  "AoA")) %>%
-  select(Term, everything())
-
-pretty_model_reordered <- pretty_model[c(1,4,3,5,6,2),] %>%
-    mutate(p = ifelse(p == "1", ">.99", p))
-```
-
-```{r wordmodel, results = 'asis'}
-apa_table(pretty_model_reordered, caption = "Model parameters predicting word gender association", 
-          col.names = c("Term", "Std. Beta", "SE", "Z", "p"), align = 'lrrrr',
-          note = "Larger gender values indicate greater association with females. AoA = Age of acquisition;  TASA = Zeno et al., 1995 Corpus.")
-```
-
-```{r}
-text_pretty_model <- pretty_model %>%
-  mutate(pretty_model = paste0( Beta, ", _SE_ = ", SE,
-                               ", _Z_ = ", Z, ", _p_ ", p))
-```
-
-We next fit an additive linear model  to estimate the independent variance in gender explained by the other word measures. All five measures predicted independent variance in gender ratings ($R^2$ = `r round(summary(model)$r.squared, 2)`), with valence being the strongest predictor of a word's gender association (i.e, more positively valenced words tend to be rated as more feminine; $\beta$ = `r filter(text_pretty_model, Term == "Valence") %>% pull(pretty_model)`;  \autoref{tab:wordmodel}).
-
-In summary, many of the most frequent content-bearing words in children’s books have strong gender associations (54%), according to adult judgments. Words judged as more feminine were associated with more positive valence and lower arousal. More feminine words are also higher in frequency, less concrete, and learned somewhat earlier (i.e., have a lower age of acquisition, holding frequency and the other variables listed in \autoref{tab:wordmodel} constant). 
+In summary, ....
 

@@ -1,0 +1,149 @@
+---
+title: Content plot
+subtitle: gender analysis
+author: Molly Lewis 
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    code_folding: hide
+    number_sections: no
+    toc: yes
+---
+  
+******
+
+```{r setup, include = F}
+# load packages
+library(knitr)
+library(rmarkdown)
+library(tidyverse)
+library(broom)
+library(langcog)
+library(here)
+library(ggrepel)
+library(glue)
+library(ggmosaic)
+
+opts_chunk$set(echo = T, message = F, warning = F, 
+               error = F, tidy = F, cache = F)
+theme_set(theme_classic())
+
+source(here("writeups/paper/paper_helpers.R"))
+```
+
+```{r}
+YEAR_DATA <- here("data/raw/other/isbn_year_by_book.csv")
+GENDER_SCORES <- here("data/processed/books/gender_token_type_by_book.csv")
+AUDIENCE_GENDER <- here("data/processed/other/tidy_amazon_gender_scores.csv")
+CHARACTER_GENDER <- here("data/raw/other/character_gender_by_book.csv")
+
+character_gender <- read_csv(CHARACTER_GENDER) %>%
+  select(book_id, char_main_gender, char_second_gender)
+
+year_data <- read_csv(YEAR_DATA) %>%
+  select(book_id, title, earliest_publication)
+
+gender_scores <- read_csv(GENDER_SCORES) %>%
+  select(book_id, corpus_type, token_gender_mean) %>%
+  pivot_wider(names_from = corpus_type, values_from = token_gender_mean)
+
+audience_gender_scores <- read_csv(AUDIENCE_GENDER) %>%
+  select(book_id, addressee_gender_score_token)
+
+tidy_df <-  list(gender_scores,
+                 year_data,
+                 audience_gender_scores,
+                 character_gender) %>%
+  reduce(left_join) %>%
+  filter(!(book_id %in% c("L105", "L112"))) # "Journey" and "Anno's Journey" are pictures books
+
+```
+
+```{r}
+addressee_cor <- get_tidy_corr_text(tidy_df, "earliest_publication", "addressee_gender_score_token")
+all_cor <- get_tidy_corr_text(tidy_df, "earliest_publication", "all")
+char_only_cor <- get_tidy_corr_text(tidy_df, "earliest_publication", "char_only")
+no_char_cor <- get_tidy_corr_text(tidy_df, "earliest_publication", "no_char")
+```
+
+Are there historical trends in gender bias across books in the corpus? To answer this question, we coded the first year each book was published using WorldCat (https://www.worldcat.org/), and examined how publication year related to the measures of gender we report in the Main Text There was a small but reliable correlation between the average gender score of each book based on human judgments of all word tokens in each book (`r all_cor`; see figure below), suggesting that more recent books have more female associations in them. There was no relationship between earliest publication year and the other gender measures reported in the Main Text (content score: `r no_char_cor`; character score:  `r char_only_cor`; audience gender: `r addressee_cor`). 
+
+```{r, fig.caption = "Mean gender score for each book as a function of the books earliest publication year. Higher values indicate a greater propensity for female-biased words. Error bar shows the standard error of the linear model fit. Sample books are labeled.", fig.width = 6}
+
+LABELED_BOOKS <- c("M36", "M49", "M45", "M9", "L239", "L142",
+                   "M19", "L257", "L128", "L240", "L220", "M41", "L230")
+
+book_labels <- tidy_df %>% 
+  select(book_id, title) %>%
+  filter(book_id %in% LABELED_BOOKS) %>%
+  mutate(title_print = str_to_title(title))
+
+tidy_df %>%
+  left_join(book_labels) %>%
+  mutate(point_class = case_when(!is.na(title_print) ~ "l", TRUE ~ "h")) %>%
+  ggplot(aes(x = earliest_publication, y  = all)) +
+  geom_point( aes( alpha = point_class)) +
+  geom_hline(aes(yintercept = 3), linetype = 2) +
+  geom_smooth(method = "lm") +
+  geom_text_repel(aes(label = title_print), size = 2.5, 
+                  min.segment.length = 0) +
+  scale_alpha_manual(values = c(.15, .9)) +
+  xlab("Earliest Publication Year") +
+  ylab("Book Gender Score (female-ness)") +
+  ggtitle("Book Gender Bias vs. Publication Year") +
+  theme_classic(base_size = 11) +
+  theme(axis.line = element_line(size = .8),
+        legend.position = "none")
+
+```
+
+The relationship between overall book gender association and publication year suggests that more recent books have more female associations, but it does not address whether more recent books contain more or less gender stereotypes than older books. To answer this question, we fit a linear model predicting book content gender score with book character gender score and publication year. The model included additive terms for both predictors as well as their interation. The table below shows the model results. Critically, there was no interaction between character gender score and publication year, suggesting that the strength of the relationship between character and content gender scores reported in the Main Text is not related to publication year. 
+
+```{r}
+lm(no_char ~ char_only*earliest_publication, data = tidy_df) %>%
+  summary() %>%
+  tidy() %>%
+  mutate(term = c("(Intercept)", "Character Gender Score",
+                  "Publication Year", "Character Gender Score:Publication Year")) %>%
+  kable(digits = 3,
+        caption  = "Results of linear model predicting book content gender scores with character gender scores and book publication year.")
+```
+
+Finally, we examined the relationship between the gender of the main characters in each book and the book's publication year. The plot below shows the proportion of books with main characters in each gender category (male, female, mixed and indeterminate) as a function of publication year. The width of the bars corresponds to the number of books in our corpus published in the each decade. The data suggest a trend for more recent books to have fewer male main characters, and more main characters with indeterminate gender.
+
+```{r, fig.caption = "Plot showing the proportion of books with main character in gender category (male, female, mixed and indeterminate) as a function of publication year. The x-axis corresponds to publication decade, and the y-axis shows the proportion of main characters from books in each decaded for each of the gender categories. The width of the bars corresponds to the number of books in the corpus from that decade.", fig.width = 10}
+
+char_main_gender_counts_raw <- tidy_df %>%
+  mutate(year_bin = cut(earliest_publication, 
+                        breaks = seq(1900, 2020, 10),
+                        labels = seq(1900, 2020, 10)[-13])) 
+
+char_main_gender_counts <- char_main_gender_counts_raw %>%
+  group_by(year_bin, char_main_gender) %>%
+  summarize(n = n()) %>%
+  mutate(prop = n/sum(n)) %>%
+  filter(!is.na(char_main_gender)) 
+ 
+mosaic_plot_data <- char_main_gender_counts %>%
+  group_by(year_bin) %>%
+  mutate(total = sum(n),
+         perc = total/sum(.$n),
+         weight = perc * prop)  %>%
+  mutate(char_main_gender = as.factor(char_main_gender)) %>%
+  mutate(char_main_gender = fct_relevel(char_main_gender, "M", "F", "MIXED", "AND"))
+
+ggplot(mosaic_plot_data) +
+  geom_mosaic(aes(x = product(char_main_gender, year_bin), 
+                  fill = char_main_gender,
+                  weight = weight)) +
+  scale_y_productlist(labels = c("", "", "" ,"")) +
+  ylab("Proportion Characters by Gender") +
+  xlab("Publication Decade") +
+  ggtitle("Main Character Gender vs. Publication Year") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        axis.ticks.y = element_blank()) +
+  scale_fill_manual(name="Main Character Gender",
+                         labels=c("Male", "Female", "Mixed", "Indeterminate"),
+                      values = c("lightblue", "pink","palegreen", "lightgoldenrod1"))
+```
+
