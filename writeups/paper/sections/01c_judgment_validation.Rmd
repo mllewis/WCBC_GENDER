@@ -7,7 +7,7 @@ library(numform)
 library(lme4)
 ```
 
-One potential limitation of our method for estimating book bias in Study 1b is that the text in each book is treated as a "bag of words" --- a simple average of the gender bias of all the words occurring in a book. If book text contains frequent instances in which stereotype-relevant information is conveyed by relying on sentence syntax, our method may not accurately reflect gender steretypes. For example, a book that contains the sentence "Sally is brave" and "Sally is not brave" would result in similar gender bias estimates under the measure used in Study 1b. In Study 1c, we validate the book stereotype measure used in Study 1b by asking adult participants to characterize the stereotypes conveyed in books on the basis of the complete, raw book text.
+One potential limitation of our method in Study 1b for estimating book bias is that the text in each book is treated as a "bag of words" --- a simple average of the gender bias of all the words occurring in a book. If book text contains frequent instances in which stereotype-relevant information is conveyed by relying on sentence syntax, our method may not accurately reflect gender steretypes. For example, a book that contains the sentence "Sally is brave" and "Sally is not brave" would result in similar gender bias estimates under the measure used in Study 1b. In Study 1c, we validate the book stereotype measure used in Study 1b by asking adult participants to characterize the stereotypes conveyed in books on the basis of the complete, raw book text.
 
 ### Method
 
@@ -56,7 +56,7 @@ sd_n_response <- round(sd(n_judgments$n),2)
 cleaned_responses_with_norms_filtered <- cleaned_responses_with_norms %>%
   filter(correct_pos %in% c("action", "description"))  %>%
   mutate(nchar = nchar(raw_response)) %>%
-  filter(nchar < 35) # remove responses 35 chars or more (tend to be full sentences)
+  filter(nchar < 35) # remove responses 35 chars or more (tend to be full sentences) 
 
 percent_exclude <- round(((nrow(cleaned_responses_with_norms) - nrow(cleaned_responses_with_norms_filtered))/nrow(cleaned_responses_with_norms)) * 100, 0) 
 unique_types <- length(unique(cleaned_responses_with_norms_filtered$word_tidy_lemma))
@@ -99,23 +99,25 @@ validation_plot <- ggplot(by_group_means, aes(x = gender_group, y = mean)) +
   facet_wrap(~question_type) +
   xlab("Book gender bias") +
   theme_classic(base_size = 10) +
-  theme(
-          legend.position = "none",
-          axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1))
 
-activity_model <- lmer(human_gender_estimate_us ~  gender_group + (1|book_id) + (1|participant_id),
-     data = cleaned_responses_with_norms_filtered %>% filter(question_type == "activity")) %>%
-  tidy() %>%
-  mutate_if(is.numeric, round, 2) %>%
-  mutate(print_pretty = glue(" = {estimate}; *SE* = {std.error}; *t* = {statistic}"))
+cleaned_responses_with_norms_filtered_scaled <- cleaned_responses_with_norms_filtered %>%
+  mutate(human_gender_estimate_us_scaled = scale(human_gender_estimate_us))
 
-description_model <- lmer(human_gender_estimate_us ~  gender_group + (1|book_id) + (1|participant_id),
-     data = cleaned_responses_with_norms_filtered %>% filter(question_type == "description")) %>%
+activity_model <- lmer(human_gender_estimate_us_scaled ~  gender_group + (1|book_id) + (1|participant_id),
+       data = cleaned_responses_with_norms_filtered_scaled %>% filter(question_type == "activity")) %>%
     tidy() %>%
-  mutate_if(is.numeric, round, 2) %>%
-  mutate(print_pretty = glue(" = {estimate}; *SE* = {std.error}; *t* = {statistic}"))
+    mutate_if(is.numeric, round, 2) %>%
+    mutate(print_pretty = glue(" = {estimate}; *SE* = {std.error}; *t* = {statistic}"))
 
-# SI - plot, full model parameters
+description_model <- lmer(human_gender_estimate_us_scaled ~  gender_group + (1|book_id) + (1|participant_id),
+     data = cleaned_responses_with_norms_filtered_scaled %>% filter(question_type == "description")) %>%
+    tidy() %>%
+    mutate_if(is.numeric, round, 2) %>%
+    mutate(print_pretty = glue(" = {estimate}; *SE* = {std.error}; *t* = {statistic}"))
+
+# SI - additional norm information to methods section of SI
 ```
 
-The key question was whether the activities and descriptions of characters, derived by human participants reading the full book text, were gender-biased in a way that was predicted by the gender bias of the book as estimated in Study 1b. We fit a mixed-effect linear regression predicting word gender bias for character activity words with book gender bias as a fixed effect (male, female or neutral), and book and participant as random intercepts. Participants produced activities that were more female-biased for female-biased books, as compared to male-biased books ($\beta$ `r activity_model %>% filter(term == "gender_groupfemale-biased") %>% pull(print_pretty)`; see SI for full model results). The gender bias of activities for characters in neutral books did not differ from male-biased books ($\beta$ `r activity_model %>% filter(term == "gender_groupneutral") %>% pull(print_pretty)`). In a model predicting the gender bias of character descriptions, descriptions of charaters in both neutral ($\beta$ `r description_model %>% filter(term == "gender_groupneutral") %>% pull(print_pretty)`) and female-biased ($\beta$ `r description_model %>% filter(term == "gender_groupfemale-biased") %>% pull(print_pretty)`) books were rated as more strongly assocated with females, relative to male-biased books. These data suggest that the book gender bias measured described in Study 1b captures aspects of books gender bias, even after taking into account more nuanced information about the book's text.
+The key question was whether the activities and descriptions of characters, derived by human participants reading the full book text, were gender-biased in a way that was predicted by the gender bias of the book as estimated in Study 1b. We fit a mixed-effect linear regression predicting word gender bias for character activity words with book gender bias (male, female or neutral) as a fixed effect, and book and participant as random intercepts. Participants produced activities that were more female-biased for female-biased books, as compared to male-biased books ($\beta$ `r activity_model %>% filter(term == "gender_groupfemale-biased") %>% pull(print_pretty)`; see SI for full model results). The gender bias of activities for characters in neutral books did not differ from male-biased books ($\beta$ `r activity_model %>% filter(term == "gender_groupneutral") %>% pull(print_pretty)`). In a model predicting the gender bias of character descriptions, descriptions of characters in both neutral ($\beta$ `r description_model %>% filter(term == "gender_groupneutral") %>% pull(print_pretty)`) and female-biased ($\beta$ `r description_model %>% filter(term == "gender_groupfemale-biased") %>% pull(print_pretty)`) books were rated as more strongly associated with females, relative to male-biased books. These data suggest that the book gender bias measure described in Study 1b captures aspects of books gender bias, even after taking into account more nuanced information about a book's text.

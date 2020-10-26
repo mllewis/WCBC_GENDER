@@ -19,6 +19,9 @@ data_for_SI <-
     here("data/processed/words/gender_ratings_mean.csv"),
     here("data/processed/other/audience_mixed_effect_models.csv"),
     here("data/processed/words/all_word_measures_tidy.csv"),
+    here("data/processed/books/character_mixed_effect_models.csv"),
+    here("data/processed/books/character_mixed_effect_models.csv"),
+    here("data/processed/books/character_gender_means.csv"),
     here("data/processed/other/year_interaction_model.csv"), # year analyses
     here("data/processed/other/year_all_plot.jpeg"),
     here("data/processed/other/year_char_plot.jpeg")

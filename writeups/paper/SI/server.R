@@ -208,6 +208,27 @@ function(input, output, session) {
   output$bubbleplot <- renderPlotly(get_bubble_plot())
 
 
+
+  CHARACTER_MEANS_PATH <- "data/character_gender_means.csv"
+  by_group_means <- read_csv(CHARACTER_MEANS_PATH) %>%
+    mutate(gender_group = fct_relevel(gender_group, "male-biased", "neutral"))
+
+  output$character_plot <- renderPlot(ggplot(by_group_means, aes(x = gender_group, y = mean)) +
+    geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) +
+    #geom_bar(stat = "identity") +
+    ylab("Human judgment of word female bias") +
+    facet_wrap(~question_type) +
+    xlab("Book gender bias") +
+    theme_classic(base_size = 16) +
+    theme(legend.position = "none",
+          axis.text.x = element_text(angle = 45, hjust = 1)))
+
+
+  CHARACTER_MODEL_PATH <- "data/character_mixed_effect_models.csv"
+  character_model_data <- read_csv(CHARACTER_MODEL_PATH)
+  output$activity_table <- renderTable({filter(character_model_data, model_type == "activity") %>% select(-model_type)},  striped = TRUE, bordered = TRUE)
+  output$desc_table <- renderTable({filter(character_model_data, model_type == "description") %>% select(-model_type)},  striped = TRUE, bordered = TRUE)
+
   AUDIENCE_MODEL_PARAM_PATH <-  "data/audience_mixed_effect_models.csv"
   audience_data <- read_csv(AUDIENCE_MODEL_PARAM_PATH)
   output$ibdb_table <- renderTable({filter(audience_data, model_type == "ibdb") %>% select(-model_type)},  striped = TRUE, bordered = TRUE)

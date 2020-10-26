@@ -1,0 +1,7 @@
+term,Beta,SE,Z,model_type
+(Intercept),-0.18,0.06,-2.75,activity
+neutral,0.04,0.09,0.41,activity
+female-biased,0.28,0.09,3.08,activity
+(Intercept),-0.28,0.1,-2.83,description
+neutral,0.34,0.14,2.41,description
+female-biased,0.67,0.14,4.87,description

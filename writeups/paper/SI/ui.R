@@ -133,11 +133,33 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
            ),
 
               tabPanel("Supplemental Models",
-                       h2("Models Predicting Audience Gender"),
+                       h2("Study 1c: Models Predicting Word Gender Bias from Book Type"),
+
+                       HTML("In Study 1c, we predicted the gender bias of the activities and descriptions associated with book characters as a function of the
+                            book gender bias estimated in Study 1b. In Study 1b, we estimated book gender bias by taking the mean gender bias of all words occurring in a book; In Study 1c, we estimated
+                            book gender bias by asking participants to generate words for the activities associated with the book characters and descriptions of the book chararacters, and then quantified the bias of those words using
+                            previously-collected gender norms for words. The key question was whether the two measures were related to each other."),
+                       br(),
+                       br(),
+                       HTML("The plot below shows the mean and 95% CI of gender bias ratings for the activity (left) and description (right) words, as a function of book type (estimated in Study 1b)."),
+                       plotOutput("character_plot", width = "80%"),
+                       br(),
+                       HTML("The tables below show the model parameters for two mixed effect models predicting activity word gender biases (top) and description word gender biases (bottom).
+                            The exact model specification was: <i> lmer(word_gender_bias ~ book_type + (1|participant_id) + (1|book_id), data) </i>."),
+
+                       h4("Mixed effect model predicting gender bias of character activity word with book type:"),
+                       tableOutput('activity_table'),
+                       br(),
+                       h4("Mixed effect model predicting gender bias of character description word with book type:"),
+                       tableOutput('desc_table'),
+
+                       h2("Study 3: Models Predicting Audience Gender"),
 
                        HTML( "In the Main Text, we present analyses  predicting the gender of a book's audience based on counts of gendered kinship terms (e.g., 'daughter', 'son', etc.) in online book reviews.
                              The  Main Text reports analyses predicting the  proportion of female kinship terms (tokens) present relative to all target kinship word for each book. Here we
                              present mixed-effect logistic regression models predicting the raw counts of gendered kinship terms at the review level with a random intercept for each book.
+                             The exact model specification was: <i> glmer(cbind(n_female_token, n_male_token) ~
+                             child_gender(or other fixed effect) + (1|book_id), family = binomial(link ='logit'), data = data)</i>.
                              The results of the mixed effect logistic models
                              are qualitatively the same as the simpler, correlational analyses presented in the Main Text."),
                        br(),
@@ -154,7 +176,7 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
                        br(),
                        h4("Predicting audience gender in reviews with charcter and content gender scores"),
                        tableOutput('char_content_table')
-           ),
+           ) ,
          tabPanel("Gender Bias and Publication Year",
                   HTML("Are there historical trends in gender bias in books across the corpus? To answer this question, we coded the first year each book was published using <a href='https://www.worldcat.org/'>WorldCat</a>, and examined how publication year related to the measures of gender we
                        report in the Main Text. There was a small positive correlation between publicaiton year and the average gender score
