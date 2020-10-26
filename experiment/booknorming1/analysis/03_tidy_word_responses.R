@@ -27,6 +27,7 @@ tidy_responses_df_with_pos <- tidy_responses_df %>%
   mutate(word = tolower(raw_response),
          word = str_trim(word),
          word = str_replace_all(word, "[[:punct:]]", ""), # strip punctuation
+         word = str_trim(word),
          word = map_chr(word, ~strsplit(., " ")[[1]][1])) %>% # if contains multiple words, take first word
   left_join(pos_info) %>%
   mutate(present_subtlexus = !is.na(dom_po_s_subtlex))
