@@ -1,0 +1,67 @@
+
+---
+title: IAT components
+author: Molly Lewis 
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    code_folding: hide
+    number_sections: no
+    toc: yes
+---
+  
+******
+
+```{r setup, include = F}
+
+# load packages
+library(knitr)
+library(rmarkdown)
+library(here)
+library(tidyverse)
+library(broom)
+library(langcog)
+
+opts_chunk$set(echo = T, message = F, warning = F, 
+               error = F, tidy = F, cache = F)
+```
+
+```{r, fig.height = 6}
+IAT_COMPONENTS <- here("data/processed/iat/other/iat_es_by_model.csv")
+
+iat_components <- read_csv(IAT_COMPONENTS) %>%
+    filter(corpus %in% c("kidbook_sampled", "coca_sampled", "wiki")) %>%
+    mutate(bias_type = str_remove(bias_type, "gender-bias-"),
+         bias_type = fct_recode(bias_type, "bad-good" = "good-bad",
+                                "career-family" = "career-family2"),
+        bias_type = fct_relevel(bias_type, "bad-good", 
+                                 "math-language", "math-arts"),
+         group = fct_recode(corpus, "coca" = "coca_sampled", "kidbook" = "kidbook_sampled"),
+         group = fct_relevel(group, "kidbook"),
+         es_type = "language",
+          group = fct_relevel(group,"wiki","coca" , "kidbook"),
+         bias_type = fct_relevel(bias_type,"bad-good", "career-family","math-language" , "math-arts"),
+         bias_type = fct_recode(bias_type,
+                                "female-good\n(vs. bad)" = "bad-good",
+                                "female-family\n(vs. career)" = "career-family",
+                                "female-language\n(vs. math)" = "math-language",
+                                "female-art\n(vs. math)" = "math-arts")) 
+  
+
+swab_means <- iat_components %>%
+  select(bias_type, group, male_swab, female_swab) %>%
+  pivot_longer(cols = male_swab:female_swab) %>%
+  group_by(bias_type, group, name) %>%
+  multi_boot_standard(col = "value") %>%
+  mutate(name = fct_recode(name, "female" = "female_swab", "male" = "male_swab"))
+
+
+ggplot(swab_means, aes(x = name, y = mean)) +
+  geom_bar(stat = "identity" ) +
+  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper), position = position_dodge(width = .9)) +
+  geom_hline(aes(yintercept = 0), color = "red", linetype = 2) +
+  ylab("Mean cosine distance") +
+  xlab("Category type") +
+  facet_grid(group~ bias_type) +
+  theme_bw()
+```

@@ -104,5 +104,3 @@ all_es <- list(kidbook_full_es,
 
 # write to csv
 write_csv(all_es, ES_OUTFILE)
-
-

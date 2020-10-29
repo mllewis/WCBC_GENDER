@@ -59,11 +59,20 @@ get_sYXab <- function(df){
 # wrapper for ES function
 get_ES <- function(df, model) {
   print(pluck(df, "test_name"))
-  es <- prep_word_list(df[-1:-2]) %>%
-    get_swabs(., model) %>%
-    get_sYXab()
+  swabs <- prep_word_list(df[-1:-2]) %>%
+    get_swabs(., model)
+
+  swab_means <- swabs %>%
+    group_by(category_type) %>%
+    summarize(mean_swab = mean(swab, na.rm = T)) %>%
+    spread(category_type, mean_swab)  %>%
+    rename(male_swab = category_1,
+           female_swab = category_2)
+
+  es <- get_sYXab(swabs)
 
   data.frame(test = pluck(df, "test_name"),
              bias_type = pluck(df, "bias_type"),
-             effect_size = es)
+             effect_size = es) %>%
+    bind_cols(swab_means)
 }

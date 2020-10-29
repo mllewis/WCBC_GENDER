@@ -139,7 +139,7 @@ charactercontentplot <- corr_df %>%
   ggplot(aes(x = char_only, y = no_char)) +
     xlab("Character Gender Score") +
     ylab("Content Gender Score") +
-      geom_smooth(method = "lm") +
+    geom_smooth(method = "lm") +
   
     geom_point( aes( alpha = point_class)) +
     geom_text_repel(aes(label = title), size = 2.5, 

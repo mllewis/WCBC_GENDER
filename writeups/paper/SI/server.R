@@ -236,6 +236,21 @@ function(input, output, session) {
   output$content_table <- renderTable({filter(audience_data, model_type == "content") %>% select(-model_type)},  striped = TRUE, bordered = TRUE)
   output$char_content_table <- renderTable({filter(audience_data, model_type == "char_content") %>% select(-model_type)},  striped = TRUE, bordered = TRUE)
 
+  ## character/content audience plots
+  AUDIENCE_PLOT_DATA <-  "data/audience_plot_data.csv"
+  audience_plot_data <- read_csv(AUDIENCE_PLOT_DATA) %>%
+    select(char_only, no_char, addressee_gender_score_token) %>%
+    pivot_longer(1:2) %>%
+    mutate(name = fct_recode(name, "Character gender score" = "char_only", "Content gender score" = "no_char"))
+
+  output$audience_score_plot <- renderPlot(ggplot(audience_plot_data, aes(x = value, y = addressee_gender_score_token)) +
+    geom_point() +
+    geom_smooth(method = "lm") +
+    facet_wrap(~name, scale = "free_x") +
+    ylab("Prop. female audience") +
+    xlab("Gender score (feminine association)") +
+    theme_classic(base_size = 16))
+
   YEAR_SCATTER_PLOT_PATH <- "data/year_all_plot.jpeg"
   output$year_all <- renderImage({
     filename <- normalizePath(YEAR_SCATTER_PLOT_PATH)
@@ -253,6 +268,5 @@ function(input, output, session) {
     list(src = filename)
 
   }, deleteFile = FALSE)
-
 
 }

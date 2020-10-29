@@ -7,7 +7,8 @@ library(here)
 ## Method
 ```{r}
 CORPUS_PATH <- here('data/processed/books/tidy_full_corpus_all.csv')
-tidy_corpus <- read_csv(CORPUS_PATH)
+tidy_corpus <- read_csv(CORPUS_PATH) %>%
+  filter(!(book_id %in% c("L105", "L112"))) # "Journey" and "Anno's Journey" are pictures books
 
 book_level_descriptives_tokens <- tidy_corpus %>%
   count(book_id)  %>%

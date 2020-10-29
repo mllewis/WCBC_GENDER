@@ -1,4 +1,4 @@
-# get tidy coca corpus of fiction books (years: 2008 - 2017)
+# get tidy coca corpus of fiction books (years: 1990 - 2017)
 library(tidyverse)
 library(tidytext)
 library(here)

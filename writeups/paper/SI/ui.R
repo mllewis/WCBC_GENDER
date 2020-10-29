@@ -11,7 +11,7 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
                     HTML( "Mean gender rating for words in gender rating task. Values range from 1 (male associated) to 5 (female associated). See 'Method Details' tab for additional information. <a href='https://github.com/mllewis/WCBC_GENDER/blob/master/data/processed/words/gender_ratings.csv'>Raw data</a> and <a href='https://github.com/mllewis/WCBC_GENDER/blob/master/data/processed/words/gender_ratings_mean.csv'> aggregated data</a>  available in the Github repository."),
                     br(),
                     br(),
-                    dataTableOutput("wordratingtable"),
+                    dataTableOutput("wordratingtable")
            ),
          tabPanel("Word Gender and Other Word Measures",
 
@@ -108,14 +108,16 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
                           The vector size was 300, the window size was 20, and the minimum word count was 5. We trained 10 separate models where we randomized
                           the order of the books across corpora. Similarly, for the adult fiction corpus (CoCA; Davies, 2008), we trained 10 models  on 10 corpora constructed by sampling fiction text from the CoCA corpus dating  from 1990 to 2017. Each training corpus
                           included a sample from a book in CoCA matched for length to one from the Children's Book Corpus. The starting point for the text from the adult fiction book was randomly determined.
-                          The word level bias estimates reported in the paper reflect the mean estimate across each of the 10 model runs for both corpus types." ),
+                          The word level bias estimates reported in the paper reflect the mean estimate across each of the 10 model runs for both corpus types. The Wikipedia model was trained on a full dump of English Wikpeidia (Bojanowski, et al., 2017)"),
 
                     br(),
                     br(),
                     h2("Language IAT Measure"),
                     withMathJax(includeMarkdown('iat_method.Rmd')),
-
                     h2("References"),
+                    HTML("Bojanowski, P., Grave, E., Joulin, A., & Mikolov, T. (2017). Enriching word vectors with subword information. Transactions of the Association for Computational Linguistics, 5, 135-146."),
+                    br(),
+                    br(),
                     HTML("Caliskan, A., Bryson, J. J., & Narayanan, A. (2017). Semantics derived automatically from language corpora contain human-like biases. Science, 356(6334), 183-186."),
                     br(),
                     br(),
@@ -169,12 +171,16 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
                        tableOutput('ibdb_table'),
                        br(),
                        h4("Predicting audience gender in reviews with character gender score"),
+                       HTML("The plot below shows the relationship between character (left) and content (right) gender scores and proportion female audience)."),
+                       plotOutput("audience_score_plot", width = "80%"),
+                       br(),
+                       br(),
                        tableOutput('char_table'),
                        br(),
                        h4("Predicting audience gender in reviews with content gender score"),
                        tableOutput('content_table'),
                        br(),
-                       h4("Predicting audience gender in reviews with charcter and content gender scores"),
+                       h4("Predicting audience gender in reviews with character and content gender scores"),
                        tableOutput('char_content_table')
            ) ,
          tabPanel("Gender Bias and Publication Year",
@@ -211,8 +217,9 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
                   br(),
                   imageOutput("year_char",  height = "100px", width = "100px", inline = TRUE),
                   br(),
-                  br(),
+                  br()
          )
-)
+  )
+
 
 

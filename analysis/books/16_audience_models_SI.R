@@ -1,4 +1,4 @@
-# predict reviews with other measures using glmer
+# predict reviews with other measures using glmer; make plots for SI
 library(tidyverse)
 library(lme4)
 library(here)
@@ -8,7 +8,7 @@ REVIEWS_DATA_PATH <- here("data/processed/other/amazon_gender_scores.csv")
 IBDB_TIDY_PATH <- here("data/processed/other/ibdb_tidy.csv")
 BOOK_MEANS_PATH <- here("data/processed/books/gender_token_type_by_book.csv")
 MODEL_OUTFILE <- here("data/processed/other/audience_mixed_effect_models.csv")
-
+PLOT_DATA_OUTFILE <- here("data/processed/other/audience_plot_data.csv")
 
 # our measures of book gender
 book_means <- read_csv(BOOK_MEANS_PATH)
@@ -19,7 +19,6 @@ book_content_measures <- book_means %>%
 
 
 ibdb_data <- read_csv(IBDB_TIDY_PATH)
-
 
 review_data <- read_csv(REVIEWS_DATA_PATH)  %>%
   left_join(book_content_measures) %>%
@@ -83,3 +82,13 @@ model_params_tidy <- model_params %>%
 
 write_csv(model_params_tidy, MODEL_OUTFILE)
 
+# plot data
+by_book_review_data <- review_data %>%
+  group_by(book_id, n_reviews_total, n_reviews_gendered,
+           prop_review_gendered, char_only, no_char, child_gender)  %>%
+  summarize(addressee_gender_score_token =
+              sum(n_female_token)/(sum(n_female_token) +
+                                     sum(n_male_token)))
+
+
+write_csv(by_book_review_data, PLOT_DATA_OUTFILE)

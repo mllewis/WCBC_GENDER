@@ -41,9 +41,37 @@ normed_books_bias <- cleaned_responses_with_norms %>%
   mutate_if(is.numeric, round,2) %>%
   mutate(print_summary = glue("*M* =  {mean}; *SD* = {sd}"))
 ```
-We divided the books in our corpus into quintiles based on the gender score described in Study 1b, and selected 15 female (`r normed_books_bias %>% filter(gender_group == "female-biased") %>% pull(print_summary)`), 15 male  (`r normed_books_bias %>% filter(gender_group == "male-biased") %>% pull(print_summary)`), and 15 neutral books to norm further (`r normed_books_bias %>% filter(gender_group == "neutral") %>% pull(print_summary)`; first, third and fifth quintiles). We excluded books that were either very short or very long (less than 100 words, or more than 900 words), or did not have a named, gendered main character. 
 
-Participants were presented with the full text of an individual book, and told that they would be asked questions about the characters in the story. After reading the text, participants were asked to list 2-5 main activities of a character in the story in a free response form. The character was named in the instructions (e.g., "List 2-5 main activities THOMAS does in the story."). The book text was displayed on the same page that responses were elicited, such that participants did not have to rely on their memory to answer the question. Next, participants were asked to complete a similiar procedure but instead provide descriptions of a character, rather than associated activities. This procedure was repeated for all main and secondary characters in a book.  Each participant provided responses for both character activities and character descriptions for a sample of three books.
+```{r, evaluate = F, include = F}
+# get examples
+ cleaned_responses_with_norms %>% 
+  filter(gender_group == "male-biased", question_type == "description") %>% 
+  group_by(word_tidy_lemma) %>%
+  summarize(n = n(),
+            human_gender_estimate_us = mean(human_gender_estimate_us)) %>%
+  arrange(-n) %>%
+  slice(1:15) %>% 
+  arrange(-human_gender_estimate_us) %>%
+  data.frame()
+
+# examples in exp: "pretty", "loud", or "clever."
+# get examples
+ cleaned_responses_with_norms %>% 
+  filter(gender_group == "female-biased", question_type == "activity") %>% 
+  group_by(word_tidy_lemma) %>%
+  summarize(n = n(),
+            human_gender_estimate_us = mean(human_gender_estimate_us)) %>%
+  arrange(-n) %>%
+  slice(1:15) %>% 
+  arrange(-human_gender_estimate_us) %>%
+  data.frame()
+
+
+# examples in exp:  "run", "play", or "eat."
+```
+We divided the books in our corpus into quintiles based on the gender score described in Study 1b, and selected 15 books each from the first (female-biased: `r normed_books_bias %>% filter(gender_group == "female-biased") %>% pull(print_summary)`), third  (neutral:`r normed_books_bias %>% filter(gender_group == "neutral") %>% pull(print_summary)`), and fifth quintiles (`r normed_books_bias %>% filter(gender_group == "male-biased") %>% pull(print_summary)`) to further norm. We excluded books that were either very short or very long (less than 100 words, or more than 900 words), or did not have a named, gendered main character. 
+
+Participants were presented with the full text of an individual book, and told that they would be asked questions about the characters in the story. After reading the text, participants were asked to list 2-5 main activities of a character in the story in a free response form. The character was named in the instructions (e.g., "List 2-5 main activities THOMAS does in the story."). The book text was displayed on the same page that responses were elicited, such that participants did not have to rely on their memory to answer the question. Next, participants were asked to complete a similar procedure but instead provide descriptions of a character, rather than associated activities. This procedure was repeated for all main and secondary characters in a book.  Each participant provided responses for both character activities and character descriptions for a sample of three books.
 
 ```{r}
 n_judgments <- cleaned_responses_with_norms %>%
@@ -78,7 +106,7 @@ num_ratings_absent <- num_ratings %>%
 percent_with_norms <- round((num_ratings_present/(num_ratings_present + num_ratings_absent)) * 100, 2)
 ```
 
-On average, participants generated `r mean_n_response` responses per question (*SD* = `r sd_n_response`). Participants' responses were lemmatized, corrected for spelling, and, in cases where a multi-word phrase (e.g., "builds a castle") was listed, the first word was selected for analysis. We identified the part of speech for each word and excluded words of the wrong class, analyzing only words that could be a verb for the activity question and an adjective, adverb, or noun for the description question. We also excluded responses that were very long (more than 35 characters), as these were likely to be full sentences rather than activity or description words. In total, `r percent_exclude`% of responses were excluded, leading to a final sample of `r prettyNum(nrow(cleaned_responses_with_norms_filtered), big.mark = ",")` responses and `r unique_types` unique lemmas. We then  analyzed the gender bias of the activity and description words using previously-collected human judgments of word gender bias. Combining word judgments from Study 1a and an additional set of norms (see SI), we obtained word gender judgments for all words that were produced more than once across the dataset (`r percent_with_norms`% of all words).  
+On average, participants generated `r mean_n_response` responses per question (*SD* = `r sd_n_response`). Participants' responses were lemmatized, corrected for spelling, and, in cases where a multi-word phrase (e.g., "builds a castle") was listed, the first word was selected for analysis. We identified the part of speech for the target word and excluded responses of the wrong class, analyzing only words that could be a verb for the activity question and an adjective, adverb, or noun for the description question. We also excluded responses that were very long (more than 35 characters), as these were likely to be full sentences rather than activity or description words. In total, `r percent_exclude`% of responses were excluded, leading to a final sample of `r prettyNum(nrow(cleaned_responses_with_norms_filtered), big.mark = ",")` responses and `r unique_types` unique lemmas. We then  analyzed the gender bias of the activity and description words using previously-collected human judgments of word gender bias. Combining word judgments from Study 1a and an additional set of norms (see SI), we obtained word gender judgments for all words that were produced more than once across the dataset (`r percent_with_norms`% of all words).  
 
 ### Results
 ```{r}
