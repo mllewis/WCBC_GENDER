@@ -1,13 +1,3 @@
-```{r}
-library(tidyverse)
-library(here)
-library(janitor)
-options(knitr.table.format = "latex")
-```
-
-
-
-
 
 # Study 2: Measuring gender bias through co-occurrence statistics 
 So far we have presented findings about gendered information in children's books based on adult gender norms and semantic representations derived from adult text. The results are relevant to the beliefs of adults who read books with children, which they may convey in conversation during shared reading. However, we also want to understand what a child may learn about gender from the statistics in children’s books alone, independent of other information sources. 

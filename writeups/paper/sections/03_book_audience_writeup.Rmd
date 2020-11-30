@@ -1,5 +1,4 @@
 
-
 # Study 3: Book Gender and Child Gender
 
 The results so far suggest that the text of popular children’s books contains rich information about gender. In this final study, we sought to begin to understand the processes through which this information might influence children’s socialization into gender stereotypes by examining who is being exposed to these books.  We created a novel measure based on the content of book reviews on a large online bookstore and validated this measure using existing survey data directly measuring the audience of a book. These data indicate that children’s books more frequently read to girls tend to have both more female content and more female characters, and children’s books more frequently read to boys tend to have both more male content and more male characters. 

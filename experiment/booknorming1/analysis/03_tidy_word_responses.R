@@ -62,11 +62,14 @@ cleaned_responses_lemma <- cleaned_responses %>%
 # merge in human judgment info
 gender_bias_estimates_run123 <- read_csv(GENDER_BIAS_DF) %>%
   select(word, gender) %>%
-  rename(human_gender_estimate_us = gender)
+  rename(human_gender_estimate_us = gender) %>%
+  mutate(source = "first_sample")
 
 gender_bias_estimates_desc_act <- read_csv(GENDER_BIAS_DESC_ACT) %>%
   select(word, mean) %>%
-  rename(human_gender_estimate_us = mean)
+  rename(human_gender_estimate_us = mean) %>%
+  mutate(source = "second_sample")
+
 
 gender_bias_estimates <- bind_rows(gender_bias_estimates_run123,
                                    gender_bias_estimates_desc_act)

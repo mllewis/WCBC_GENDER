@@ -1,9 +1,4 @@
-```{r}
-library(tidyverse)
-library(here)
-library(janitor)
-options(knitr.table.format = "latex")
-```
+
 
 # Study 1: Measuring gender bias with human judgments
 

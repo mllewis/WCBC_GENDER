@@ -1,7 +1,3 @@
-```{r}
-library(tidyverse)
-library(here)
-```
 
 # Children's Book Corpus
 ## Method

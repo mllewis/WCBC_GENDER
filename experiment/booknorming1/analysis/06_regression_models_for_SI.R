@@ -5,8 +5,14 @@ library(here)
 
 
 CLEANED_RESPONSES_DF <- here("data/processed/character_norming/exp1/exp1_response_data.csv")
+BOOK_MEANS_PATH <- here("data/processed/books/gender_token_type_by_book.csv")
+
 MODEL_OUTFILE <- here("data/processed/books/character_mixed_effect_models.csv")
 MEANS_OUTFILE <- here("data/processed/books/character_gender_means.csv")
+
+gender_rating_by_book_mean_only <- read_csv(BOOK_MEANS_PATH) %>%
+  filter(corpus_type == "all") %>%
+  select(book_id, token_gender_mean)
 
 
 cleaned_responses_with_norms <- read_csv(CLEANED_RESPONSES_DF) %>%
@@ -18,24 +24,24 @@ cleaned_responses_with_norms_filtered <- cleaned_responses_with_norms %>%
   filter(nchar < 35) # remove responses 35 chars or more (tend to be full sentences)
 
 cleaned_responses_with_norms_filtered_scaled <- cleaned_responses_with_norms_filtered %>%
-  mutate(human_gender_estimate_us_scaled = scale(human_gender_estimate_us))
+  mutate(human_gender_estimate_us_scaled = scale(human_gender_estimate_us)) %>%
+  left_join(gender_rating_by_book_mean_only)
 
-activity_model <- lmer(human_gender_estimate_us_scaled ~  gender_group + (1|book_id) + (1|participant_id),
+activity_model <- lmer(human_gender_estimate_us_scaled ~  token_gender_mean + (1|book_id) + (1|participant_id),
                        data = cleaned_responses_with_norms_filtered_scaled %>% filter(question_type == "activity"))
 
-description_model <- lmer(human_gender_estimate_us_scaled ~  gender_group + (1|book_id) + (1|participant_id),
-     data = cleaned_responses_with_norms_filtered_scaled %>% filter(question_type == "description"))
+description_model <- lmer(human_gender_estimate_us_scaled ~  token_gender_mean + (1|book_id) + (1|participant_id),
+                          data = cleaned_responses_with_norms_filtered_scaled %>% filter(question_type == "description"))
 
 make_model_pretty <- function(md, type) {
 
   pretty_model <- md %>%
     tidy() %>%
-    filter(group == "fixed") %>%
+  #  filter(effect == "fixed") %>%
     rename(Beta = estimate, SE = std.error, Z = statistic) %>%
     mutate_if(is.numeric, ~ round(.,2))  %>%
     select(-group) %>%
-    mutate(term = case_when(term == "gender_groupneutral" ~ "neutral",
-                            term == "gender_groupfemale-biased" ~ "female-biased",
+    mutate(term = case_when(term == "token_gender_mean" ~ "average_book_gender",
                             TRUE ~ term)) %>%
     mutate(model_type = type)
 
@@ -45,7 +51,8 @@ make_model_pretty <- function(md, type) {
 
 model_params <- map2_df(list(activity_model, description_model),
         list("activity", "description"),
-        make_model_pretty)
+        make_model_pretty) %>%
+  select(-effect)
 
 write_csv(model_params, MODEL_OUTFILE)
 

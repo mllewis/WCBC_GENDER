@@ -147,7 +147,7 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
                        plotOutput("character_plot", width = "80%"),
                        br(),
                        HTML("The tables below show the model parameters for two mixed effect models predicting activity word gender biases (top) and description word gender biases (bottom).
-                            The exact model specification was: <i> lmer(word_gender_bias ~ book_type + (1|participant_id) + (1|book_id), data) </i>."),
+                            The exact model specification was: <i> lmer(word_gender_bias ~ average_book_gender + (1|participant_id) + (1|book_id), data) </i>."),
 
                        h4("Mixed effect model predicting gender bias of character activity word with book type:"),
                        tableOutput('activity_table'),
