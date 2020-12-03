@@ -1,0 +1,135 @@
+---
+title: Embedding word biases
+subtitle: gender analysis
+author: Molly Lewis 
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    code_folding: hide
+    number_sections: no
+    toc: yes
+---
+  
+******
+
+```{r setup, include = F}
+# load packages
+library(knitr)
+library(rmarkdown)
+library(tidyverse)
+library(broom)
+library(langcog)
+library(modelr)
+library(here)
+
+opts_chunk$set(echo = T, message = F, warning = F, 
+               error = F, tidy = F, cache = F)
+theme_set(theme_classic())
+
+```
+
+```{r}
+## Emebedding scores
+SCORE_PATH <- here("data/processed/other/iat/by_word_gender_scores.csv")
+GENDER_NORMS <- here("data/processed/words/gender_ratings_mean.csv")
+GENDERED_WORDS_PATH <-  here("data/processed/words/gendered_person_words.csv")
+
+gendered_person_words <- read_csv(GENDERED_WORDS_PATH) %>% # general gendered  words
+  pull(gendered_person_word)
+
+
+model_biases <- read_csv(SCORE_PATH, col_names = c("model", "word", "female_target", "male_target", "female_score")) %>%
+  mutate(model2 = str_split(model, "_5_count_"),
+         corpus = map_chr(model2, ~pluck(.x, 1)),
+       # model_id = map_chr(model2, ~pluck(.x, 2)),
+         corpus = case_when(model == "wiki" ~ "wiki", TRUE ~ corpus),
+         word = tolower(word)) %>%
+  select(-model2, -model) 
+
+# take average across model runs
+model_scores <- model_biases %>%
+  group_by(corpus, word) %>%
+  summarize(female_score = mean(female_score)) 
+
+gender_words <- read_csv(GENDER_NORMS)
+gender_norms <- gender_words %>%
+  mutate(word = map_chr(word, ~unlist(str_split(.x, " "))[[1]]),
+         word = tolower(word),
+         word = str_remove_all(word, '[:punct:]')) %>%
+  distinct(word, .keep_all = T) %>%
+  group_by(word) %>%
+  summarize(human_gender_rating  = mean(mean, na.rm = T))
+
+# Merge language and human data
+all_scores <- gender_norms %>%
+  inner_join(model_scores)
+
+# get pairwise correlation
+common_words <- count(all_scores, word) %>%
+  filter(n == 3) %>%
+  pull(word)
+
+human_lang_corrs <- all_scores %>%
+  filter(word %in% common_words) %>% 
+  spread(corpus, female_score) %>%
+  pivot_longer(human_gender_rating:wiki)
+```
+
+
+```{r}
+human_lang_corrs %>%
+  group_by(name) %>%
+  mutate(value_scale = scale(value)) %>%
+  ggplot(aes(x= value_scale)) +
+  facet_wrap(~name, scale = "free_x") +
+  geom_histogram()
+
+human_lang_corrs %>%
+  group_by(name) %>%
+  mutate(value_scale = scale(value, scale = F)) %>%
+  ggplot(aes(value_scale, colour = name)) + stat_ecdf(geom = "step")
+
+```
+
+
+```{r}
+m = human_lang_corrs %>%
+  group_by(name) %>%
+  mutate(value_scale = scale(value, scale = F)) %>%
+  filter(name %in% c("human_gender_rating", "kidbook")) %>%
+  select(-value) %>%
+  pivot_wider(values_from = "value_scale") %>%
+  mutate(dif = human_gender_rating - kidbook)
+
+ks.test(m$human_gender_rating,m$kidbook)
+```
+
+```{r}
+data_for_regression <- all_scores %>%
+  filter(corpus == "kidbook") %>%
+  select(-corpus) %>%
+  rename(kidbook = female_score)
+
+mod <- lm(human_gender_rating ~ kidbook, data_for_regression) 
+
+data_with_residuals <- data_for_regression %>%
+  add_residuals(model = mod) %>%
+  filter(abs(resid) > 1) %>%
+  arrange(resid)
+
+
+ggplot(data_for_regression) +
+  geom_text(data = data_with_residuals, 
+             aes(y = human_gender_rating, x = kidbook,
+                 label = word), size = 1.2) +
+  geom_smooth(method = "lm", aes(y = human_gender_rating, x = kidbook))
+```
+
+Excluding "gendered" words, effect is smaller:
+```{r}
+non_gendered_words <- data_for_regression %>%
+  filter(!(word %in% gendered_person_words))
+cor.test(non_gendered_words$human_gender_rating, non_gendered_words$kidbook)
+
+cor.test(data_for_regression$human_gender_rating, data_for_regression$kidbook)
+```

@@ -56,6 +56,12 @@ all_book_means <- book_means %>%
         title = str_to_title(title))%>%
   filter(!is.na(gender_group))
 
+#book_means %>%
+#  ggplot(aes(x = token_gender_mean)) +
+#  facet_wrap(~corpus_type) +
+#  geom_histogram()
+
+
 ```
 
 
