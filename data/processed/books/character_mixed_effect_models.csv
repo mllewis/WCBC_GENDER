@@ -1,0 +1,11 @@
+term,Beta,SE,Z,model_type
+(Intercept),-1.33,0.46,-2.89,activity
+average_book_gender,0.43,0.16,2.74,activity
+sd__(Intercept),0.03,NA,NA,activity
+sd__(Intercept),0.23,NA,NA,activity
+sd__Observation,0.76,NA,NA,activity
+(Intercept),-3.33,0.67,-5.01,description
+average_book_gender,1.15,0.23,5.12,description
+sd__(Intercept),0.16,NA,NA,description
+sd__(Intercept),0.32,NA,NA,description
+sd__Observation,1.09,NA,NA,description
