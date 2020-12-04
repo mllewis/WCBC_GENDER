@@ -1,7 +1,7 @@
 
 # Study 3: Book Gender and Child Gender
 
-The results so far suggest that the text of popular children’s books contains rich information about gender. In this final study, we sought to begin to understand the processes through which this information might influence children’s socialization into gender stereotypes by examining who is being exposed to these books.  We created a novel measure based on the content of book reviews on a large online bookstore and validated this measure using existing survey data directly measuring the audience of a book. These data indicate that children’s books more frequently read to girls tend to have both more female content and more female characters, and children’s books more frequently read to boys tend to have both more male content and more male characters. 
+The results so far suggest that the text of popular children’s books contains rich information about gender. In this final study, we sought to better understand the processes through which this information might influence children’s socialization into gender stereotypes by examining who is being exposed to these books.  We created a novel measure based on the content of book reviews on a large online bookstore and validated this measure using existing survey data directly measuring the audience of a book. These data indicate that children’s books more frequently read to girls tend to have both more female content and more female characters, and children’s books more frequently read to boys tend to have both more male content and more male characters. 
 
 
 ### Method
@@ -47,6 +47,11 @@ char_addressee_corr <- get_tidy_corr_text(by_book_review_data,
                                       "char_only",
                                       "addressee_gender_score_token")
 
+
+char_addressee_corr_r <- cor(by_book_review_data$char_only, 
+                             by_book_review_data$addressee_gender_score_token, use = "complete.obs") %>%
+  round(2)
+  
 
 content_addressee_corr <- get_tidy_corr_text(by_book_review_data,
                                       "no_char",
@@ -106,13 +111,50 @@ other_t_text <- get_tidy_one_sample_t_test_text(x_value =
 
 ### Results
 
-We compared our audience gender score for each book to the measures of book genderedness described above. Both the content gender scores  (`r content_addressee_corr`) and book character gender scores (`r char_addressee_corr`) were correlated with audience gender scores: Books that contained more female-biased content words and more female characters tended to be read more often to girls. In an additive linear model predicting audience gender with both types of gender scores, both content  ($\beta$ `r model_estimates %>% filter(term == "no_char") %>% pull(string)`) and character gender scores ($\beta$ `r model_estimates %>% filter(term == "char_only") %>% pull(string)`) predicted independent, and roughly equal, variance. Together, they accounted for `r r_squared`%  of the total variance in audience gender. 
+```{r}
+AUDIENCE_LABELED_BOOKS <- c( "M81", "M25","M44", "L142", "L239",
+                  "L213", "M68", "M39", "M548", "L136", "L220",   "M49", "L111",  "L160", "L169")
 
-Consistent with this general pattern, books with female primary characters also tended to be more often read to girls, compared to the overall average (`r fem_t_text`; \autoref{fig:characterplots}b). Books with male (`r male_t_text`) or gender indeterminate primary characters  (`r and_t_text`) tended to be more often read to boys. Notably, the effect size for girls was more than twice that of boys, suggesting that there was a stronger bias to read books with female characters to girls, relative to books with male characters to boys. There was no bias in audience gender for books with multiple primary characters of different genders (`r mixed_t_text`)  or books without primary characters (`r other_t_text`).
+audience_book_labels <- book_means %>% 
+  distinct(book_id, title) %>% 
+  filter(book_id %in% AUDIENCE_LABELED_BOOKS) %>%
+  mutate(title = case_when(title == "GOODNIGHT, GOODNIGHT, CONSTRUCTION SITE" ~ 
+                         "GOODNIGHT, GOODNIGHT,\nCONSTRUCTION SITE", TRUE~ title),
+        title = case_when(title == "TRIANGLE (SHAPE TRILOGY)" ~ 
+                         "TRIANGLE ", TRUE~ title),
+        title = case_when(title == "CURIOUS GEORGE TAKES A JOB" ~ 
+                         "CURIOUS GEORGE\nTAKES A JOB", TRUE~ title),
+        title = case_when(title == "KATY AND THE BIG SNOW" ~ 
+                         "KATY AND THE\nBIG SNOW", TRUE~ title),
+        title = str_to_title(title))
+
+characteraudienceplot <- by_book_review_data %>%
+  left_join(audience_book_labels) %>%
+  filter(!is.na(char_only)) %>%
+  mutate(point_class = case_when(!is.na(title) ~ "l", TRUE ~ "h")) %>%
+  ggplot(aes(x = char_only, y = addressee_gender_score_token)) +
+    xlab("Character Gender Score") +
+    ylab("Prop. Female Audience") +
+    geom_smooth(method = "lm") +
+    geom_point( aes( alpha = point_class)) +
+    geom_text_repel(aes(label = title), size = 2.5, 
+                 min.segment.length = 0) +
+    scale_alpha_manual(values = c(.15, .9)) +
+    ggtitle("Prop. Female Audience vs.\nCharacter Gender Scores") +
+    scale_x_continuous(breaks = c(1,2,3,4,5), 
+                     label = c("1\n(male-\nbiased)",  "2" ,"3", "4", "5\n(female-\nbiased)")) +
+    annotate("text", x = 4, y = .1, label = paste0("italic(r) ==  ", 
+                                                     f_num(char_addressee_corr_r)),
+           color = "red", size = 4, parse = T) +
+    theme_classic(base_size = 10) +
+    theme(#axis.line = element_line(size = .8),
+          legend.position = "none",
+          axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
 
 
-```{r characterplots,  fig.height = 3.8, fig.width = 3.8, fig.cap="Distribution across books of audience gender as a function of primary character gender. Colored points show individuals books. Dashed line shows grand mean of proportion female audience. Black points and ranges show mean and bootstrapped 95\\% percent confidence intervals for books of each primary character gender type.", cache = F}
-
+```{r characterplots,  out.width = "\\textwidth", fig.cap = "(a) Estimated audience gender for each book as a function of mean character gender score. Error bar shows the standard error of the linear model fit. (b) Distribution across books of audience gender as a function of primary character gender. Colored points show individuals books. Dashed line shows grand mean of proportion female audience. Black points and error bars show mean and bootstrapped 95\\% percent confidence intervals for books of each primary character gender type.", cache = F}
 
 addressee_char_data_primary_data <- character_bar_data %>%
   select(book_id, char_main_gender2) %>%
@@ -143,12 +185,16 @@ violin_plot2 <- ggplot(addressee_char_data_primary_data,
                       "lightgrey")),guide = F)+
   ggtitle("Prop. Female Audience vs.\nPrimary Character Gender") +
   xlab("Primary Character Gender") +
-  ylab("Prop. female audience") +
+  ylab("Prop. Female Audience") +
   theme_classic(base_size = 10) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-violin_plot2
+cowplot::plot_grid(characteraudienceplot, violin_plot2, ncol = 2,
+                             labels = c('a','b'), label_size = 14, rel_widths = c(1.6,1))
 ```
 
+We compared our audience gender score for each book to the measures of book genderedness described above. Both the content gender scores  (`r content_addressee_corr`) and book character gender scores (`r char_addressee_corr`; \autoref{fig:characterplots}a) were correlated with audience gender scores: Books that contained more female-biased content words and more female characters tended to be read more often to girls. In an additive linear model predicting audience gender with both types of gender scores, both content  ($\beta$ `r model_estimates %>% filter(term == "no_char") %>% pull(string)`) and character gender scores ($\beta$ `r model_estimates %>% filter(term == "char_only") %>% pull(string)`) predicted independent, and roughly equal, variance. Together, they accounted for `r r_squared`%  of the total variance in audience gender. 
+
+Consistent with this general pattern, books with female primary characters also tended to be more often read to girls, compared to the overall average (`r fem_t_text`; \autoref{fig:characterplots}b). Books with male (`r male_t_text`) or gender indeterminate primary characters  (`r and_t_text`) tended to be more often read to boys. Notably, the effect size for girls was more than twice that of boys, suggesting that there was a stronger bias to read books with female characters to girls, relative to books with male characters to boys. There was no bias in audience gender for books with multiple primary characters of different genders (`r mixed_t_text`)  or books without primary characters (`r other_t_text`).
 
 In sum, these findings suggest that  children’s books  featuring a particular gender and content  associated with that gender tend to be read disproportionately to children of that same gender.
