@@ -185,9 +185,10 @@ language_plot_data <- all_es %>%
 
 language_plot_data %>%
   ggplot(aes(x = bias_type, y = mean, group = group, fill = group)) +
-  geom_bar(stat = "identity", position='dodge') +
+  geom_bar(stat = "identity", position = 'dodge') +
   geom_linerange(aes(ymin = ci_lower, ymax = ci_upper), position = position_dodge(width = .9)) +
-    scale_fill_manual(values = c("lightblue", "blue", "orange"), name = "Language Source", labels = c("Wikipedia", "Adult Fiction", "Children's Picture Books"))  +
+    scale_fill_manual(values = c("lightblue", "blue", "orange"), 
+                      name = "Language Source", labels = c("Wikipedia", "Adult Fiction", "Children's Picture Books"))  +
     geom_hline(aes(yintercept = 0), linetype = 2)  +
     xlab("Bias Type") +
   ylab("Language IAT effect size") +
@@ -197,6 +198,6 @@ language_plot_data %>%
 ```
 
 
- \autoref{fig:languageiat} shows the effect size for each of the four biases from models trained on each of the three corpora types. Positive values indicate a bias to associate women with the stereotypical female category (e.g. women-family). Three of the four gender biases were present in the co-occurrence statistics of the WCBC -- Language-Math, Arts-Math, and Family-Career. Importantly, these biases were larger in children’s books than in corpora containing mostly adult-directed language. This finding that behaviorally measurable gender biases are present in an exaggerated form in books for young children provides additional evidence that these books instantiate gender stereotypes that may influence children's learning of gender stereotypes.
+\autoref{fig:languageiat} shows the effect size for each of the four biases from models trained on each of the three corpora types. Positive values indicate a bias to associate women with the stereotypical female category (e.g. women-family). Three of the four gender biases were present in the co-occurrence statistics of the WCBC -- Language-Math, Arts-Math, and Family-Career. Importantly, these biases were larger in children’s books than in corpora containing mostly adult-directed language. This finding that behaviorally measurable gender biases are present in an exaggerated form in books for young children provides additional evidence that these books instantiate gender stereotypes that may influence children's learning of gender stereotypes.
 
 In summary, in Study 2, we that adult word gender associations and specific gender biases that have been demonstrated behaviorally in adults and children, such as the bias to associate girls with language and boys with math, are both reflected in the co-occurrence statistics of the children’s book corpus.
