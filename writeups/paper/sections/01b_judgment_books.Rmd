@@ -51,7 +51,7 @@ all_book_means <- book_means %>%
   mutate(gender_order = 1:n(), 
         gender_group = case_when(gender_order <= 20 ~ "male-biased",
                                  gender_order >= 109 &  gender_order <= 128 ~ "neutral",
-                                 gender_order >= 230 ~ "female-biased"),
+                                 gender_order >= 228 ~ "female-biased"),
         gender_group = fct_relevel(gender_group, "female-biased", "neutral"),
         title = str_to_title(title))%>%
   filter(!is.na(gender_group))
@@ -109,6 +109,22 @@ ggplot(all_book_means, aes(x = reorder(title, token_gender_mean),
   theme(axis.text.y = element_text(size = 5.5)) +
        # legend.position = c(.8,.2)) +
   guides(colour = guide_legend(override.aes = list(size=5)))
+```
+
+```{r bookexampletable,  results = 'asis'}
+
+BOOK_EXAMPLE_DATA <- here("data/processed/other/example_gender_books.csv")
+
+book_data <-  read_csv(BOOK_EXAMPLE_DATA)
+
+kable(book_data,  "latex", booktabs = T,  escape = F, longtable = F,
+      caption = "Examples of Clusters from Multi-Dimensional Embeddings",
+      col.names = linebreak(c("Category", "Effect Size", "N", "Examples")))
+ # kable_styling(latex_options = c("scale_down")) 
+ # pack_rows("Female-Biased Clusters", 1, 5) %>%
+ # pack_rows("Neutral Clusters", 6, 10) %>%
+ #
+
 ```
 
 

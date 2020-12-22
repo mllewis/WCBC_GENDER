@@ -256,6 +256,22 @@ Using the adult judgments of gender bias from Study 1a, we calculated overall ge
 \includegraphics{kidbookgender_psych_sci_files/figure-latex/bookforest-1} \caption{Overall gender rating of  a subset of books, the 20 with the highest feminine bias scores, the 20 with the highest masculine bias scores, and 20 from the neutral range. Bias scores are calculated from the mean gender ratings of words in each book (tokens). The dashed line indicates the overall mean across books, and color indicates the gender of the primary character. Error bars are bootstrapped 95\% CIs.}\label{fig:bookforest}
 \end{figure}
 
+\begin{table}
+
+\caption{\label{tab:bookexampletable}Examples of Clusters from Multi-Dimensional Embeddings}
+\centering
+\begin{tabular}[t]{llll}
+\toprule
+Category & Effect Size & N & Examples\\
+\midrule
+Title & Chrysanthemum & The Polar Express & Curious George\\
+Plot & The main character, Chrysanthemum, is ridiculed at school for her unusual name, despite liking it herself.  She shares her feelings with her parents who console her. After a teacher reveals that she has a similar name, the ridicule stops and Chrysanthemum likes her name again. & A child travels by train to the North Pole and is gifted a bell from Santa. The bell falls out of the child's pocket on the return home, but is returned as a wrapped present on Christmas morning. & George, a monkey, is taken from his home to the city and repeatedly gets into mischief while exploring his new world. Happily, he is eventually taken to live at the zoo.\\
+Main Character Gender & female & indeterminate & male\\
+25 most freq. nouns/verbs & chrysanthemum, said, name, twinkle, father, mother, flower, named, thought, way, loved, school, day, looked, students, think, chosen, did, tag, would & bell, christmas, said, train, could, elves, express, sound, asked, children, hear, would, gift, lights, looked, north, pocket, pole, silver, stood & man, hat, hurry, looked, balloon, caught, fire, monkey, telephone, head, put, said, saw, went, bed, catch, ship, thought, walked, zoo\\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \begin{figure}[t!]
 \includegraphics[width=\textwidth,]{kidbookgender_psych_sci_files/figure-latex/characterplot-1} \caption{(a) Mean content gender score for each book as a function of mean character gender score. Error bar shows the standard error of the linear model fit.  (b) Distribution across books of content gender score as a function of primary character gender. Colored points show individuals books (one point excluded for visibility). Dashed line shows content gender score grand mean. Black points and error bars show mean and bootstrapped 95\% percent confidence intervals for books of each primary character gender type.}\label{fig:characterplot}
 \end{figure}

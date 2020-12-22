@@ -1,0 +1,149 @@
+---
+title             : "What might books be teaching young children about gender?"
+shorttitle        : "Gender in children's books"
+
+author:  
+  - name          : "XXX"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "XXX"
+    email         : "XXX"
+  - name          : "XX"
+    affiliation   : "2"
+    email         : "cooperborken@wisc.edu"
+  - name          : "XXX"
+    affiliation   : "2"
+    email         : "econverse@wisc.edu"
+  - name          : "XXX"
+    affiliation   : "2"
+    email         : "glupyan@wisc.edu"
+  - name          : "XXX"
+    affiliation   : "2"
+    email         : "seidenberg@wisc.edu "
+affiliation:
+  - id            : "1"
+    institution   : "XXX"
+  - id            : "2"
+    institution   : "XXX"
+    
+author_note: | 
+abstract: |
+  We investigated how gender is represented in children's books using a 200,000 word corpus comprising 247 popular, contemporary books for young children (0-5 years). Using human judgments and word co-occurrence data, we quantified the gender biases of words within the corpus and within individual books. We find that children's books contain large numbers of words that adults judge as gendered. Semantic analyses based on co-occurrence data yielded word clusters related to gender stereotypes (e.g., feminine: emotions; masculine: tools). Co-occurrence data also indicate that books instantiate gender stereotypes found in other research (e.g., girls are better at reading and boys at math). Finally, we used large-scale data to estimate the gender distribution of the audience for individual books, and find that children tend to be exposed to gender stereotypes for their own gender. Together the data suggest that children's books may be an early source of gender stereotypes.
+  
+  STATMENT OF RELEVANCE:  Gender stereotypes such as that girls are better at reading and boys are better at math have origins in early childhood. We examined the extent to which popular children's books may expose young 0-5 year old children to information about gender stereotypes. Our data suggest that children's books have rich information about gender stereotypes, and that some of these stereotypes are more strongly represented in children's books than in adult fiction. These findings suggest that popular children's books may be unintentionally teaching young children about gender stereotypes.
+  
+keywords          : "reading, gender, language development"
+wordcount         : "2051 (excluding methods and results)"
+bibliography      : ["references.bib"]
+header-includes:
+  - \usepackage{setspace}
+  - \usepackage{float}
+  - \usepackage{graphicx}
+#  - \usepackage{booktabs}
+  - \usepackage{tabu}
+  - \usepackage{makecell}
+  - \AtBeginEnvironment{tabular}{\singlespacing}
+  - \usepackage{pbox}
+  - \usepackage{hyphsubst}
+  - \floatplacement{figure}{t!} # make every figure with caption = t
+  - \raggedbottom
+  - \renewcommand{\topfraction}{1}
+  - \renewcommand{\bottomfraction}{1}
+  - \renewcommand{\textfraction}{.1}
+  - \renewcommand{\floatpagefraction}{1}
+
+
+figsintext        : yes
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+lineno            : no
+documentclass     : "apa6"
+lang              : "english"
+class             : "man"
+output            : papaja::apa6_pdf
+#papaja::apa6_docx
+  
+
+---
+
+```{r load_utility_packages, include = FALSE}
+library(papaja)
+library(rmarkdown)
+library(tidyverse) 
+library(here)
+library(kableExtra)
+
+source(here("writeups/paper/paper_helpers.R"))
+```
+
+```{r global_options, include = FALSE}
+#redoc::redoc(highlight_outputs = FALSE)
+knitr::opts_chunk$set(warning = FALSE, 
+                      message = FALSE, 
+                      cache = FALSE,
+                      echo = FALSE,
+                      out.extra = "",
+                      fig.pos = "t!",  sanitize = TRUE)
+options(knitr.table.format = "latex")
+```
+
+
+```{r bookexampletable,  results = 'asis'}
+#\renewcommand{\arraystretch}{2}
+
+BOOK_EXAMPLE_DATA <- here("data/processed/other/example_gender_books.csv")
+
+book_data <-  read_csv(BOOK_EXAMPLE_DATA) %>%
+        mutate(X1 = linebreak(X1, linebreaker = "\n"))
+
+kable(book_data,  "latex", booktabs = TRUE, escape = FALSE,linesep = c( 
+  "\\addlinespace\\addlinespace"),
+      caption = "Representative female-biased, neutral and male-biased books",
+      col.names = linebreak(c("", "female-biased", "neutral", "male-biased"))) %>%
+    #kable_paper(full_width = T)  %>%
+    #kable_styling(latex_options = c("striped")) %>%
+    row_spec(0,bold=TRUE) %>%
+    column_spec(1, bold=TRUE, width = "4.9em") %>%
+    column_spec(2, width = "10em") %>%
+    column_spec(3, width = "10em") %>%
+    column_spec(4, width = "10em") %>%
+  footnote(general = " Last row gives 25 most frequent nouns and verbs in each book text. Parentheses denote word gender bias based on human judgments in Study 1a (f = female; m = male).",  footnote_as_chunk = T, threeparttable = T)
+
+```
+
+```{r bookexampletable2,  results = 'asis', eval = F}
+
+
+
+book_data <-  read_csv(BOOK_EXAMPLE_DATA) %>%
+  t() %>%
+  as.data.frame()  %>%
+  rownames_to_column() %>%
+  filter(rowname != "X1")
+
+kable(book_data,  "latex", booktabs = T,
+      caption = "Examples of Clusters from Multi-Dimensional Embeddings",
+      col.names = linebreak(c("Book-type", "Title", "Main character gender", "Plot summary", "Most frequent content words"))) %>%
+    kable_paper(full_width = T)  %>%
+    #kable_styling(latex_options = c("striped")) %>%
+row_spec(0,bold=TRUE)  %>% #%>%
+  
+  column_spec(1, width = "5em") %>%
+  column_spec(2, width = "5em") %>%
+  column_spec(3, width = "5em") %>%
+  column_spec(4, width = "10em") %>%
+      column_spec(5, width = "5em") 
+ ## kable_styling(full_width = T) 
+ # pack_rows("Female-Biased Clusters", 1, 5) %>%
+ # pack_rows("Neutral Clusters", 6, 10) %>%
+ #
+
+```
+
+
+
+ 
+
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
