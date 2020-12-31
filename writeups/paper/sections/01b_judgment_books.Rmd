@@ -5,7 +5,8 @@ gender_rating_by_book_mean_only <- read_csv(BOOK_MEANS_PATH)
 overall_token_mean <- mean(gender_rating_by_book_mean_only$token_gender_mean)
 
 CHARACTER_PATH <- here("data/raw/other/character_gender_by_book.csv")
-characters <- read_csv(CHARACTER_PATH)  
+characters <- read_csv(CHARACTER_PATH)  %>%
+  filter(!(book_id %in% c("L105", "L112"))) # "Journey" and "Anno's Journey" are pictures books
 
 book_means <- gender_rating_by_book_mean_only %>%
   left_join(characters %>% select(book_id,char_main_gender, 
@@ -14,7 +15,7 @@ book_means <- gender_rating_by_book_mean_only %>%
 ```
 
 ## Study 1b: Gender bias in books
-We next use the word gender bias judgments derived in Study 1a to quantify the genderedness of individual books. 
+We next use the word gender bias judgments reported in Study 1a to quantify the genderedness of individual books.
 
 ### Method and Results
 
@@ -64,8 +65,7 @@ all_book_means <- book_means %>%
 
 ```
 
-
-Using the adult judgments of gender bias from Study 1a, we calculated  overall gender bias score for each book as the mean gender bias score of all the words (tokens) it contained. On average, there were gender norms for `r pull(prop_present, mean)*100`% ([`r pull(prop_present, ci_lower)*100`%, `r pull(prop_present, ci_upper)*100`%]) of all tokens in the books (see SI for details and additional analyses). The average gender score did not exhibit a strong bias (_M_ =  `r pull(overall_gender_mean_token, mean)` [`r pull(overall_gender_mean_token, ci_lower)`, `r pull(overall_gender_mean_token, ci_upper)`]), but there was substantial variability (_SD_ = `r overall_sd`): some books contained many more “masculine” words, other books contained many more “feminine” words.
+We calculated an overall gender bias score for each book as the mean gender bias score of all the normed words (tokens) in the text. On average, there were gender norms for `r pull(prop_present, mean)*100`% ([`r pull(prop_present, ci_lower)*100`%, `r pull(prop_present, ci_upper)*100`%]) of all tokens in the books (see SI for details and additional analyses). The overall average gender score did not exhibit a strong bias (_M_ =  `r pull(overall_gender_mean_token, mean)` [`r pull(overall_gender_mean_token, ci_lower)`, `r pull(overall_gender_mean_token, ci_upper)`]), but there was substantial variability (_SD_ = `r overall_sd`), with some books showing much greater “masculine” or “feminine” bias. 
 
 ```{r}
 gender_by_corpus_type <- book_means %>%
@@ -85,8 +85,7 @@ char_no_char_corr <- get_tidy_corr_text(corr_df, "char_only", "no_char")
 
 
 
-\autoref{fig:bookforest} includes data from a subset of books, the 20 with the highest feminine bias scores, the 20 with the highest masculine bias scores, and 20 from the neutral range. Data for all books are available in the SI. Measured in this way, the books clearly vary in genderedness, falling along a continuum. Books at the feminine end include *Olivia*, *Brave Irene*, and *Amelia Bedelia*; the masculine end includes *Dear Zoo*, *Curious George*, and *Goodnight, Goodnight, Construction Site*; neutrals include *In the Night Kitchen*, *Hippos Go Berserk*, and *Everyone Poops*.  
-
+\autoref{fig:bookforest} shows 20 books with the highest feminine bias scores, the 20 with the highest masculine bias scores, and 20 from the neutral range.  Measured in this way, the books clearly vary in genderedness, falling along a continuum (see SI for data for all books, analyses of historical trends in gender associations). Books at the feminine end include *Chrysanthemum*, *Brave Irene*, and *Amelia Bedelia*; the masculine end includes  *Curious George*, *Dear Zoo*, and *Goodnight, Goodnight, Construction Site*; neutrals include *The Polar Express*, *In the Night Kitchen*, and  *Hippos Go Berserk* (\autoref{tab:bookexampletable}).
 
 
 ```{r bookforest, fig.height = 8, fig.width = 8, fig.pos = "b", fig.cap = "Overall gender rating of  a subset of books, the 20 with the highest feminine bias scores, the 20 with the highest masculine bias scores, and 20 from the neutral range. Bias scores are calculated from the mean gender ratings of words in each book (tokens). The dashed line indicates the overall mean across books, and color indicates the gender of the primary character. Error bars are bootstrapped 95\\% CIs."}
@@ -111,27 +110,30 @@ ggplot(all_book_means, aes(x = reorder(title, token_gender_mean),
   guides(colour = guide_legend(override.aes = list(size=5)))
 ```
 
+
 ```{r bookexampletable,  results = 'asis'}
+#\renewcommand{\arraystretch}{2}
 
 BOOK_EXAMPLE_DATA <- here("data/processed/other/example_gender_books.csv")
 
-book_data <-  read_csv(BOOK_EXAMPLE_DATA)
+book_data <-  read_csv(BOOK_EXAMPLE_DATA) %>%
+        mutate(X1 = linebreak(X1, linebreaker = "\n"))
 
-kable(book_data,  "latex", booktabs = T,  escape = F, longtable = F,
-      caption = "Examples of Clusters from Multi-Dimensional Embeddings",
-      col.names = linebreak(c("Category", "Effect Size", "N", "Examples")))
- # kable_styling(latex_options = c("scale_down")) 
- # pack_rows("Female-Biased Clusters", 1, 5) %>%
- # pack_rows("Neutral Clusters", 6, 10) %>%
- #
-
+kable(book_data,  "latex", booktabs = TRUE, escape = FALSE,linesep = c( 
+  "\\addlinespace\\addlinespace"),
+      caption = "Representative female-biased, neutral, and male-biased books",
+      col.names = linebreak(c("", "female-biased", "neutral", "male-biased"))) %>%
+    #kable_paper(full_width = T)  %>%
+    #kable_styling(latex_options = c("striped")) %>%
+    row_spec(0,bold=TRUE) %>%
+    column_spec(1, bold=TRUE, width = "4.9em") %>%
+    column_spec(2, width = "10em") %>%
+    column_spec(3, width = "10em") %>%
+    column_spec(4, width = "10em") %>%
+  footnote(general = " Last row gives 25 most frequent nouns and verbs in each book text. Parentheses denote word gender bias based on human judgments in Study 1a (f = female; m = male).",  footnote_as_chunk = T, threeparttable = T)
 ```
 
-
 ```{r charactercontentplot"}
-
-
-
 LABELED_BOOKS <- c("L214", "M81", "M25", "M56",  "M44", "L142", "L239",
                   "L213", "M68", "M39", "M548", "L136", "L220",   "M49", "L111",  "L160")
 
@@ -207,7 +209,7 @@ all_gendered_counts <- character_bar_data %>%
 
 mf_gendered_counts <- data.frame(n_gendered = sum(all_gendered_counts %>% filter(char_main_gender2 == "female") %>% pull(n),
                                                   all_gendered_counts %>% filter(char_main_gender2 == "male") %>% pull(n))) %>%
-  mutate(perc_gendered = paste0(round(n_gendered/sum(all_gendered_counts$n) * 100,0), "%"),
+  mutate(perc_gendered = paste0(round(n_gendered/sum(all_gendered_counts$n) * 100,1), "%"),
          print_total_gendered = glue("{n_gendered}/{sum(all_gendered_counts$n)}; {perc_gendered}")) %>%
   pull(print_total_gendered)
                       
@@ -233,6 +235,54 @@ primary_chi_es_text <- esc_chisq(chisq = primary_chi$statistic,
   mutate(d_print_text = glue("_d_ = {es} [{ci.lo}, {ci.hi}]")) %>%
   pull(d_print_text)
 ```
+
+
+
+Overall gender bias could be due to words that express concepts such as pretty but also the frequency of intrinsically gendered words such as names (e.g., "Jill"), pronouns (e.g., "her"), and relational/generic gender terms (e.g., "mom", "lady"). We therefore calculated bias separately using intrinsically gendered words referring to characters (the character gender score) and using the remaining content words (content gender score). Character and content scores were moderately correlated (`r char_no_char_corr`): books with more gender-biased content tended to have more names, pronouns, and kinship terms of that gender (\autoref{fig:characterplot}a). Thus, the word gender biases reported by adults could arise, in part, from their association with gendered characters.
+
+Whereas the character gender score reflects the extent to which males and females are directly mentioned in a book, the gender of the story protagonist may be particularly salient for children. For each book, we manually coded the name of the primary protagonist character(s) and their gender as determined from text (i.e., pronouns). Text rather than illustrations was used to determine character gender because it was less ambiguous. A character was considered a protagonist if they were the primary agent of the story, in some cases in a collaborative fashion with another protagonist. The main character(s) were classified as either female, male, mixed, or indeterminate (Wagner, 2017). A book was coded as “mixed” if there was more than one primary character, and their gender composition was heterogeneous and as “indeterminate” if a given primary character had a gender that could not be determined from the text. Two research assistants and the second author coded character gender. Coders agreed on the protagonist type for 97% of books. Discrepancies were resolved through discussion.
+
+
+```{r charbookmeans}
+book_gender_descriptives <- book_means %>%
+  filter(char_main_gender %in% c("M", "F"))  %>%
+  group_by(char_main_gender, corpus_type) %>%
+  multi_boot_standard(col = "token_gender_mean") %>%
+  mutate_if(is.numeric, round, 2) %>%
+  mutate(print_mean = glue("_M_ = {mean} [{ci_lower}, {ci_upper}]"))
+
+
+# do character scores differ from mean for males? and females?
+char_data <- book_means %>% 
+  filter(corpus_type == "char_only")
+
+char_t_test_F <- get_tidy_one_sample_t_test_text(
+  filter(char_data, char_main_gender == "F") %>% 
+                           pull(token_gender_mean),
+  mean(pull(char_data, token_gender_mean)))
+
+char_t_test_M <- get_tidy_one_sample_t_test_text(
+  filter(char_data, char_main_gender == "M") %>% 
+                           pull(token_gender_mean),
+  mean(pull(char_data, token_gender_mean)))
+
+
+# do content scores differ from mean for males? and females?
+no_char_data <- book_means %>% 
+  filter(corpus_type == "no_char")
+  
+content_t_test_F <- get_tidy_one_sample_t_test_text(
+  filter(no_char_data, char_main_gender == "F") %>% 
+                           pull(token_gender_mean),
+  mean(pull(no_char_data, token_gender_mean)))
+
+content_t_test_M <- get_tidy_one_sample_t_test_text(
+  filter(no_char_data, char_main_gender == "M") %>% 
+                           pull(token_gender_mean),
+  mean(pull(no_char_data, token_gender_mean)))
+```
+
+About half of the books (`r mf_gendered_counts`)  had gendered primary characters that were exclusively male or exclusively female. Two-thirds of these books had male primary characters (_N_ = `r all_gendered_counts %>% filter(char_main_gender2 == "male") %>% pull(n)`; $\chi^2$`r primary_chi_text`; `r primary_chi_es_text`). Of the remaining books, `r all_gendered_counts %>% filter(char_main_gender2 == "indeterminate") %>% pull(perc_print)` had main characters(s) of indeterminate gender, `r all_gendered_counts %>% filter(char_main_gender2 == "mixed") %>% pull(perc_print)` had main characters of mixed genders, and `r all_gendered_counts %>% filter(char_main_gender2 == "none") %>% pull(perc_print)` had no main character(s). These results are broadly consistent with those previously in a smaller sample of books (Wagner, 2017). We then examined book genderedness as a function of the gender of the primary character, using both content and character scores. Books with female primary characters tended to have higher female content scores (`r book_gender_descriptives %>% filter(char_main_gender == "F", corpus_type == "no_char") %>% pull(print_mean)`; `r content_t_test_F`), compared to the overall averages, whereas books with male primary characters tended to have relatively higher male content scores (`r book_gender_descriptives %>% filter(char_main_gender == "M", corpus_type == "no_char") %>% pull(print_mean)`; `r content_t_test_M`; \autoref{fig:characterplot}b). Notably, however, there was a large degree of variability in content scores across books (female: $SD$  = `r filter(char_data, char_main_gender == "F") %>% pull(token_gender_mean) %>% sd()`; male: $SD$  = `r filter(char_data, char_main_gender == "M") %>% pull(token_gender_mean) %>% sd()`): many books with male characters had female-biased content-words and vice-versa.
 
 
 ```{r characterplot, out.width = "\\textwidth", fig.cap = "(a) Mean content gender score for each book as a function of mean character gender score. Error bar shows the standard error of the linear model fit.  (b) Distribution across books of content gender score as a function of primary character gender. Colored points show individuals books (one point excluded for visibility). Dashed line shows content gender score grand mean. Black points and error bars show mean and bootstrapped 95\\% percent confidence intervals for books of each primary character gender type."}
@@ -285,54 +335,4 @@ cowplot::plot_grid(charactercontentplot, violin_plot1, ncol = 2,
 
 ```
 
-Differences in overall gender bias may be due to the distribution of gendered content but also to differences in the occurrence of intrinsically gendered words such as names (e.g., *Jill*), pronouns (e.g., *her*), and relational/generic gender terms (e.g., *mom*, *lady*). We therefore calculated two additional bias measures: one based on the gender words referring to the book’s characters (the character gender score) and the remaining content words (content gender score). Character and content scores had a moderate positive correlation with each other (`r char_no_char_corr`): books with more feminine-biased (less masculine-biased) content tended to have more female names, pronouns, and kinship terms (\autoref{fig:characterplot}a). This finding suggests that the word gender biases reported by adults, could in principle, be learned from a word’s associations with gendered terms in the book text.
-
-Whereas the character gender score reflects the extent to which males and females are directly mentioned in a book, the gender of the story protagonist may be particularly salient for children. For each book, we manually coded the name of the primary protagonist character(s) and their gender as determined from text (i.e., pronouns). Text rather than illustrations was used to determine character gender because it was less ambiguous. A character was considered a protagonist if they were the primary agent of the story, in some cases in a collaborative fashion with another protagonist. The main character(s) were classified as either female, male, mixed, or indeterminate (Wagner, 2017). A book was coded as “mixed” if there was more than one primary character, and their gender composition was heterogeneous and as “indeterminate” if a given primary character had a gender that could not be determined from the text. Two research assistants and the second author coded character gender. Coders agreed on the protagonist type for 97% of books. Discrepancies were resolved through discussion.
-
-
-
-```{r charbookmeans}
-book_gender_descriptives <- book_means %>%
-  filter(char_main_gender %in% c("M", "F"))  %>%
-  group_by(char_main_gender, corpus_type) %>%
-  multi_boot_standard(col = "token_gender_mean") %>%
-  mutate_if(is.numeric, round, 2) %>%
-  mutate(print_mean = glue("_M_ = {mean} [{ci_lower}, {ci_upper}]"))
-
-
-# do character scores differ from mean for males? and females?
-char_data <- book_means %>% 
-  filter(corpus_type == "char_only")
-
-char_t_test_F <- get_tidy_one_sample_t_test_text(
-  filter(char_data, char_main_gender == "F") %>% 
-                           pull(token_gender_mean),
-  mean(pull(char_data, token_gender_mean)))
-
-char_t_test_M <- get_tidy_one_sample_t_test_text(
-  filter(char_data, char_main_gender == "M") %>% 
-                           pull(token_gender_mean),
-  mean(pull(char_data, token_gender_mean)))
-
-
-# do content scores differ from mean for males? and females?
-no_char_data <- book_means %>% 
-  filter(corpus_type == "no_char")
-  
-content_t_test_F <- get_tidy_one_sample_t_test_text(
-  filter(no_char_data, char_main_gender == "F") %>% 
-                           pull(token_gender_mean),
-  mean(pull(no_char_data, token_gender_mean)))
-
-content_t_test_M <- get_tidy_one_sample_t_test_text(
-  filter(no_char_data, char_main_gender == "M") %>% 
-                           pull(token_gender_mean),
-  mean(pull(no_char_data, token_gender_mean)))
-```
-
-
-
-About half of the books (`r mf_gendered_counts`) had gendered primary characters that were exclusively male or exclusively female. Two-thirds of these books had male primary characters (_N_ = `r all_gendered_counts %>% filter(char_main_gender2 == "male") %>% pull(n)`; $\chi^2$`r primary_chi_text`; `r primary_chi_es_text`). Of the remaining books, `r all_gendered_counts %>% filter(char_main_gender2 == "indeterminate") %>% pull(perc_print)` had main characters(s) of indeterminate gender, `r all_gendered_counts %>% filter(char_main_gender2 == "mixed") %>% pull(perc_print)` had main characters of mixed genders, and `r all_gendered_counts %>% filter(char_main_gender2 == "none") %>% pull(perc_print)` had no main character(s). These results are broadly consistent with those previously in a smaller sample of books (Wagner, 2017). We then examined book genderedness as a function of the gender of the primary character, using both content and character scores. Books with female primary characters tended to have higher female content scores (`r book_gender_descriptives %>% filter(char_main_gender == "F", corpus_type == "no_char") %>% pull(print_mean)`; `r content_t_test_F`), compared to the overall averages, whereas books with male primary characters  tended to have relatively higher male content scores (`r book_gender_descriptives %>% filter(char_main_gender == "M", corpus_type == "no_char") %>% pull(print_mean)`; `r content_t_test_M`; \autoref{fig:characterplot}b). Notably, however, there was a large degree of variability in content scores across books with characters of a certain gender  (female: $SD$  = `r filter(char_data, char_main_gender == "F") %>% pull(token_gender_mean) %>% sd()`; male: $SD$  = `r filter(char_data, char_main_gender == "M") %>% pull(token_gender_mean) %>% sd()`). 
-
-Our findings suggest that books vary appreciably along the dimension of gender in terms of both their content and characters. Together, the gender character and content gender data provide converging evidence that the text of children’s books is significantly gendered: Books with female characters tend to have content typically associated with females, whereas books with male characters tend to have content typically associated with males.
-
+Our findings suggest that books vary considerably along gender not only in terms of characters (i.e., those having only male or only female characters), which is expected, but also in terms of gendered content words. Books with female characters tend to have content (e.g., artifacts, actions, descriptors) that is more associated with females, whereas books with male characters tend to have content on average more associated with male, though this effect is highly variable across books.

@@ -185,7 +185,7 @@ navbarPage("Gender in Children's Book Corpus SI", theme = shinytheme("flatly"),
            ) ,
          tabPanel("Gender Bias and Publication Year",
                   HTML("Are there historical trends in gender bias in books across the corpus? To answer this question, we coded the first year each book was published using <a href='https://www.worldcat.org/'>WorldCat</a>, and examined how publication year related to the measures of gender we
-                       report in the Main Text. There was a small positive correlation between publicaiton year and the average gender score
+                       report in the Main Text. There was a small positive correlation between publication year and the average gender score
                        of each book based on human judgments of all word tokens in each book (<i>r </i> = 0.15 [0.03, 0.27], <i> p </i> = 0.02; see figure below), suggesting that more
                        recent books have more female associations in them. There was no relationship between publication year
                        and the other gender measures reported in the Main Text (content score: <i> r </i> = 0.06 [-0.06, 0.19], <i> p </i> = 0.32; character score: <i> r </i> = 0.1 [-0.04, 0.24], <i> p </i> = 0.15;

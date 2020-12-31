@@ -1,7 +1,7 @@
 
 # Study 3: Book Gender and Child Gender
 
-The results so far suggest that the text of popular children’s books contains rich information about gender. In this final study, we sought to better understand the processes through which this information might influence children’s socialization into gender stereotypes by examining who is being exposed to these books.  We created a novel measure based on the content of book reviews on a large online bookstore and validated this measure using existing survey data directly measuring the audience of a book. These data indicate that children’s books more frequently read to girls tend to have both more female content and more female characters, and children’s books more frequently read to boys tend to have both more male content and more male characters. 
+The results so far suggest that the texts of popular children’s books contain rich information about gender. In this final study, we sought to better understand the processes through which this information might influence children’s socialization into gender stereotypes by examining who is being exposed to these books. We created a novel measure based on the content of book reviews on a large online bookstore and validated this measure using existing survey data directly measuring the audience of a book. These data indicate that children’s books more frequently read to girls tend to have both more female content and more female characters, and children’s books more frequently read to boys tend to have both more male content and more male characters.
 
 
 ### Method
@@ -197,4 +197,4 @@ We compared our audience gender score for each book to the measures of book gend
 
 Consistent with this general pattern, books with female primary characters also tended to be more often read to girls, compared to the overall average (`r fem_t_text`; \autoref{fig:characterplots}b). Books with male (`r male_t_text`) or gender indeterminate primary characters  (`r and_t_text`) tended to be more often read to boys. Notably, the effect size for girls was more than twice that of boys, suggesting that there was a stronger bias to read books with female characters to girls, relative to books with male characters to boys. There was no bias in audience gender for books with multiple primary characters of different genders (`r mixed_t_text`)  or books without primary characters (`r other_t_text`).
 
-In sum, these findings suggest that  children’s books  featuring a particular gender and content  associated with that gender tend to be read disproportionately to children of that same gender.
+In sum, these findings suggest that children’s books featuring a particular gender and content associated with that gender tend to be read disproportionately to children of that same gender.
