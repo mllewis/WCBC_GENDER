@@ -112,7 +112,7 @@
   {}{\typeout{Failed to patch title.}}
 \makeatother
 \shorttitle{Gender in children's books}
-\keywords{reading, gender, language development\newline\indent Word count: 2060 (excluding methods and results but INCLUDING footnotes)}
+\keywords{reading, gender, language development\newline\indent Word count: 2048 (excluding methods and results)}
 \usepackage{csquotes}
 \usepackage{setspace}
 \usepackage{float}
@@ -180,16 +180,16 @@ The Wisconsin Children's Book Corpus (WCBC) consists of 247 books marketed for c
 \hypertarget{study-1a-gender-bias-in-words}{%
 \subsection{Study 1a: Gender bias in words}\label{study-1a-gender-bias-in-words}}
 
-As a first step we asked adult English speakers to rate the genderedness of words in these books using a 5-point scale from masculine to feminine (Scott, Keitel, Becirspahic, Yao, \& Sereno, 2019)\footnote{We operationalize gender as a continuum ranging from masculine to feminine throughout, and use the terms "masculine" and "feminine" interchangebly with "male" and "female". This approach admittidely ignores many aspects of gender that not critical to the present research question.} This procedure yields systematic data with good face validity: words such as \enquote{axe} and \enquote{engine} as masculine, \enquote{cuddle} and \enquote{pink} are rated as feminine,\enquote{exactly} and \enquote{nose} as neutral.
+As a first step we asked adult English speakers to rate the genderedness of words in these books using a 5-point scale from masculine to feminine (Scott, Keitel, Becirspahic, Yao, \& Sereno, 2019). This procedure yields systematic data with good face validity: words such as \enquote{axe} and \enquote{engine} as masculine, \enquote{cuddle} and \enquote{pink} are rated as feminine,\enquote{exactly} and \enquote{nose} as neutral.
 
 \hypertarget{method-1}{%
 \subsubsection{Method}\label{method-1}}
 
-Participants (\emph{N} = 426) were recruited on Amazon Mechanical Turk. Participants who answered any of 6 performance integrity check items incorrectly (e.g., \enquote{The word red has two letters}) were excluded (\emph{N} = 80). One participant who responded with the midpoint on almost all items and 6 non-native English speakers were also excluded. The final sample included 339 participants (174 who identified as male, 162 female, 3 other), with a mean age of 36.40 years (\emph{SD} = 10.70).\footnote{All data and code available in a public repository: \url{https://github.com/mllewis/WCBC_GENDER}}
+Participants (\emph{N} = 426) were recruited on Amazon Mechanical Turk. Participants who answered any of 6 performance integrity check items incorrectly (e.g., \enquote{The word red has two letters}) were excluded (\emph{N} = 80). One participant who responded with the midpoint on almost all items and 6 non-native English speakers were also excluded. The final sample included 339 participants (174 who identified as male, 162 female, 3 other), with a mean age of 36.40 years (\emph{SD} = 10.70). All data and code available in a public repository: \url{https://github.com/mllewis/WCBC_GENDER}.
 
 Because it was infeasible to collect gender norms for all 10,174 unique words, ratings were obtained for a large subset of the most important content-bearing words (\emph{N} = 2,373). This subset was largely composed of nouns (51.75\%) and verbs (25.96\%). We also included the names of all characters (e.g.~\enquote{Amelia}, \enquote{Yertle}). A short context was provided to indicate a specific meaning of homonyms, e.g., \enquote{pin (hold down)}, \enquote{creep (move slowly)}, \enquote{act (part of a play)}, \enquote{act (to take action)}. The norms included 82.48\% of the tokens in the corpus excluding stop words, and at least 30\% of the tokens in each book (\emph{M} = 83.25\%; \emph{SD} = 9.54\%; types: \emph{M} = 78.44\%; \emph{SD} = 10.75\%).
 
-Participants rated the gender of each word on a 1-5 scale with the intervals labeled \enquote{Very masculine,} \enquote{Somewhat masculine,} \enquote{Neither masculine nor feminine,} \enquote{Somewhat feminine,} and \enquote{Very feminine}. The instructions did not provide definitions of masculine or feminine; raters were encouraged to use their own intuitions. Each participant rated 90-97 words. Words were quasirandomly assigned to participants to ensure that each word received at least 10 ratings; mean number of ratings per word was 13.58 (\emph{SD} = 1.79).
+Participants rated the gender of each word on a 1-5 scale with the intervals labeled \enquote{Very masculine,} \enquote{Somewhat masculine,} \enquote{Neither masculine nor feminine,} \enquote{Somewhat feminine,} and \enquote{Very feminine} (note that we operationalize gender as a continuum ranging from masculine to feminine throughout and use the terms \enquote{masculine} and \enquote{feminine} interchangebly with \enquote{male} and \enquote{female}. This approach ignores many aspects of gender that are not critical to the present research question). The instructions did not provide definitions of masculine or feminine; raters were encouraged to use their own intuitions. Each participant rated 90-97 words. Words were quasirandomly assigned to participants to ensure that each word received at least 10 ratings; mean number of ratings per word was 13.58 (\emph{SD} = 1.79).
 
 \hypertarget{results}{%
 \subsubsection{Results}\label{results}}
@@ -412,7 +412,7 @@ What gender messages are conveyed by popular children's books and who is being e
 
 There are several reasons to think that the statistical regularities we identified in children's books may be shaping children's gender stereotypes. First, many of the stereotypical patterns that we report are implicit in the distributional statistics of the text, rather than conveyed via explicit statements (\enquote{boys are better at math than girls}). The implicit nature of these messages may make them particularly difficult for adult readers to track or explicitly contradict. Second, children are exposed to books with a caregiver (compared to, e.g., watching TV). The caregiver's presence may signal implicit endorsement of these stereotypes as correct or desirable and lead the child to make stronger inferences (Lewis \& Frank, 2016; Xu \& Tenenbaum, 2007). Third, our data suggest that children tend to be exposed to books that contain gender stereotypes of their own gender presenting children with more information about own-gender-consistent associations. This may make gender-inconsistent preferences less familiar to children and therefore more difficult to emulate (Bussey \& Bandura, 1999). Filtered through children's cognitive and social biases, children's books may therefore be a potent means of teaching children about gender stereotypes.
 
-Our work characterizes the messages in the text of children's books and begins to address the role they play in socialization, but there are a number of open questions about the causal link between the statistical regularities we observe and the gender stereotypes that children form. Importantly, little is known about how children themselves perceive the messages contained within these books. In the work presented here, we primarily measure word gender bias via adult judgments, yet children do not have the extensive knowledge and experience that underlies adult judgments. The fact that word embedding models trained exclusively on the statistics of the children's book corpus reflect adult-like word gender biases suggests that the adult gender biases could in principle be learned from sources like children's book text, but whether they are remains an open question. Future work could more directly address these questions by eliciting child ratings of word gender, and by experimentally manipulating the statistics of children's linguistic input about gender.
+Our work characterizes the gendered content of children's books and their potential role in development, but causal links between the properties we observed and the gender associations that children form remain to be addressed. Reviews of the impact of shared reading on language and literacy development (Noble et al., 2019; Scarborough \& Dobrich, 1994) have concluded that learning effects are small (e.g., Reese \& Cox, 1999). How much is learned about gender in particular is a further question. Moreover, little is known about how children themselves perceive the messages contained within these books. In the work presented here, we primarily measure word gender bias via adult judgments, yet children do not have the extensive knowledge and experience that underlies adult judgments. The fact that word embedding models trained exclusively on the statistics of the children's book corpus reflect adult-like word gender biases suggests that adult gender biases could in principle begin to be learned from children's book texts, but whether they are remains an open question. Future work could more directly address these questions by eliciting child judgments of word gender, and by experimentally manipulating the statistics of children's linguistic input about gender.
 
 One unanswered question from our data is how children learn stereotypes about other genders, given that they are largely read storybooks containing stereotypes aligning with their own gender. One possibility is that children are exposed to information about other genders from other sources, such as other kinds of media and direct interactions. Alternatively, children may in fact receive more information about their own gender, relative to other genders, and consequently have less precise intuitions about stereotypes related to other genders. It is also an open question whether the tendency for children to be read books matching their own gender is due to caregiver or child preferences. This question is important in light of recent data on gender development in transgender children (Gülgöz et al., 2019). Transgender children show strong identity with the gender they feel they are by age three. If transgender children play an active role in their own socialization (Martin \& Ruble, 2004), our data suggest that children's books could be an early source of gender information for transgender children.
 
@@ -523,6 +523,9 @@ Montag, J. L., Jones, M. N., \& Smith, L. B. (2015). The words children hear: Pi
 \leavevmode\hypertarget{ref-moty2019unintended}{}%
 Moty, K., \& Rhodes, M. (2019). The unintended consequences of the things we say: What generics communicate to children about unmentioned categories. Retrieved from \url{https://psyarxiv.com/zkjyr/}
 
+\leavevmode\hypertarget{ref-noble2019impact}{}%
+Noble, C., Sala, G., Peter, M., Lingwood, J., Rowland, C., Gobet, F., \& Pine, J. (2019). The impact of shared book reading on children's language skills: A meta-analysis. \emph{Educational Research Review}, \emph{28}, 100290.
+
 \leavevmode\hypertarget{ref-nosek2002harvesting}{}%
 Nosek, B. A., Banaji, M. R., \& Greenwald, A. G. (2002). Harvesting implicit group attitudes and beliefs from a demonstration web site. \emph{Group Dynamics: Theory, Research, and Practice}, \emph{6}(1), 101.
 
@@ -532,8 +535,14 @@ Oswald, F. L., Mitchell, G., Blanton, H., Jaccard, J., \& Tetlock, P. E. (2013).
 \leavevmode\hypertarget{ref-poulin2002men}{}%
 Poulin-Dubois, D., Serbin, L. A., Eichstedt, J. A., Sen, M. G., \& Beissel, C. F. (2002). Men don't put on make-up: Toddlers' knowledge of the gender stereotyping of household activities. \emph{Social Development}, \emph{11}(2), 166--181.
 
+\leavevmode\hypertarget{ref-reese1999quality}{}%
+Reese, E., \& Cox, A. (1999). Quality of adult book reading affects children's emergent literacy. \emph{Developmental Psychology}, \emph{35}(1), 20.
+
 \leavevmode\hypertarget{ref-rudman2004gender}{}%
 Rudman, L. A., \& Goodwin, S. A. (2004). Gender differences in automatic in-group bias: Why do women like women more than men like men? \emph{Journal of Personality and Social Psychology}, \emph{87}(4), 494.
+
+\leavevmode\hypertarget{ref-scarborough1994efficacy}{}%
+Scarborough, H. S., \& Dobrich, W. (1994). On the efficacy of reading to preschoolers. \emph{Developmental Review}, \emph{14}(3), 245--302.
 
 \leavevmode\hypertarget{ref-scott2019glasgow}{}%
 Scott, G. G., Keitel, A., Becirspahic, M., Yao, B., \& Sereno, S. C. (2019). The Glasgow Norms: Ratings of 5,500 words on nine scales. \emph{Behavior Research Methods}, \emph{51}(3), 1258--1270.
