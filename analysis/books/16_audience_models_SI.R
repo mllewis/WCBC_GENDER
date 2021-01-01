@@ -2,7 +2,7 @@
 library(tidyverse)
 library(lme4)
 library(here)
-library(broom)
+library(broom.mixed)
 
 REVIEWS_DATA_PATH <- here("data/processed/other/amazon_gender_scores.csv")
 IBDB_TIDY_PATH <- here("data/processed/other/ibdb_tidy.csv")
@@ -75,7 +75,7 @@ model_params <- map2_df(list(ibdb_amazon_model,  adressee_char_model, adressee_c
                         make_model_pretty)
 
 model_params_tidy <- model_params %>%
-  mutate(term = case_when(term == "child_gender" ~ "prop. female, Kam and Matthewson (2017)",
+  mutate(term = case_when(term == "child_gender" ~ "prop. female, Hudson Kam and Matthewson (2017)",
                           term == "char_only" ~ "character score",
                           term == "no_char" ~ "content score",
                           TRUE ~ term))

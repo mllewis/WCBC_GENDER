@@ -42,7 +42,7 @@ function(input, output, session) {
                                          mixed = "MIXED"),
            char_second_gender = fct_relevel(char_second_gender,
                                           "female", "male", "indeterminate", "mixed", "none"))
-  # overall b0ok means data
+  # overall book means data
   BOOK_MEANS_PATH <- "data/gender_token_type_by_book.csv"
   gender_rating_by_book_mean <- read_csv(BOOK_MEANS_PATH) %>%
     select(corpus_type, book_id, token_gender_mean, token_ci_lower, token_ci_upper, prop_present_token)  %>%
@@ -209,6 +209,22 @@ function(input, output, session) {
 
 
 
+  WORD_PROPERTIES_CORR_PATH <-  "data/word_properties_corrs.csv"
+  word_properties_data <- read_csv(WORD_PROPERTIES_CORR_PATH)
+  output$word_properties_table <- renderTable(word_properties_data,  striped = TRUE, bordered = TRUE, na = " ")
+
+  TASA_MODEL_PATH <-  "data/TASA_word_properties_model.csv"
+  tasa_model_data <- read_csv(TASA_MODEL_PATH)
+  output$tasa_model_table <- renderTable(tasa_model_data,  striped = TRUE, bordered = TRUE, na = " ")
+
+  SUBT_MODEL_PATH <-  "data/SUBTLEXUS_word_properties_model.csv"
+  subt_model_data <- read_csv(SUBT_MODEL_PATH)
+  output$subt_model_table <- renderTable(subt_model_data,  striped = TRUE, bordered = TRUE, na = " ")
+
+  WCBC_MODEL_PATH <-  "data/WCBC_word_properties_model.csv"
+  wcbc_model_data <- read_csv(WCBC_MODEL_PATH)
+  output$wcbc_model_table <- renderTable(wcbc_model_data,  striped = TRUE, bordered = TRUE, na = " ")
+
   CHARACTER_MEANS_PATH <- "data/character_gender_means.csv"
   by_group_means <- read_csv(CHARACTER_MEANS_PATH) %>%
     mutate(gender_group = fct_relevel(gender_group, "male-biased", "neutral"))
@@ -223,11 +239,20 @@ function(input, output, session) {
     theme(legend.position = "none",
           axis.text.x = element_text(angle = 45, hjust = 1)))
 
-
   CHARACTER_MODEL_PATH <- "data/character_mixed_effect_models.csv"
   character_model_data <- read_csv(CHARACTER_MODEL_PATH)
-  output$activity_table <- renderTable({filter(character_model_data, model_type == "activity") %>% select(-model_type)},  striped = TRUE, bordered = TRUE)
-  output$desc_table <- renderTable({filter(character_model_data, model_type == "description") %>% select(-model_type)},  striped = TRUE, bordered = TRUE)
+  output$activity_table <- renderTable({filter(character_model_data, model_type == "activity_model") %>% select(-model_type)},  striped = TRUE, bordered = TRUE,  na = " ")
+  output$desc_table <- renderTable({filter(character_model_data, model_type == "description_model") %>% select(-model_type)},  striped = TRUE, bordered = TRUE,  na = " ")
+  output$activity_char_table <- renderTable({filter(character_model_data, model_type == "activity_model_char") %>% select(-model_type)},  striped = TRUE, bordered = TRUE,  na = " ")
+  output$desc_char_table <- renderTable({filter(character_model_data, model_type == "description_model_char") %>% select(-model_type)},  striped = TRUE, bordered = TRUE,  na = " ")
+  output$activity_content_table <- renderTable({filter(character_model_data, model_type == "activity_model_content") %>% select(-model_type)},  striped = TRUE, bordered = TRUE,  na = " ")
+  output$desc_content_table <- renderTable({filter(character_model_data, model_type == "description_model_content") %>% select(-model_type)},  striped = TRUE, bordered = TRUE,  na = " ")
+
+
+  EMBEDDING_WORD_CORR_PATH <- "data/by_word_embedding_corr_table.csv"
+  embedding_corr_data <- read_csv(EMBEDDING_WORD_CORR_PATH)
+  output$embedding_corr_table <- renderTable(embedding_corr_data,  striped = TRUE, bordered = TRUE,  na = " ")
+
 
   AUDIENCE_MODEL_PARAM_PATH <-  "data/audience_mixed_effect_models.csv"
   audience_data <- read_csv(AUDIENCE_MODEL_PARAM_PATH)
@@ -260,7 +285,7 @@ function(input, output, session) {
 
   YEAR_INTERACTION_MODEL_PARAM_PATH <-  "data/year_interaction_model.csv"
   year_model_data <- read_csv(YEAR_INTERACTION_MODEL_PARAM_PATH)
-  output$year_model_table <- renderTable(year_model_data,  striped = TRUE, bordered = TRUE)
+  output$year_model_table <- renderTable(year_model_data,  striped = TRUE, bordered = TRUE, na = " ")
 
   YEAR_CHAR_PLOT_PATH <- "data/year_char_plot.jpeg"
   output$year_char <- renderImage({

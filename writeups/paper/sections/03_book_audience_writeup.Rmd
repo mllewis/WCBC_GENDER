@@ -1,5 +1,5 @@
 
-# Study 3: Book Gender and Child Gender
+# Study 3: Book gender and child gender
 
 The results so far suggest that the texts of popular children’s books contain rich information about gender. In this final study, we sought to better understand the processes through which this information might influence children’s socialization into gender stereotypes by examining who is being exposed to these books. We created a novel measure based on the content of book reviews on a large online bookstore and validated this measure using existing survey data directly measuring the audience of a book. These data indicate that children’s books more frequently read to girls tend to have both more female content and more female characters, and children’s books more frequently read to boys tend to have both more male content and more male characters.
 
@@ -40,7 +40,7 @@ ibdb_amazon_cor <- get_tidy_corr_text(by_book_review_data,
 
 For each book in the WCBC we collected a sample of the most recent reviews on Amazon.com. There were reviews for all but two books, with an average of `r printnum(mean(review_data$n_reviews_total))` reviews per book (_SD_ = `r printnum(sd(review_data$n_reviews_total))`; min = `r printnum(min(review_data$n_reviews_total), digits = 0)`; max = `r printnum(max(review_data$n_reviews_total), digits = 0)`). The content of each review was coded for the presence of 16 gendered kinship terms (e.g., “son”, “daughter”, “nephew”, “niece”; see SI for full list). We selected these target words because they had a high likelihood of referring to the child for whom the book was purchased (e.g., “My son loves *Goodnight Moon*.”), rather than referring to a book character. All but two books had reviews containing at least one of our target gendered kinship terms. Overall, `r printnum(mean(by_book_review_data$prop_review_gendered, na.rm = T)*100)`% of reviews per book contained at least one target gendered kinship term (_SD_ = `r printnum(sd(by_book_review_data$prop_review_gendered, na.rm = T))`). For each review, we calculated an audience gender score as the proportion of female kinship terms (tokens) present relative to all target kinship words, and then averaged across reviews from the same book to get a book-level estimate of the gender of book addressees (_M_ = `r printnum(mean(by_book_review_data$addressee_gender_score_token, na.rm = T))`; _SD_ = `r printnum(sd(by_book_review_data$addressee_gender_score_token, na.rm = T))`; see SI for supplemental models predicting book gender at the review level). 
 
-We validated our computed audience gender score by comparing it to survey data collected by @kam_2017, who asked a sample of 1,107 Canadian caregivers to list the five books most frequently read to their male or female child. Of the books with at least 5 survey responses, `r n_amazon_ibdb_books` were also in the WCBC. Our review-based gender measure was positively correlated with Kam and Matthewson’s survey based measure (`r ibdb_amazon_cor`), suggesting that book reviews can be used to estimate whether a given book is primarily read to boys or girls.
+We validated our computed audience gender score by comparing it to survey data collected by @kam_2017, who asked a sample of 1,107 Canadian caregivers to list the five books most frequently read to their male or female child. Of the books with at least 5 survey responses, `r n_amazon_ibdb_books` were also in the WCBC. Our review-based gender measure was positively correlated with Hudson Kam and Matthewson’s survey based measure (`r ibdb_amazon_cor`), suggesting that book reviews can be used to estimate whether a given book is primarily read to boys or girls.
 
 ```{r}
 char_addressee_corr <- get_tidy_corr_text(by_book_review_data,
@@ -143,7 +143,7 @@ characteraudienceplot <- by_book_review_data %>%
     ggtitle("Prop. Female Audience vs.\nCharacter Gender Scores") +
     scale_x_continuous(breaks = c(1,2,3,4,5), 
                      label = c("1\n(male-\nbiased)",  "2" ,"3", "4", "5\n(female-\nbiased)")) +
-    annotate("text", x = 4, y = .1, label = paste0("italic(r) ==  ", 
+    annotate("text", x = 4, y = .07, label = paste0("italic(r) ==  ", 
                                                      f_num(char_addressee_corr_r)),
            color = "red", size = 4, parse = T) +
     theme_classic(base_size = 10) +

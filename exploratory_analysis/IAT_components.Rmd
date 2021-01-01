@@ -60,7 +60,7 @@ ggplot(swab_means, aes(x = name, y = mean)) +
   geom_bar(stat = "identity" ) +
   geom_linerange(aes(ymin = ci_lower, ymax = ci_upper), position = position_dodge(width = .9)) +
   geom_hline(aes(yintercept = 0), color = "red", linetype = 2) +
-  ylab("Mean cosine distance") +
+  ylab("Mean cosine similarity") +
   xlab("Category type") +
   facet_grid(group~ bias_type) +
   theme_bw()

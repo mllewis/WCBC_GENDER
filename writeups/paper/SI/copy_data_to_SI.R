@@ -19,9 +19,13 @@ data_for_SI <-
     here("data/processed/words/gender_ratings_mean.csv"),
     here("data/processed/other/audience_mixed_effect_models.csv"),
     here("data/processed/other/audience_plot_data.csv"),
-    here("data/processed/words/all_word_measures_tidy.csv"),
+    here("data/processed/words/word_properties_corrs.csv"),
+    here("data/processed/words/TASA_word_properties_model.csv"),
+    here("data/processed/words/SUBTLEXUS_word_properties_model.csv"),
+    here("data/processed/words/WCBC_word_properties_model.csv"),
     here("data/processed/books/character_mixed_effect_models.csv"),
     here("data/processed/books/character_gender_means.csv"),
+    here("data/processed/words/by_word_embedding_corr_table.csv"),
     here("data/processed/other/year_interaction_model.csv"), # year analyses
     here("data/processed/other/year_all_plot.jpeg"),
     here("data/processed/other/year_char_plot.jpeg")
