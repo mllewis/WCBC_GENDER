@@ -1,0 +1,243 @@
+---
+title             : "What might books be teaching young children about gender?"
+shorttitle        : "Gender in children's books"
+
+author:  
+  - name          : "XXX"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "XXX"
+    email         : "XXX"
+  - name          : "XX"
+    affiliation   : "2"
+    email         : "cooperborken@wisc.edu"
+  - name          : "XXX"
+    affiliation   : "2"
+    email         : "econverse@wisc.edu"
+  - name          : "XXX"
+    affiliation   : "2"
+    email         : "glupyan@wisc.edu"
+  - name          : "XXX"
+    affiliation   : "2"
+    email         : "seidenberg@wisc.edu "
+affiliation:
+  - id            : "1"
+    institution   : "XXX"
+  - id            : "2"
+    institution   : "XXX"
+    
+author_note: | 
+abstract: |
+  We investigated how gender is represented in children's books using a 200,000 word corpus comprising 247 popular, contemporary books for young children (0-5 years). Using human judgments and word co-occurrence data, we quantified the gender biases of words within the corpus and within individual books. We find that children's books contain large numbers of words that adults judge as gendered. Semantic analyses based on co-occurrence data yielded word clusters related to gender stereotypes (e.g., feminine: emotions; masculine: tools). Co-occurrence data also indicate that books instantiate gender stereotypes found in other research (e.g., girls are better at reading and boys at math). Finally, we used large-scale data to estimate the gender distribution of the audience for individual books, and find that children tend to be exposed to gender stereotypes for their own gender. Together the data suggest that children's books may be an early source of gender stereotypes.
+  
+  STATMENT OF RELEVANCE:  Gender stereotypes such as that girls are better at reading and boys are better at math have origins in early childhood. We examined the extent to which popular children's books may expose young 0-5 year old children to information about gender stereotypes. Our data suggest that children's books have rich information about gender stereotypes, and that some of these stereotypes are more strongly represented in children's books than in adult fiction. These findings suggest that popular children's books may be unintentionally teaching young children about gender stereotypes.
+  
+keywords          : "reading, gender, language development"
+wordcount         : "2051 (excluding methods and results)"
+bibliography      : ["references.bib"]
+header-includes:
+  - \usepackage{setspace}
+  - \usepackage{float}
+  - \usepackage{graphicx}
+#  - \usepackage{booktabs}
+  - \usepackage{tabu}
+  - \usepackage{makecell}
+  - \AtBeginEnvironment{tabular}{\singlespacing}
+  - \usepackage{pbox}
+  - \usepackage{hyphsubst}
+  - \floatplacement{figure}{t!} # make every figure with caption = t
+  - \raggedbottom
+  - \renewcommand{\topfraction}{1}
+  - \renewcommand{\bottomfraction}{1}
+  - \renewcommand{\textfraction}{.1}
+  - \renewcommand{\floatpagefraction}{1}
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{multirow}
+  - \usepackage{wrapfig}
+  - \usepackage{float}
+  - \usepackage{colortbl}
+  - \usepackage{pdflscape}
+  - \usepackage{tabu}
+  - \usepackage{threeparttable}
+  - \usepackage{threeparttablex}
+  - \usepackage[normalem]{ulem}
+  - \usepackage{makecell}
+  - \usepackage{xcolor}
+
+
+figsintext        : yes
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+lineno            : no
+documentclass     : "apa6"
+lang              : "english"
+class             : "man"
+output            : papaja::apa6_pdf
+#papaja::apa6_docx
+  
+
+---
+
+```{r load_utility_packages, include = FALSE}
+library(papaja)
+library(rmarkdown)
+library(tidyverse) 
+library(here)
+library(kableExtra)
+
+source(here("writeups/paper/paper_helpers.R"))
+```
+
+```{r global_options, include = FALSE}
+#redoc::redoc(highlight_outputs = FALSE)
+knitr::opts_chunk$set(warning = FALSE, 
+                      message = FALSE, 
+                      cache = FALSE,
+                      echo = FALSE,
+                      out.extra = "",
+                      fig.pos = "t!",  sanitize = TRUE)
+options(knitr.table.format = "latex")
+```
+
+
+
+```{r}
+LABEL_DATA <- here("data/processed/words/cluster_labels.csv")
+cluster_labels <- read_csv(LABEL_DATA)
+
+TNSE_DATA <- here("data/processed/words/gender_centroids_tsne_coordinates.csv")
+centroid_df <- read_csv(TNSE_DATA)  %>%
+    left_join(cluster_labels)  %>%
+    select(cluster_id, n, effect_size, eff_conf_low, eff_conf_high, 
+           cluster_label, gender_bias)
+
+gender_bias_counts <- count(centroid_df, gender_bias)
+```
+
+
+```{r clusterexamples}
+target_clusters <- c("zoo animals", "airborne actions", "tools", "professions",
+                     "transportation (ground)", "communication verbs", "affection",
+                     "modifiers", "school", "food",
+                     "body parts", "spatial terms", "family relationships", "house parts",
+                     "quantifiers")
+
+target_cluster_df <- centroid_df %>%
+  filter(cluster_label %in% target_clusters) %>%
+  arrange(effect_size)
+
+cluster_examples <- tibble(cluster_id = c(75, 50, 17, 97, 86, 89, 24, 96, 23, 13,
+                                          68, 71, 43, 36, 33),
+       example_words = c("judge, policemen, guard, sailor, mayor, clerk",
+                         "car, bicycle, trains, ambulance, engine, traffic",
+                         "axe, blade, knife, bow, stick, wood",
+                         "climbed, tossed, jumped, knocked, pulled, swung",
+                         "giraffe, elephant, gorilla, lion, monkey, zebra",
+                         "meatballs, soup, eggs, milk, pie, salad",
+                         "learning, practicing, school, students, writing, book",
+                         "spoke, listened, heard, explained, asked, answered",
+                         "probably, whenever, truly, likely, completely, yet",
+                         "kisses, loved, smile, tears, heart, care",
+                         "across, long, low, through, close",
+                         "few, almost, many, most, whole",
+                         "bedroom, floor, lamp, roof, window",
+                         "eye, knee, ankle, hair, bone",
+                         "children, brother, sister, uncle, aunt")) %>%
+  left_join(target_cluster_df) %>%
+  mutate(gender_bias = fct_relevel(gender_bias, "female", "neither")) %>%
+  arrange(gender_bias, -effect_size)%>%
+  mutate_if(is.numeric, round, 2) %>%
+  mutate(ES_string = paste0(effect_size, " [", eff_conf_low, ", ", eff_conf_high,
+                            "]")) %>%
+  select(cluster_label, ES_string, n, example_words) 
+
+
+kable(cluster_examples,  "latex", booktabs = T,  escape = F, longtable = F,
+      caption = "Examples of Clusters from Multi-Dimensional Embeddings",
+      col.names = linebreak(c("Category", "Effect Size", "$N$", "Examples"))) %>%
+  kable_styling(latex_options = c("scale_down")) %>%
+  pack_rows("Female-Biased Clusters", 1, 5) %>%
+  pack_rows("Neutral Clusters", 6, 10) %>%
+  pack_rows("Male-Biased Clusters", 11, 15)  %>%
+  footnote(general = "Effect size measure is Cohen's $d$ based on a one-sample $t$-test comparing the mean gender of words in a cluster to the overall word gender mean. Clustering is an unsupervised machine learning method for dividing observations into k clusters by minimizing within-cluster distance and maximizing across-cluster distance. Brackets give bootstrapped 95 percent confidence intervals. $N$ indicates number of words in each cluster.", general_title = "Note:", footnote_as_chunk = T, threeparttable = T, escape = F)
+
+```
+
+
+```{r iattablex}
+FS <- 8
+iattablethis <- tibble(psychbias = c("women as good;\nmen as bad", 
+                                                            "women and family;\nmen and career",
+                      "women and language;\nmen and math", 
+                      "women and arts;\n men and math"),
+                    words = c('``good": good, happy, gift,  sunshine, heaven\n``bad": bad, awful, sick, trouble, hurt',
+                              '``family": family, parents, children, home, cousins, wedding\n``career": job,  work,  money, office, business, desk',
+                              '``language": books, read, write, story, letters, spell\n``math": numbers, count,  sort,  size, shapes, different',
+                              '``art": art, paint, draw, books, dance, story\n``math": numbers, count,  sort,  size, shapes, different'),
+                    citation = c(
+                              "Cveneck, Meltzoff, \\& Greenwald (2011b, C); Skowronski \\& Lawrence (2001, C/A); Greenwald et al. (2002, A); Rudman \\& Goodman (2004, A)", "Nosek, Banaji,   \\& Greenwald (2002, A)", "Cveneck, Meltzoff, Greenwald (2011a, C); Nosek, Banaji,  \\& Greenwald, (2002, A)", " Nosek, Banaji \\& Greenwald (2002, A)")) %>%
+  mutate(psychbias = cell_spec(psychbias, font_size = FS),
+         words = cell_spec(words, font_size = FS),
+         citation = cell_spec(citation, font_size = FS))
+
+
+kable(iattablethis, "latex", booktabs = T, escape = F, longtable = T, 
+      caption = "Four IATs used to study gender bias",
+      col.names = c("Psychological Bias", "Target Words", "Behavioral Studies")) %>% #
+  kable_styling(full_width = T) %>%
+  column_spec(column = 1, width = "9em") %>%
+  column_spec(column = 2, width = "27em") %>%
+  column_spec(column = 3, width = "15em") 
+  
+  # kable_styling(latex_options = c("scale_down")) 
+  #kable_styling(font_size = 7)
+ # kable_styling(font_size = 1)  %>%
+ # kable_styling(latex_options = c("scale_down"))
+ # kable_styling(font_size = 5) 
+ # column_spec(column = 1, width = "9em") %>%
+  #column_spec(column = 2, width = "9em") %>%
+  #column_spec(column = 3, width = "9em") 
+```
+
+```{r}
+ mtcars[1:10, 1:2] %>%
+ mutate(
+ car = row.names(.),
+  mpg = cell_spec(mpg,  color = ifelse(mpg > 20, "red", "blue"), font_size =4),
+  cyl = cell_spec(cyl, , color = "white", align = "c", angle = 45,
+  background = factor(cyl, c(4, 6, 8),
+ c("#666666", "#999999", "#BBBBBB")))
+ ) %>%
+ select(car, mpg, cyl) %>%
+ kbl(escape = F) %>%
+ kable_styling("striped", full_width = F)
+
+```
+
+
+```{r iattable, eval = F}
+iattablethis <- tibble(psych_bias = c("women as good;\nmen as bad", 
+                                                            "women and family;\nmen and career",
+                      "women and language;\nmen and math", 
+                      "women and arts;\n men and math"),
+                    words = c('``good": good, happy, gift,  sunshine, heaven\n``bad": bad, awful, sick, trouble, hurt',
+                              '``family": family, parents, children, home, cousins, wedding\n``career": job,  work,  money, office, business, desk',
+                              '``language": books, read, write, story, letters, spell\n``math": numbers, count,  sort,  size, shapes, different',
+                              '``art": art, paint, draw, books, dance, story\n``math": numbers, count,  sort,  size, shapes, different'),
+                    citation = c(
+                              "Cveneck, Meltzoff, \\& Greenwald (2011b, C); Skowronski \\& Lawrence (2001, C/A); Greenwald et al. (2002, A); Rudman \\& Goodman (2004, A)", "Nosek, Banaji,   \\& Greenwald (2002, A)", "Cveneck, Meltzoff, Greenwald (2011a, C); Nosek, Banaji,  \\& Greenwald, (2002, A)", " Nosek, Banaji \\& Greenwald (2002, A)"))
+
+kable(iattablethis, "latex", booktabs = T, escape = F, longtable = T, 
+      caption = "Four IATs used to study gender bias",
+      col.names = c("Psychological Bias", "Target Words", "Behavioral Studies")) %>% #
+  kable_styling(font_size = 9,
+                full_width = T, 
+                "striped")  %>%
+  column_spec(column = 1, width = "9em") %>%
+  column_spec(column = 2, width = "27em") %>%
+  column_spec(column = 3, width = "15em") %>%
+  footnote("The left column describes the bias; the middle column lists the actual words tested for the target categories; the right column cites behavioral studies measuring the psychological bias. The words for the \``female\" and \``male\" categories were identical across all tests (see Main Text). Note that the words differ slightly from the stimuli used in the behavioral studies. \``C\" and \``A\" in citations indicate whether  participants were children or adults, respectively.", general_title = "Note:", footnote_as_chunk = T, threeparttable = T, escape = F)
+```

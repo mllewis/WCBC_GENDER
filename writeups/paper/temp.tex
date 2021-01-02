@@ -1,0 +1,261 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  english,
+  ,man,floatsintext]{apa6}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={What might books be teaching young children about gender?},
+  pdfauthor={XXX1, XX2, XXX2, XXX2, \& XXX2},
+  pdflang={en-EN},
+  pdfkeywords={reading, gender, language development},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+% Make \paragraph and \subparagraph free-standing
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+% Manuscript styling
+\usepackage{upgreek}
+\captionsetup{font=singlespacing,justification=justified}
+
+% Table formatting
+\usepackage{longtable}
+\usepackage{lscape}
+% \usepackage[counterclockwise]{rotating}   % Landscape page setup for large tables
+\usepackage{multirow}		% Table styling
+\usepackage{tabularx}		% Control Column width
+\usepackage[flushleft]{threeparttable}	% Allows for three part tables with a specified notes section
+\usepackage{threeparttablex}            % Lets threeparttable work with longtable
+
+% Create new environments so endfloat can handle them
+% \newenvironment{ltable}
+%   {\begin{landscape}\begin{center}\begin{threeparttable}}
+%   {\end{threeparttable}\end{center}\end{landscape}}
+\newenvironment{lltable}{\begin{landscape}\begin{center}\begin{ThreePartTable}}{\end{ThreePartTable}\end{center}\end{landscape}}
+
+% Enables adjusting longtable caption width to table width
+% Solution found at http://golatex.de/longtable-mit-caption-so-breit-wie-die-tabelle-t15767.html
+\makeatletter
+\newcommand\LastLTentrywidth{1em}
+\newlength\longtablewidth
+\setlength{\longtablewidth}{1in}
+\newcommand{\getlongtablewidth}{\begingroup \ifcsname LT@\roman{LT@tables}\endcsname \global\longtablewidth=0pt \renewcommand{\LT@entry}[2]{\global\advance\longtablewidth by ##2\relax\gdef\LastLTentrywidth{##2}}\@nameuse{LT@\roman{LT@tables}} \fi \endgroup}
+
+% \setlength{\parindent}{0.5in}
+% \setlength{\parskip}{0pt plus 0pt minus 0pt}
+
+% \usepackage{etoolbox}
+\makeatletter
+\patchcmd{\HyOrg@maketitle}
+  {\section{\normalfont\normalsize\abstractname}}
+  {\section*{\normalfont\normalsize\abstractname}}
+  {}{\typeout{Failed to patch abstract.}}
+\patchcmd{\HyOrg@maketitle}
+  {\section{\protect\normalfont{\@title}}}
+  {\section*{\protect\normalfont{\@title}}}
+  {}{\typeout{Failed to patch title.}}
+\makeatother
+\shorttitle{Gender in children's books}
+\keywords{reading, gender, language development\newline\indent Word count: 2051 (excluding methods and results)}
+\usepackage{csquotes}
+\usepackage{setspace}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{tabu}
+\usepackage{makecell}
+\AtBeginEnvironment{tabular}{\singlespacing}
+\usepackage{pbox}
+\usepackage{hyphsubst}
+\floatplacement{figure}{t!}
+\raggedbottom
+\renewcommand{\topfraction}{1}
+\renewcommand{\bottomfraction}{1}
+\renewcommand{\textfraction}{.1}
+\renewcommand{\floatpagefraction}{1}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\ifxetex
+  % Load polyglossia as late as possible: uses bidi with RTL langages (e.g. Hebrew, Arabic)
+  \usepackage{polyglossia}
+  \setmainlanguage[]{english}
+\else
+  \usepackage[shorthands=off,main=english]{babel}
+\fi
+
+\title{What might books be teaching young children about gender?}
+\author{XXX\textsuperscript{1}, XX\textsuperscript{2}, XXX\textsuperscript{2}, XXX\textsuperscript{2}, \& XXX\textsuperscript{2}}
+\date{}
+
+
+\affiliation{\vspace{0.5cm}\textsuperscript{1} XXX\\\textsuperscript{2} XXX}
+
+\abstract{
+We investigated how gender is represented in children's books using a 200,000 word corpus comprising 247 popular, contemporary books for young children (0-5 years). Using human judgments and word co-occurrence data, we quantified the gender biases of words within the corpus and within individual books. We find that children's books contain large numbers of words that adults judge as gendered. Semantic analyses based on co-occurrence data yielded word clusters related to gender stereotypes (e.g., feminine: emotions; masculine: tools). Co-occurrence data also indicate that books instantiate gender stereotypes found in other research (e.g., girls are better at reading and boys at math). Finally, we used large-scale data to estimate the gender distribution of the audience for individual books, and find that children tend to be exposed to gender stereotypes for their own gender. Together the data suggest that children's books may be an early source of gender stereotypes.
+
+STATMENT OF RELEVANCE: Gender stereotypes such as that girls are better at reading and boys are better at math have origins in early childhood. We examined the extent to which popular children's books may expose young 0-5 year old children to information about gender stereotypes. Our data suggest that children's books have rich information about gender stereotypes, and that some of these stereotypes are more strongly represented in children's books than in adult fiction. These findings suggest that popular children's books may be unintentionally teaching young children about gender stereotypes.
+}
+
+
+
+\begin{document}
+\maketitle
+
+\begin{table}
+
+\caption{\label{tab:clusterexamples}Examples of Clusters from Multi-Dimensional Embeddings}
+\centering
+\resizebox{\linewidth}{!}{
+\begin{threeparttable}
+\begin{tabular}[t]{llrl}
+\toprule
+Category & Effect Size & $N$ & Examples\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Female-Biased Clusters}}\\
+\hspace{1em}affection & 1.33 [0.9, 2.1] & 21 & kisses, loved, smile, tears, heart, care\\
+\hspace{1em}modifiers & 0.79 [0.49, 1.27] & 34 & probably, whenever, truly, likely, completely, yet\\
+\hspace{1em}communication verbs & 0.74 [0.43, 1.14] & 25 & spoke, listened, heard, explained, asked, answered\\
+\hspace{1em}school & 0.54 [0.12, 1.12] & 20 & learning, practicing, school, students, writing, book\\
+\hspace{1em}food & 0.44 [0.15, 0.8] & 43 & meatballs, soup, eggs, milk, pie, salad\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Neutral Clusters}}\\
+\hspace{1em}family relationships & 0.19 [-0.18, 0.63] & 29 & children, brother, sister, uncle, aunt\\
+\hspace{1em}body parts & 0.14 [-0.16, 0.48] & 41 & eye, knee, ankle, hair, bone\\
+\hspace{1em}house parts & 0.08 [-0.24, 0.4] & 40 & bedroom, floor, lamp, roof, window\\
+\hspace{1em}quantifiers & 0.05 [-0.29, 0.4] & 36 & few, almost, many, most, whole\\
+\hspace{1em}spatial terms & -0.31 [-0.71, 0.02] & 39 & across, long, low, through, close\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Male-Biased Clusters}}\\
+\hspace{1em}zoo animals & -0.53 [-1.27, -0.07] & 23 & giraffe, elephant, gorilla, lion, monkey, zebra\\
+\hspace{1em}airborne actions & -0.83 [-1.21, -0.54] & 37 & climbed, tossed, jumped, knocked, pulled, swung\\
+\hspace{1em}tools & -0.89 [-1.42, -0.52] & 20 & axe, blade, knife, bow, stick, wood\\
+\hspace{1em}transportation (ground) & -1.23 [-1.62, -0.93] & 40 & car, bicycle, trains, ambulance, engine, traffic\\
+\hspace{1em}professions & -1.35 [-2.19, -0.92] & 23 & judge, policemen, guard, sailor, mayor, clerk\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[para]
+\item \textit{Note:} 
+\item Effect size measure is Cohen's $d$ based on a one-sample $t$-test comparing the mean gender of words in a cluster to the overall word gender mean. Clustering is an unsupervised machine learning method for dividing observations into k clusters by minimizing within-cluster distance and maximizing across-cluster distance. Brackets give bootstrapped 95 percent confidence intervals. $N$ indicates number of words in each cluster.
+\end{tablenotes}
+\end{threeparttable}}
+\end{table}
+
+\begin{longtabu} to \linewidth {>{\raggedright\arraybackslash}p{9em}>{\raggedright\arraybackslash}p{27em}>{\raggedright\arraybackslash}p{15em}}
+\caption{\label{tab:iattablex}Four IATs used to study gender bias}\\
+\toprule
+Psychological Bias & Target Words & Behavioral Studies\\
+\midrule
+\bgroup\fontsize{8}{10}\selectfont women as good;
+men as bad\egroup{} & \bgroup\fontsize{8}{10}\selectfont ``good": good, happy, gift,  sunshine, heaven
+``bad": bad, awful, sick, trouble, hurt\egroup{} & \bgroup\fontsize{8}{10}\selectfont Cveneck, Meltzoff, \textbackslash{}\& Greenwald (2011b, C); Skowronski \textbackslash{}\& Lawrence (2001, C/A); Greenwald et al. (2002, A); Rudman \textbackslash{}\& Goodman (2004, A)\egroup{}\\
+\bgroup\fontsize{8}{10}\selectfont women and family;
+men and career\egroup{} & \bgroup\fontsize{8}{10}\selectfont ``family": family, parents, children, home, cousins, wedding
+``career": job,  work,  money, office, business, desk\egroup{} & \bgroup\fontsize{8}{10}\selectfont Nosek, Banaji,   \textbackslash{}\& Greenwald (2002, A)\egroup{}\\
+\bgroup\fontsize{8}{10}\selectfont women and language;
+men and math\egroup{} & \bgroup\fontsize{8}{10}\selectfont ``language": books, read, write, story, letters, spell
+``math": numbers, count,  sort,  size, shapes, different\egroup{} & \bgroup\fontsize{8}{10}\selectfont Cveneck, Meltzoff, Greenwald (2011a, C); Nosek, Banaji,  \textbackslash{}\& Greenwald, (2002, A)\egroup{}\\
+\bgroup\fontsize{8}{10}\selectfont women and arts;
+ men and math\egroup{} & \bgroup\fontsize{8}{10}\selectfont ``art": art, paint, draw, books, dance, story
+``math": numbers, count,  sort,  size, shapes, different\egroup{} & \bgroup\fontsize{8}{10}\selectfont  Nosek, Banaji \textbackslash{}\& Greenwald (2002, A)\egroup{}\\
+\bottomrule
+\end{longtabu}
+
+\begin{table}[H]
+\centering
+\begin{tabular}[t]{l|l|l}
+\hline
+car & mpg & cyl\\
+\hline
+Mazda RX4 & \bgroup\fontsize{4}{6}\selectfont \textcolor{red}{21}\egroup{} & \multicolumn{1}{c}{\rotatebox{45}{\cellcolor[HTML]{999999}{\textcolor{white}{6}}}}\\
+\hline
+Mazda RX4 Wag & \bgroup\fontsize{4}{6}\selectfont \textcolor{red}{21}\egroup{} & \multicolumn{1}{c}{\rotatebox{45}{\cellcolor[HTML]{999999}{\textcolor{white}{6}}}}\\
+\hline
+Datsun 710 & \bgroup\fontsize{4}{6}\selectfont \textcolor{red}{22.8}\egroup{} & \multicolumn{1}{c}{\rotatebox{45}{\cellcolor[HTML]{666666}{\textcolor{white}{4}}}}\\
+\hline
+Hornet 4 Drive & \bgroup\fontsize{4}{6}\selectfont \textcolor{red}{21.4}\egroup{} & \multicolumn{1}{c}{\rotatebox{45}{\cellcolor[HTML]{999999}{\textcolor{white}{6}}}}\\
+\hline
+Hornet Sportabout & \bgroup\fontsize{4}{6}\selectfont \textcolor{blue}{18.7}\egroup{} & \multicolumn{1}{c}{\rotatebox{45}{\cellcolor[HTML]{BBBBBB}{\textcolor{white}{8}}}}\\
+\hline
+Valiant & \bgroup\fontsize{4}{6}\selectfont \textcolor{blue}{18.1}\egroup{} & \multicolumn{1}{c}{\rotatebox{45}{\cellcolor[HTML]{999999}{\textcolor{white}{6}}}}\\
+\hline
+Duster 360 & \bgroup\fontsize{4}{6}\selectfont \textcolor{blue}{14.3}\egroup{} & \multicolumn{1}{c}{\rotatebox{45}{\cellcolor[HTML]{BBBBBB}{\textcolor{white}{8}}}}\\
+\hline
+Merc 240D & \bgroup\fontsize{4}{6}\selectfont \textcolor{red}{24.4}\egroup{} & \multicolumn{1}{c}{\rotatebox{45}{\cellcolor[HTML]{666666}{\textcolor{white}{4}}}}\\
+\hline
+Merc 230 & \bgroup\fontsize{4}{6}\selectfont \textcolor{red}{22.8}\egroup{} & \multicolumn{1}{c}{\rotatebox{45}{\cellcolor[HTML]{666666}{\textcolor{white}{4}}}}\\
+\hline
+Merc 280 & \bgroup\fontsize{4}{6}\selectfont \textcolor{blue}{19.2}\egroup{} & \multicolumn{1}{c}{\rotatebox{45}{\cellcolor[HTML]{999999}{\textcolor{white}{6}}}}\\
+\hline
+\end{tabular}
+\end{table}
+
+
+\end{document}

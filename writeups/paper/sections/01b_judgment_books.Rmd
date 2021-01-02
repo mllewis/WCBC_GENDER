@@ -122,7 +122,7 @@ BOOK_EXAMPLE_DATA <- here("data/processed/other/example_gender_books.csv")
 book_data <-  read_csv(BOOK_EXAMPLE_DATA) %>%
         mutate(X1 = linebreak(X1, linebreaker = "\n"))
 
-kable(book_data,  "latex", booktabs = TRUE, escape = FALSE,linesep = c( 
+kable(book_data,  "latex", booktabs = TRUE, escape = FALSE, linesep = c( 
   "\\addlinespace\\addlinespace"),
       caption = "Representative female-biased, neutral, and male-biased books",
       col.names = linebreak(c("", "female-biased", "neutral", "male-biased"))) %>%
@@ -130,9 +130,11 @@ kable(book_data,  "latex", booktabs = TRUE, escape = FALSE,linesep = c(
     #kable_styling(latex_options = c("striped")) %>%
     row_spec(0,bold=TRUE) %>%
     column_spec(1, bold=TRUE, width = "4.9em") %>%
+    kable_styling(latex_options = c("scale_down")) %>%
     column_spec(2, width = "10em") %>%
     column_spec(3, width = "10em") %>%
     column_spec(4, width = "10em") %>%
+
   footnote(general = " Last row gives 25 most frequent nouns and verbs in each book text. Parentheses denote word gender bias based on human judgments in Study 1a (f = female; m = male).",  footnote_as_chunk = T, threeparttable = T)
 ```
 
