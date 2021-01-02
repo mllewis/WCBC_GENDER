@@ -4,7 +4,7 @@
 
 ## Study 1a: Gender bias in words
 
-As a first step we asked adult English speakers to rate the genderedness of words in these books using a 5-point scale from masculine to feminine [@scott2019glasgow]. This procedure yields systematic data with good face validity: words such as "axe" and "engine" as masculine, "cuddle" and "pink" are rated as feminine,"exactly" and "nose" as neutral.
+As a first step we asked adult English speakers to rate the genderedness of words in these books using a 5-point scale from masculine to feminine [@scott2019glasgow]. This procedure yields systematic data with good face validity: words such as "axe" and "engine" as masculine, "cuddle" and "pink" are rated as feminine, "exactly" and "nose" as neutral.
 
 ### Method
 
@@ -111,7 +111,7 @@ normed_tokens <- tidy_corpus %>%
   mutate(normed_word = ifelse(!is.na(gender), TRUE, FALSE)) %>%
   count(normed_word) %>%
   mutate( prop_normed = n/sum(n),
-          percent_normed = glue("{round(prop_normed * 100,2)}%")) %>%
+          percent_normed = glue("{round(prop_normed * 100,1)}%")) %>%
   filter(normed_word)
 
 prop_token_normed_by_book <- tidy_corpus %>%
@@ -123,8 +123,10 @@ prop_token_normed_by_book <- tidy_corpus %>%
             n = n()) %>%
   arrange(prop_normed) # min > 30%
 
-mean_per_book_normed <- round(mean(prop_token_normed_by_book$prop_normed) *100,2)
-sd_per_book_normed <- round(sd(prop_token_normed_by_book$prop_normed)*100,2)
+mean_per_book_normed <- round(mean(prop_token_normed_by_book$prop_normed) *100,1) %>%
+  as.character()
+sd_per_book_normed <- round(sd(prop_token_normed_by_book$prop_normed)*100,1) %>%
+  as.character()
 
 prop_type_normed_by_book <- tidy_corpus %>%
   left_join(mean_rating_no_sense) %>%
@@ -136,8 +138,11 @@ prop_type_normed_by_book <- tidy_corpus %>%
             n = n()) %>%
   arrange(prop_normed)
 
-mean_type_per_book_normed <- round(mean(prop_type_normed_by_book$prop_normed) *100,2)
-sd_type_per_book_normed <- round(sd(prop_type_normed_by_book$prop_normed)*100,2)
+mean_type_per_book_normed <- round(mean(prop_type_normed_by_book$prop_normed) *100,1) %>% 
+  as.character()
+sd_type_per_book_normed <- round(sd(prop_type_normed_by_book$prop_normed)*100,1) %>%
+  as.character()
+
 ```
 
 ```{r pos}
@@ -150,7 +155,7 @@ pos_dist <- pos_of_normed_words %>%
                         dom_po_s_subtlex %in% c("Noun","Name") ~ "noun",
                         TRUE ~ "other")) %>%
     count(pos) %>%
-    mutate(perc = glue("{round(n/sum(n) * 100,2)}%"))
+    mutate(perc = glue("{round(n/sum(n) * 100,1)}%"))
 
 prop_verbs <- pos_dist %>%
   filter(pos == "verb") %>%
@@ -159,7 +164,6 @@ prop_verbs <- pos_dist %>%
 prop_noun <- pos_dist %>%
   filter(pos == "noun") %>%
   pull(perc)
-
 ```
 
 Because it was infeasible to collect gender norms for all `r format(nrow(distinct(tidy_corpus, word)), big.mark = ",")` unique words, ratings were obtained for a large subset of the most important content-bearing words (_N_ = `r format(nrow(by_word_means), big.mark = ",")`). This subset was largely composed of nouns (`r prop_noun`) and verbs (`r prop_verbs`). We also included the names of all characters (e.g. "Amelia", "Yertle"). A short context was provided to indicate a specific meaning of homonyms, e.g., "pin (hold down)", "creep (move slowly)", "act (part of a play)", "act (to take action)". The norms included `r pull(normed_tokens, percent_normed)` of the tokens in the corpus excluding stop words, and at least 30% of the tokens in each book  (_M_ = `r mean_per_book_normed`%; _SD_ = `r sd_per_book_normed`%; types: _M_ = `r mean_type_per_book_normed`%; _SD_ = `r sd_type_per_book_normed`%).

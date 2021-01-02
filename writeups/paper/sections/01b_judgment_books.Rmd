@@ -6,12 +6,12 @@ overall_token_mean <- mean(gender_rating_by_book_mean_only$token_gender_mean)
 
 CHARACTER_PATH <- here("data/raw/other/character_gender_by_book.csv")
 characters <- read_csv(CHARACTER_PATH)  %>%
-  filter(!(book_id %in% c("L105", "L112"))) # "Journey" and "Anno's Journey" are pictures books
+  filter(!(book_id %in% c("L105", "L112"))) # "Journey" and "Anno's Journey" are picture books
 
 book_means <- gender_rating_by_book_mean_only %>%
   left_join(characters %>% select(book_id,char_main_gender, 
                                   char_second_gender)) %>%
-  filter(!(book_id %in% c("L105", "L112"))) # "Journey" and "Anno's Journey" are pictures books
+  filter(!(book_id %in% c("L105", "L112"))) # "Journey" and "Anno's Journey" are picture books
 ```
 
 ## Study 1b: Gender bias in books
@@ -65,7 +65,7 @@ all_book_means <- book_means %>%
 
 ```
 
-We calculated an overall gender bias score for each book as the mean gender bias score of all the normed words (tokens) in the text. On average, there were gender norms for `r pull(prop_present, mean)*100`% ([`r pull(prop_present, ci_lower)*100`%, `r pull(prop_present, ci_upper)*100`%]) of all tokens in the books (see SI for details and additional analyses). The overall average gender score did not exhibit a strong bias (_M_ =  `r pull(overall_gender_mean_token, mean)` [`r pull(overall_gender_mean_token, ci_lower)`, `r pull(overall_gender_mean_token, ci_upper)`]), but there was substantial variability (_SD_ = `r overall_sd`), with some books showing much greater “masculine” or “feminine” bias. 
+We calculated an overall gender bias score for each book as the mean gender bias score of all the normed words (tokens) in the text. On average, there were gender norms for `r round(pull(prop_present, mean)*100, 1) %>% as.character()`% ([`r round(pull(prop_present, ci_lower)*100, 1) %>% as.character()`%, `r round(pull(prop_present, ci_upper)*100,1) %>% as.character()`%]) of all tokens in the books (see SI for details and additional analyses). The overall average gender score did not exhibit a strong bias (_M_ =  `r pull(overall_gender_mean_token, mean)` [`r pull(overall_gender_mean_token, ci_lower)`, `r pull(overall_gender_mean_token, ci_upper)`]), but there was substantial variability (_SD_ = `r overall_sd`), with some books showing much greater “masculine” or “feminine” bias. 
 
 ```{r}
 gender_by_corpus_type <- book_means %>%
@@ -102,9 +102,12 @@ ggplot(all_book_means, aes(x = reorder(title, token_gender_mean),
                       "lightgrey"), 
       name = "Primary character\ngender") +
   xlab("Book Title") +
-  ylab("Book Gender Score (female-ness)") +
+  ylab("Book Gender Score") +
   ggtitle("Mean Gender Rating by Book") +
   theme_classic() +
+  scale_y_continuous(breaks = c(2.0, 2.5, 3.0, 3.5, 4.0), 
+                     label = c("2.0\n(male-\nbiased)\n",  "2.5" ,"3.0", "3.5", "4.0\n(female-\nbiased)"),
+                     limits = c(1.8, 4)) +
   theme(axis.text.y = element_text(size = 5.5)) +
        # legend.position = c(.8,.2)) +
   guides(colour = guide_legend(override.aes = list(size=5)))
@@ -175,7 +178,7 @@ charactercontentplot <- corr_df %>%
     theme_classic(base_size = 10) +
     theme(#axis.line = element_line(size = .8),
           legend.position = "none",
-          axis.text.x = element_text(angle = 45, hjust = 1))
+          axis.text.x = element_text(angle = 45, hjust = 1)) # this is so x axes line up in multi panel figure
 ```
 
 ```{r}
@@ -303,7 +306,8 @@ content_means_for_violin <- violin_data %>%
   multi_boot_standard(col = "token_gender_mean")
 
 violin_plot1 <- ggplot(violin_data %>% filter(token_gender_mean < 3.5), # exclude one point
-         aes(x = char_main_gender2, y = token_gender_mean, color = fct_rev(char_main_gender2))) +
+         aes(x = char_main_gender2, y = token_gender_mean, 
+             color = fct_rev(char_main_gender2))) +
   geom_violin() +
   geom_jitter(alpha = .7, size = 1) +
   geom_point(data = content_means_for_violin, 
@@ -327,7 +331,7 @@ violin_plot1 <- ggplot(violin_data %>% filter(token_gender_mean < 3.5), # exclud
   ggtitle("Book Content vs.\nCharacter Gender") +
   xlab("Primary Character Gender") +
   ylab("Content Gender Score") +
-  theme_classic(base_size = 10) +
+  theme_classic(base_size = 10)  +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 cowplot::plot_grid(charactercontentplot, violin_plot1, ncol = 2,
