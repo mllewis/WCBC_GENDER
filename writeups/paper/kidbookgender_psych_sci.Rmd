@@ -34,7 +34,7 @@ abstract: |
 
   
 keywords          : "reading, gender, language development"
-wordcount         : "2048 (excluding methods and results)"
+wordcount         : "1996 (excluding methods and results)"
 bibliography      : ["references.bib"]
 header-includes:
   - \usepackage{setspace}
