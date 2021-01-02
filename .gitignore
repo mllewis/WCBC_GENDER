@@ -35,7 +35,7 @@ writeups/paper/kidbookgender_files/figure-latex/*
 writeups/paper/kidbookgender_psych_sci_cache/latex/*
 writeups/paper/kidbookgender_psych_sci_files/figure-latex/*
 writeups/paper/SI/rsconnect/*
-resources/*
+writeups/paper/scratch/*
 
 # LaTeX #
 *.bet
