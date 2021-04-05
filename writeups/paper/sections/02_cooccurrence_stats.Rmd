@@ -95,7 +95,7 @@ These findings suggest that some of the word-level gender associations that emer
 
 ## Study 2b: Specific gender stereotypes in children's books
 
-We next examined gender bias beyond the word level, asking whether children’s books instantiate specific gender stereotypes.
+We next examined gender bias beyond the word level, asking whether children’s books instantiate specific gender stereotypes. 
 
 ### Method and Results
 
@@ -205,5 +205,5 @@ language_plot_data %>%
 
 \autoref{fig:languageiat}  shows the effect size for each of the four biases from models trained on each of the three corpora. Positive values indicate a bias to associate women with the stereotypical female category (e.g. women-family). Three of the four gender biases were present in the co-occurrence statistics of the WCBC – Language-Math, Arts-Math, and Family-Career. Importantly, these biases were larger in children’s books than in corpora containing mostly adult-directed language. This finding that behaviorally measurable gender biases are present in an exaggerated form in books for young children provides additional evidence that these books instantiate gender stereotypes that may influence children’s learning of gender stereotypes.
 
-In summary, these studies show that both adult word gender associations and specific gender stereotypes observed in behavioral studies with adults and children are reflected in the co-occurrence statistics of the children’s book corpus.
+In summary, these studies show that both adult word gender associations and specific gender stereotypes observed in behavioral studies with adults and children are reflected in the co-occurrence statistics of the children’s book corpus. These findings are consonant with prior work showing similar biases in a historical corpus of children's books published around 1900 [@charlesworth2021gender],
 

@@ -177,17 +177,6 @@ AoA = Age of acquisition; WCBC = Wisconsin Children's Book Corpus; TASA = Zeno e
                        tableOutput('year_model_table'),
                        br(),
                        br(),
-                       HTML("Finally, we examined the relationship between the gender of the main characters in each book and the book's publication year.
-                       The plot below shows the proportion of books with main characters in each gender category
-                       (male, female, mixed and indeterminate) as a function of publication year.
-                       The width of the bars corresponds to the number of books in our corpus published in each decade.
-                       The data suggest a trend for more recent books to have proportionally fewer male main characters,
-                       and more main characters with indeterminate gender."),
-                       br(),
-                       br(),
-                       imageOutput("year_char",  height = "100px", width = "100px", inline = TRUE),
-                       br(),
-                       br(),
 
                        h2("Study 1c: Models Predicting Word Gender Bias from Book Type"),
 

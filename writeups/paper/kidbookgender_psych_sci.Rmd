@@ -3,28 +3,30 @@ title             : "What might books be teaching young children about gender?"
 shorttitle        : "Gender in children's books"
 
 author:  
-  - name          : "XXX"
-    affiliation   : "1"
+  - name          : "Molly Lewis"
+    affiliation   : "1,2"
     corresponding : yes    # Define only one corresponding author
-    address       : "XXX"
-    email         : "XXX"
-  - name          : "XX"
-    affiliation   : "2"
+    address       : ""
+    email         : "mollyllewis@gmail.com"
+  - name          : "Matt Cooper Borkenhagen"
+    affiliation   : "3"
     email         : "cooperborken@wisc.edu"
-  - name          : "XXX"
-    affiliation   : "2"
+  - name          : "Erin Converse"
+    affiliation   : "3"
     email         : "econverse@wisc.edu"
-  - name          : "XXX"
-    affiliation   : "2"
+  - name          : "Gary Lupyan"
+    affiliation   : "3"
     email         : "glupyan@wisc.edu"
-  - name          : "XXX"
-    affiliation   : "2"
+  - name          : "Mark S. Seidenberg"
+    affiliation   : "3"
     email         : "seidenberg@wisc.edu "
 affiliation:
   - id            : "1"
-    institution   : "XXX"
+    institution   : "Department of Psychology, Carnegie Mellon University"
   - id            : "2"
-    institution   : "XXX"
+    institution   : "Department of Social and Decision Sciences, Carnegie Mellon University"
+  - id            : "3"
+    institution   : "Department of Psychology, University of Wisconsin-Madison"
     
 author_note: | 
 abstract: |
@@ -63,6 +65,7 @@ documentclass     : "apa6"
 lang              : "english"
 class             : "man"
 output            : papaja::apa6_pdf
+draft             : no
 #papaja::apa6_docx
   
 
@@ -88,6 +91,7 @@ library(numform)
 library(rstatix)
 library(lme4)
 library(english)
+library(ggmosaic)
 source(here("writeups/paper/paper_helpers.R"))
 ```
 
