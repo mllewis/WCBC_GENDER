@@ -6,8 +6,8 @@ author:
   - name          : "Molly Lewis"
     affiliation   : "1,2"
     corresponding : yes    # Define only one corresponding author
-    address       : ""
-    email         : "mollyllewis@gmail.com"
+    address       : "Department of Psychology, Carnegie Mellon University, Baker Hall,  Frew St, Pittsburgh, PA 15213"
+    email         : "mollylewis@cmu.edu"
   - name          : "Matt Cooper Borkenhagen"
     affiliation   : "3"
     email         : "cooperborken@wisc.edu"
@@ -28,7 +28,7 @@ affiliation:
   - id            : "3"
     institution   : "Department of Psychology, University of Wisconsin-Madison"
     
-author_note: | 
+authornote: | 
 abstract: |
   We investigate how gender is represented in children’s books using a novel 200,000 word corpus comprising 247 popular, contemporary books for young children. Using human judgments and word co-occurrence data, we quantified gender biases of words in individual books and in the whole corpus. We find that children’s books contain many words that adults judge as gendered. Semantic analyses based on co-occurrence data yielded word clusters related to gender stereotypes (e.g., feminine: emotions; masculine: tools). Co-occurrence data also indicate that many books instantiate gender stereotypes identified in other research (e.g., girls are better at reading and boys at math). Finally, we used large-scale data to estimate the gender distribution of the audience for individual books, and find that children tend to be exposed to gender stereotypes for their own gender. Together the data suggest that children’s books may be an early source of gender associations and stereotypes.  
   
@@ -65,7 +65,6 @@ documentclass     : "apa6"
 lang              : "english"
 class             : "man"
 output            : papaja::apa6_pdf
-draft             : no
 #papaja::apa6_docx
   
 
