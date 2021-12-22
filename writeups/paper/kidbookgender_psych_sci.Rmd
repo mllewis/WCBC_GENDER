@@ -93,6 +93,7 @@ library(lme4)
 library(english)
 library(ggmosaic)
 source(here("writeups/paper/paper_helpers.R"))
+Sys.setenv("VROOM_CONNECTION_SIZE" = 131072 * 100)
 ```
 
 ```{r global_options, include = FALSE}
