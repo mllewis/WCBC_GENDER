@@ -3,10 +3,28 @@ library(shinythemes)
 library(plotly)
 library(ggiraph)
 library(DT)
+fluidPage(
+titlePanel("Explore the representation of gender in children's books"),
 
-navbarPage("What might books be teaching young children about gender?: Supplemental Information", theme = shinytheme("flatly"),
+navbarPage("", theme = shinytheme("flatly"),
          #  header = tags$div(`width` = "200px"),
-           tabPanel("Word Gender Ratings",
+         tabPanel(icon("home"),
+                  fluidRow( 
+                  column(
+                    
+                    br(),
+                    p("This application is the Supplemental Information to Lewis, Cooper Borkenhagen, Converse, Lupyan, & Seidenberg (2021,", em("Psychological Science"), "). 
+                      Use the tabs above to explore the representation of gender in children's books, as well as supplemental methods and results. In the 'Book Gender' tab, you can explore the gender biases of particular titles.
+                      Code and data  are available in the ", a('Github repository ',href="https://github.com/mllewis/WCBC_GENDER/"), "associated with the project. The corpus itself is currently not publicly available due to copyright issues.",
+                      style="text-align:left;color:black;background-color:papayawhip;padding:15px;border-radius:10px"),
+                    br(),
+                    width=10)),
+         fluidRow(column(tags$img(src="covers.png"),width=10)),
+                  
+                          
+         ),
+
+          tabPanel("Word Gender Ratings",
 
                     HTML( "Mean gender rating for words in gender rating task. Values range from 1 (male associated) to 5 (female associated). See 'Method Details' tab for additional information. <a href='https://github.com/mllewis/WCBC_GENDER/blob/master/data/processed/words/gender_ratings.csv'>Raw data</a> and <a href='https://github.com/mllewis/WCBC_GENDER/blob/master/data/processed/words/gender_ratings_mean.csv'> aggregated data</a>  available in the Github repository."),
                     br(),
@@ -27,9 +45,9 @@ navbarPage("What might books be teaching young children about gender?: Supplemen
                     plotlyOutput("bubbleplot", height = "1000px", width = "1000px")
            ),
 
-           tabPanel("Overall Book Gender",
-           HTML("The plot below shows the overall gender ratings based on the words in the text.
-                       Y-axis shows each book in our corpus; X-axis shows female bias of book on a 5 pt scale. Toggle the Measure selector to change which words are used to calculate the gender score.
+           tabPanel("Book Gender",
+           HTML("The plot below shows the overall gender ratings based on the words in each text. Larger values indicate stronger female association on a 5-pt scale.
+                       Y-axis shows each book in our corpus. Toggle the Measure selector to change which words are used to calculate the gender score.
                        Toggle the Order and Point Color selectors to change how the data are displayed.
                        Hover over a point to see an individual book's gender score."),
            br(),
@@ -49,8 +67,8 @@ navbarPage("What might books be teaching young children about gender?: Supplemen
                                          "Secondary character gender" = "char_second_gender"))),
              #"Prop. words included" = "prop_present_token"
              mainPanel(
-               ggiraphOutput("forestplot", height = "10000px", width = "10000px")
-
+               girafeOutput("forestplot2", height = "10000px", width = "900px")
+               
              )
            )
            ),
@@ -259,6 +277,7 @@ dominance for 13,915 English lemmas. Behavior Research Methods, 45(4), 1191–12
                        HTML("Zevin, J. D., & Seidenberg, M. S. (2004). Age-of-acquisition effects in reading aloud: Tests of cumulative frequency and frequency trajectory. Memory & Cognition, 32(1), 31–38.")
            )
   )
+)
 
 
 

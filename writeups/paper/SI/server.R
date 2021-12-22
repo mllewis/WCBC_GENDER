@@ -67,17 +67,17 @@ function(input, output, session) {
 
     current_df <- all_book_means[input$plotmeasure][[1]]
 
-    current_title <- case_when(input$plotmeasure == "all" ~ "Mean Gender Rating by Book\n(all words)\n",
-                               input$plotmeasure == "content" ~ "Mean Gender Rating by Book\n(content words only)\n",
-                               input$plotmeasure == "chars" ~ "Mean Gender Rating by Book\n(character words only)\n")
-
-    if (input$plotorder == "token_gender_mean"){
-      current_df_sorted <- current_df %>%
-        mutate(title = fct_reorder(title, token_gender_mean))
-    }  else {
-      current_df_sorted <- current_df %>%
-        mutate(title = fct_rev(title))
-    }
+    current_title <- case_when(input$plotmeasure == "all" ~ "Female Association by Book\n(all words)\n",
+                               input$plotmeasure == "content" ~ "Female Association by Book\n(content words only)\n",
+                               input$plotmeasure == "chars" ~ "Female Association by Book\n(character words only)\n")
+ 
+     if (input$plotorder == "token_gender_mean"){
+       current_df_sorted <- current_df %>%
+         mutate(title = fct_reorder(title, token_gender_mean))
+     }  else {
+       current_df_sorted <- current_df %>%
+         mutate(title = fct_rev(title))
+     }
 
     overall_token_mean <- mean(current_df$token_gender_mean, na.rm = T)
 
@@ -98,11 +98,11 @@ function(input, output, session) {
             legend.position = 'bottom',
             text=element_text(family="helvetica"))
 
-    # format color
-    if (input$plotcolor == "char_main_gender"){
-      forest_plot <- forest_plot +
-        scale_color_manual(
-              values = c("pink"," lightblue", "lightgoldenrod1",
+     # format color
+     if (input$plotcolor == "char_main_gender"){
+       forest_plot <- forest_plot +
+         scale_color_manual(
+               values = c("pink"," lightblue", "lightgoldenrod1",
                          "palegreen","lightgrey"),
               name = "Primary character gender") +
         guides(col = guide_legend(ncol = 2, size = 8))
@@ -121,15 +121,15 @@ function(input, output, session) {
         theme(legend.position = 'top')
     }
 
-    #girafe_options(forest_plot, opts_tooltip(use_fill = TRUE) )
-
-    ggiraph(code = print(forest_plot),
-            height_svg = 50,
-            width_svg = 15,
-            hover_css = "fill:black;",
-            selection_type = "single",
-            selected_css = "fill:black;",
-            zoom_max = 1)
+   # girafe_options(forest_plot, opts_tooltip(use_fill = TRUE) )
+    girafe(ggobj = forest_plot,
+            height_svg = 60,
+            width_svg = 20
+            #hover_css = "fill:black;",
+            #selection_type = "single",
+           # selected_css = "fill:black;",
+           # zoom_max = 1
+           )
   }
 
   get_bubble_plot <- function(){
@@ -204,7 +204,7 @@ function(input, output, session) {
 
   }
 
-  output$forestplot <- renderggiraph(get_forest_plot())
+  output$forestplot2 <- renderGirafe(get_forest_plot())
   output$bubbleplot <- renderPlotly(get_bubble_plot())
 
 
