@@ -1,7 +1,7 @@
 What might books be teaching young children about gender?
 ===
 
-Lewis, M. & Borkenhagen, MC., Converse, E., Lupyan, G., Seidenberg, M.  (under review). What might books be teaching young children about gender? [[preprint]](https://psyarxiv.com/ntgfe) [[paper source]](writeup/journal/iat_lang.Rmd) [[supplemental materials]](https://mlewis.shinyapps.io/SI_WCBC_GENDER/).
+Lewis, M. & Borkenhagen, MC., Converse, E., Lupyan, G., Seidenberg, M.  (2021). What might books be teaching young children about gender? _Psychological Science_. [[preprint]](https://psyarxiv.com/ntgfe) [[paper source]](https://github.com/mllewis/WCBC_GENDER/tree/master/writeups/paper/) [[supplemental materials]](https://mlewis.shinyapps.io/SI_WCBC_GENDER/).
 
 <br>
 
